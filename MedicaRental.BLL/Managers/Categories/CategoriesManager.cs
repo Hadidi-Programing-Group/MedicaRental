@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories.Categories
+namespace MedicaRental.BLL.Managers;
+
+public class CategoriesManager : ICategoriesManager
 {
-    public class CategoriesRepo : ICategoriesRepo
-    {
-    }
 }

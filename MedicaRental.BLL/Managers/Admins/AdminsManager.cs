@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories.Admins
+namespace MedicaRental.BLL.Managers;
+
+public class AdminsManager : IAdminsManager
 {
-    public class AdminsRepo : IAdminsRepo
-    {
-    }
 }

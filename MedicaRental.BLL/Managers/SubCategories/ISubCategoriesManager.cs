@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories.SubCategories
+namespace MedicaRental.BLL.Managers;
+
+public interface ISubCategoriesManager
 {
-    public interface ISubCategoriesRepo
-    {
-    }
 }

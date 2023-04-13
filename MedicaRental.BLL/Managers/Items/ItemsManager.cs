@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories.Items
+namespace MedicaRental.BLL.Managers;
+
+public class ItemsManager : IItemsManager
 {
-    public class ItemsRepo : IItemsRepo
-    {
-    }
 }
