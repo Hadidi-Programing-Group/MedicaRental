@@ -1,6 +1,7 @@
 ﻿using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,13 @@ namespace MedicaRental.DAL.Context
 {
     public class MedicaRentalDbContext : IdentityDbContext<AppUser>
     {
-        DbSet<Item> Items => Set<Item>();
-        DbSet<Client> Clients => Set<Client>();
-        DbSet<Category> Categories => Set<Category>();
-        DbSet<SubCategory> SubCategories => Set<SubCategory>();
-        DbSet<Review> Reviews => Set<Review>();
-        DbSet<Message> Messages => Set<Message>();
-        DbSet<Report> Reports => Set<Report>();
+        public DbSet<Item> Items => Set<Item>();
+        public DbSet<Client> Clients => Set<Client>();
+        public DbSet<Category> Categories => Set<Category>();
+        public DbSet<SubCategory> SubCategories => Set<SubCategory>();
+        public DbSet<Review> Reviews => Set<Review>();
+        public DbSet<Message> Messages => Set<Message>();
+        public DbSet<Report> Reports => Set<Report>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 
@@ -120,6 +121,68 @@ namespace MedicaRental.DAL.Context
                 entity.Property(r => r.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(r => !r.IsDeleted);
             });
+        }
+
+        public override void RemoveRange(IEnumerable<object> entities)
+        {
+            foreach (var entity in entities)
+            {
+                if (entity is ISoftDeletable deletable)
+                {
+                    deletable.IsDeleted = true;
+                    Entry(deletable).State = EntityState.Modified;
+                }
+                else
+                {
+                    Entry(entity).State = EntityState.Deleted;
+                }
+            }
+        }
+
+        public override void RemoveRange(params object[] entities)
+        {
+            foreach (var entity in entities)
+            {
+                if (entity is ISoftDeletable deletable)
+                {
+                    deletable.IsDeleted = true;
+                    Entry(deletable).State = EntityState.Modified;
+                }
+                else
+                {
+                    Entry(entity).State = EntityState.Deleted;
+                }
+            }
+        }
+        
+        public override EntityEntry Remove(object entity)
+        {
+            if (entity is ISoftDeletable deletable)
+            {
+                deletable.IsDeleted = true;
+                Entry(deletable).State = EntityState.Modified;
+
+                return Entry(entity);
+            }
+            else
+            {
+                return base.Remove(entity);
+            }
+        }
+
+        public override EntityEntry<TEntity> Remove<TEntity>(TEntity entity)
+        {
+            if (entity is ISoftDeletable deletable)
+            {
+                deletable.IsDeleted = true;
+                Entry(deletable).State = EntityState.Modified;
+
+                return Entry(entity);
+            }
+            else
+            {
+                return base.Remove(entity);
+            }
         }
     }
 }
