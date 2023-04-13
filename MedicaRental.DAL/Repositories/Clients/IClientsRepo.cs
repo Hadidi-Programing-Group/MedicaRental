@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MedicaRental.DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,4 +9,5 @@ namespace MedicaRental.DAL.Repositories;
 
 public interface IClientsRepo
 {
+    void Add(Client newClient);
 }

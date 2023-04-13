@@ -1,4 +1,5 @@
 ﻿using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,10 @@ public class ClientsRepo : IClientsRepo
     public ClientsRepo(MedicaRentalDbContext context)
     {
         _context = context;
+    }
+
+    public void Add(Client newClient)
+    {
+        _context.Set<Client>().Add(newClient);
     }
 }

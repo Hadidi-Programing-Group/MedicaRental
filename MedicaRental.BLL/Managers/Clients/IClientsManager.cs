@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,4 +10,5 @@ namespace MedicaRental.BLL.Managers;
 
 public interface IClientsManager
 {
+    Task<RegisterStatusDto> RegisterNewUserAsync(RegisterInfoDto registerInfoDto);
 }

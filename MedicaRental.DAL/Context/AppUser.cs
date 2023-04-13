@@ -8,6 +8,13 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Context
 {
+    public enum UserRoles
+    {
+        Admin,
+        Moderator,
+        Client
+    }
+
     public class AppUser : IdentityUser
     {
         public string FirstName { get; set; } = string.Empty;

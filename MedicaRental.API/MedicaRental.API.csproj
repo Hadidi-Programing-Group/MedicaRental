@@ -19,4 +19,8 @@
     <ProjectReference Include="..\MedicaRental.BLL\MedicaRental.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Filters\" />
+  </ItemGroup>
+
 </Project>
