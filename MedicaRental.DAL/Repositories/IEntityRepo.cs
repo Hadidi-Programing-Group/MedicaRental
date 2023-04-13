@@ -9,8 +9,7 @@ namespace MedicaRental.DAL.Repositories
 {
     public interface IEntityRepo<TEntity> where TEntity : class
     {
-        public Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? predicate = null,
-                                           Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        public Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
                                            Expression<Func<TEntity, object>>? include = null);
 
         public Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>? include = null);
@@ -19,8 +18,8 @@ namespace MedicaRental.DAL.Repositories
                                            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
                                            Expression<Func<TEntity, object>>? include = null);
 
-        public void AddAsync(TEntity entity);
-        public void AddRangeAsync(IEnumerable<TEntity> entities);
+        public Task AddAsync(TEntity entity);
+        public Task AddRangeAsync(IEnumerable<TEntity> entities);
         
         public void Delete(TEntity entity);
         public void DeleteRange(IEnumerable<TEntity> entities);
