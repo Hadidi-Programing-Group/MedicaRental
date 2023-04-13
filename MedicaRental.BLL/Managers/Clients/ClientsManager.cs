@@ -57,7 +57,7 @@ public class ClientsManager : IClientsManager
                 UnionCardImage = Convert.FromBase64String(clientRegisterInfoDto.UnionCardImage),
             };
 
-            _unitOfWork.Clients.Add(newClient);
+            await _unitOfWork.Clients.AddAsync(newClient);
             _unitOfWork.Save();
         }
         catch (Exception e)
