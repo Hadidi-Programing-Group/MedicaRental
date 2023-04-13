@@ -11,5 +11,6 @@ namespace MedicaRental.BLL.Managers;
 public interface IAccountsManager
 {
     Task DeleteAsync(AppUser newUser);
+    Task<LoginStatusWithTokenDto> LoginAsync(LoginInfoDto loginInfoDto);
     Task<BaseUserRegisterStatusDto> RegisterNewUserAsync(BaseUserRegisterInfoDto baseUserRegisterInfoDto);
 }

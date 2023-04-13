@@ -2,8 +2,11 @@
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -14,15 +17,49 @@ namespace MedicaRental.BLL.Managers;
 public class AccountsManager : IAccountsManager
 {
     private readonly UserManager<AppUser> _userManager;
+    private readonly IConfiguration _configuration;
 
-    public AccountsManager(UserManager<AppUser> userManager)
+    public AccountsManager(
+        UserManager<AppUser> userManager,
+        IConfiguration configuration
+        )
     {
         _userManager = userManager;
+        _configuration = configuration;
     }
 
     public Task DeleteAsync(AppUser newUser)
     {
         return _userManager.DeleteAsync(newUser);
+    }
+
+    public async Task<LoginStatusWithTokenDto> LoginAsync(LoginInfoDto loginInfoDto)
+    {
+        var user = await _userManager.FindByEmailAsync(loginInfoDto.Email);
+        if (user is null)
+            return new LoginStatusWithTokenDto(false, null, null);
+
+        var isAuth = await _userManager.CheckPasswordAsync(user, loginInfoDto.Password);
+        if (!isAuth)
+            return new LoginStatusWithTokenDto(false, null, null);
+
+        var ClaimsList = await _userManager.GetClaimsAsync(user);
+
+        var SecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+        var SignInCreds = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256Signature);
+
+        var expiry = DateTime.Now.AddDays(1);
+
+        var token = new JwtSecurityToken(
+            claims: ClaimsList,
+            expires: expiry,
+            signingCredentials: SignInCreds);
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenString = tokenHandler.WriteToken(token);
+
+        return new LoginStatusWithTokenDto(true, tokenString, expiry);
     }
 
     public async Task<BaseUserRegisterStatusDto> RegisterNewUserAsync(BaseUserRegisterInfoDto baseUserRegisterInfoDto)
