@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MedicaRental.DAL.Context;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicaRental.DAL.Models
 {
-    public class Review
+    public class Review : ISoftDeletable
     {
         public int Id { get; set; }
 

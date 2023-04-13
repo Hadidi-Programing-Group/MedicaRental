@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Models
 {
-    public class Item
+    public class Item : ISoftDeletable
     {
         public int Id { get; set; }
 

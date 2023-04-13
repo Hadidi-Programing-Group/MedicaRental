@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using MedicaRental.DAL.Context;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicaRental.DAL.Models
 {
-    public class Message
+    public class Message : ISoftDeletable
     {
         public Guid Id { get; set; }
         
