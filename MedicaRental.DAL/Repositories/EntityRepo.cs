@@ -60,19 +60,36 @@ namespace MedicaRental.DAL.Repositories
             return await query.ToListAsync();
         }
 
-        public Task<TEntity> FindAsync(object id, Expression<Func<TEntity, object>>? include = null)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Expression<Func<TEntity, object>>? include = null)
         {
-            throw new NotImplementedException();
+
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (include != null)
+            {
+                query = query.Include(include);
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return await query.ToListAsync();
         }
 
-        public Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Expression<Func<TEntity, object>>? include = null)
+        public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>? include = null)
         {
-            throw new NotImplementedException();
-        }
+            IQueryable<TEntity> query = _context.Set<TEntity>();
 
-        public Task<TEntity> GetAsync(object id, Expression<Func<TEntity, object>>? include = null)
-        {
-            throw new NotImplementedException();
+            query = query.Where(predicate);
+
+            if (include != null)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync();
         }
 
         public void Update(TEntity entity)
@@ -82,9 +99,7 @@ namespace MedicaRental.DAL.Repositories
 
         public void UpdateRange(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
-
-            //_context.UpdateRange<TEntity>(entities.ToArray());
+            _context.UpdateRange(entities);
         }
     }
 }

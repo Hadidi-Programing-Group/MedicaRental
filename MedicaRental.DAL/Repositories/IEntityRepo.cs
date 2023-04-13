@@ -13,12 +13,11 @@ namespace MedicaRental.DAL.Repositories
                                            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
                                            Expression<Func<TEntity, object>>? include = null);
 
-        public Task<TEntity> GetAsync(object id, Expression<Func<TEntity, object>>? include = null);
+        public Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>? include = null);
 
         public Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null,
                                            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
                                            Expression<Func<TEntity, object>>? include = null);
-        public Task<TEntity> FindAsync(object id, Expression<Func<TEntity, object>>? include = null);
 
         public void AddAsync(TEntity entity);
         public void AddRangeAsync(IEnumerable<TEntity> entities);
