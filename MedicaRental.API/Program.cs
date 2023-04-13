@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -87,10 +86,10 @@ builder.Services
 #region Authorization Services
 builder.Services
     .AddAuthorization(options =>
-        {
-            //options.AddPolicy("", policy => policy
-            //    .RequireClaim(ClaimTypes.Role, "", "", ....));
-        });
+    {
+        //options.AddPolicy("", policy => policy
+        //    .RequireClaim(ClaimTypes.Role, "", "", ....));
+    });
 #endregion
 
 #region Unit Of Work
