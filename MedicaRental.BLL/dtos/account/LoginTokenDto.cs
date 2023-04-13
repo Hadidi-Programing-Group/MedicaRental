@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-public record LoginTokenDto (string Token);
+public record LoginTokenDto (string Token, DateTime Expiry);
