@@ -10,5 +10,5 @@ namespace MedicaRental.BLL.Managers;
 
 public interface IClientsManager
 {
-    Task<RegisterStatusDto> RegisterNewUserAsync(RegisterInfoDto registerInfoDto);
+    Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto registerInfoDto);
 }

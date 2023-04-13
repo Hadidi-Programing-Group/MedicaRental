@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-public record RegisterStatusDto(bool isCreated, string RegisterMessage);
+public record ClientRegisterStatusDto(bool isCreated, string RegisterMessage);

@@ -32,13 +32,13 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("/Register")]
-        public async Task<ActionResult> RegisterAsync(RegisterInfoDto registerInfoDto)
+        public async Task<ActionResult> RegisterAsync(ClientRegisterInfoDto clientRegisterInfoDto)
         {
-            RegisterStatusDto registerStatus = await _clientsManager.RegisterNewUserAsync(registerInfoDto);
-            if (!registerStatus.isCreated)
-                return BadRequest(registerStatus.RegisterMessage);
+            ClientRegisterStatusDto clientRegisterStatus = await _clientsManager.RegisterNewUserAsync(clientRegisterInfoDto);
+            if (!clientRegisterStatus.isCreated)
+                return BadRequest(clientRegisterStatus.RegisterMessage);
 
-            return Ok(registerStatus.RegisterMessage);
+            return Ok(clientRegisterStatus.RegisterMessage);
         }
     }
 }

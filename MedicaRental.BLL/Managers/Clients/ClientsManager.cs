@@ -16,48 +16,32 @@ namespace MedicaRental.BLL.Managers;
 public class ClientsManager : IClientsManager
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly UserManager<AppUser> _userManager;
+    private readonly IAccountsManager _accountsManager;
 
-    public ClientsManager(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+    public ClientsManager(IUnitOfWork unitOfWork,
+        IAccountsManager accountsManager
+        )
     {
         _unitOfWork = unitOfWork;
-        _userManager = userManager;
+        _accountsManager = accountsManager;
     }
 
-    public async Task<RegisterStatusDto> RegisterNewUserAsync(RegisterInfoDto registerInfoDto)
+    public async Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto clientRegisterInfoDto)
     {
-        var newUser = new AppUser
-        {
-            FirstName = registerInfoDto.FirstName,
-            LastName = registerInfoDto.LastName,
-            Email = registerInfoDto.Email,
-            UserName = registerInfoDto.Email,
-            PhoneNumber = registerInfoDto.PhoneNumber,
-        };
-
-        var registerUserResult = await _userManager.CreateAsync(newUser, registerInfoDto.Password);
-        if (!registerUserResult.Succeeded)
-            return new RegisterStatusDto
+        var baseUserRegisterStatus = await _accountsManager.RegisterNewUserAsync(clientRegisterInfoDto.BaseUserRegisterInfo);
+        if (!baseUserRegisterStatus.isCreated)
+            return new ClientRegisterStatusDto
             (
                 isCreated: false,
-                RegisterMessage: registerUserResult.Errors.First().Description
+                RegisterMessage: baseUserRegisterStatus.RegisterMessage
             );
 
-        var ClaimsList = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, newUser.Id),
-            new Claim(ClaimTypes.Email, newUser.Email),
-            new Claim(ClaimTypes.GivenName, newUser.FirstName),
-            new Claim(ClaimTypes.Surname, newUser.LastName),
-            new Claim(ClaimTypes.Role, UserRoles.Client.ToString()),
-        };
-
-        var addingClaimsResult = await _userManager.AddClaimsAsync(newUser, ClaimsList);
-        if (!addingClaimsResult.Succeeded)
-            return new RegisterStatusDto
+        var newUser = baseUserRegisterStatus.NewUser;
+        if (newUser is null)
+            return new ClientRegisterStatusDto
             (
                 isCreated: false,
-                RegisterMessage: addingClaimsResult.Errors.First().Description
+                RegisterMessage: "Couldn't Create User"
             );
 
         try
@@ -66,11 +50,11 @@ public class ClientsManager : IClientsManager
             var newClient = new Client
             {
                 Id = newUser.Id,
-                Ssn = registerInfoDto.SSN,
-                Address = registerInfoDto.Address,
+                Ssn = clientRegisterInfoDto.SSN,
+                Address = clientRegisterInfoDto.Address,
                 IsGrantedRent = false,
-                NationalIdImage = Convert.FromBase64String(registerInfoDto.NationalIdImage),
-                UnionCardImage = Convert.FromBase64String(registerInfoDto.UnionCardImage),
+                NationalIdImage = Convert.FromBase64String(clientRegisterInfoDto.NationalIdImage),
+                UnionCardImage = Convert.FromBase64String(clientRegisterInfoDto.UnionCardImage),
             };
 
             _unitOfWork.Clients.Add(newClient);
@@ -78,8 +62,8 @@ public class ClientsManager : IClientsManager
         }
         catch (Exception e)
         {
-            await _userManager.DeleteAsync(newUser);
-            return new RegisterStatusDto
+            await _accountsManager.DeleteAsync(newUser);
+            return new ClientRegisterStatusDto
             (
                 isCreated: false,
                 RegisterMessage: e.Message
@@ -87,7 +71,7 @@ public class ClientsManager : IClientsManager
 
         }
 
-        return new RegisterStatusDto
+        return new ClientRegisterStatusDto
         (
             isCreated: true,
             RegisterMessage: "Account Created Successfully"

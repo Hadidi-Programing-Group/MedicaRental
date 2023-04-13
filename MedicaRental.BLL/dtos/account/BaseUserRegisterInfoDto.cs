@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos.Validations;
+using MedicaRental.DAL.Context;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-public record RegisterInfoDto
+public record BaseUserRegisterInfoDto
 {
     [Required(ErrorMessage = "First Name is required")]
     [MinLength(3, ErrorMessage = "Name can't be less that three characters")]
@@ -29,17 +30,6 @@ public record RegisterInfoDto
     [RegularExpression(@"^(010|011|012|015)\d{8}$", ErrorMessage = "Invalid Egyptian phone number.")]
     public string PhoneNumber { get; set; } = string.Empty;
 
-    [RegularExpression(@"^\d{14}$", ErrorMessage = "National ID must be 14 numbers")]
-    public string SSN { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Address is required")]
-    public string Address { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "National ID image is required.")]
-    [Base64StringImageValidation]
-    public string NationalIdImage { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Union Card image is required.")]
-    [Base64StringImageValidation]
-    public string UnionCardImage { get; set; } = string.Empty;
+    [UserRoleValidation(ErrorMessage = "Invalid Role")]
+    public UserRoles UserRole { get; set; }
 }
