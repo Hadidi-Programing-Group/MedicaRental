@@ -1,8 +1,10 @@
 ﻿using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Models;
 using MedicaRental.DAL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,15 +14,14 @@ public class UnitOfWork : IUnitOfWork
 {
     #region Private Fields
     private readonly MedicaRentalDbContext _context;
-    private IItemsRepo? _items;
-    private ICategoriesRepo? _categories;
-    private ISubCategoriesRepo? _subCategories;
-    private IClientsRepo? _clients;
-    private IAdminsRepo? _admins;
-    private IMessagesRepo? _messages;
-    private IReportsRepo? _reports;
-    private IReviewsRepo? _reviews;
-    private IAccountsRepo? _accounts;
+    private IEntityRepo<Item>? _items;
+    private IEntityRepo<Category>? _categories;
+    private IEntityRepo<SubCategory>? _subCategories;
+    private IEntityRepo<Client>? _clients;
+    private IEntityRepo<AppUser>? _admins;
+    private IEntityRepo<Message>? _messages;
+    private IEntityRepo<Report>? _reports;
+    private IEntityRepo<Review>? _reviews;
     #endregion
 
     public UnitOfWork(MedicaRentalDbContext context)
@@ -33,23 +34,14 @@ public class UnitOfWork : IUnitOfWork
      * Lazy Loading For Repositories
      * Will be initialized only when used
      */
-    public IItemsRepo Items => _items ??= new ItemsRepo(_context);
-
-    public ICategoriesRepo Categories => _categories ??= new CategoriesRepo(_context);
-
-    public ISubCategoriesRepo SubCategories => _subCategories ??= new SubCategoriesRepo(_context);
-
-    public IClientsRepo Clients => _clients ??= new ClientsRepo(_context);
-
-    public IAdminsRepo Admins => _admins ??= new AdminsRepo(_context);
-
-    public IMessagesRepo Messages => _messages ??= new MessagesRepo(_context);
-
-    public IReportsRepo Reports => _reports ??= new ReportsRepo(_context);
-
-    public IReviewsRepo Reviews => _reviews ??= new ReviewsRepo(_context);
-
-    public IAccountsRepo Accounts => _accounts ??= new AccountsRepo(_context);
+    public IEntityRepo<Item> Items => _items ??= new ItemsRepo(_context);
+    public IEntityRepo<Category> Categories => _categories ??= new CategoriesRepo(_context);
+    public IEntityRepo<SubCategory> SubCategories => _subCategories ??= new SubCategoriesRepo(_context);
+    public IEntityRepo<Client> Clients => _clients ??= new ClientsRepo(_context);
+    public IEntityRepo<AppUser> Admins => _admins ??= new AdminsRepo(_context);
+    public IEntityRepo<Message> Messages => _messages ??= new MessagesRepo(_context);
+    public IEntityRepo<Report> Reports => _reports ??= new ReportsRepo(_context);
+    public IEntityRepo<Review> Reviews => _reviews ??= new ReviewsRepo(_context);
     #endregion
 
     private bool disposed = false;
