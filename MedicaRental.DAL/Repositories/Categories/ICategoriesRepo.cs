@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories.Categories
+namespace MedicaRental.DAL.Repositories;
+
+public interface ICategoriesRepo
 {
-    public interface ICategoriesRepo
-    {
-    }
 }

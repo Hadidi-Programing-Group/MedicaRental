@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories.Reviews
+namespace MedicaRental.DAL.Repositories;
+
+public interface IReviewsRepo
 {
-    public interface IReviewsRepo
-    {
-    }
 }
