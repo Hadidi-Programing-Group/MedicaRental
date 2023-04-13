@@ -1,3 +1,4 @@
+using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Repositories.Accounts;
 using MedicaRental.DAL.Repositories.Admins;
@@ -110,6 +111,18 @@ builder.Services.AddScoped<IMessagesRepo, MessagesRepo>();
 builder.Services.AddScoped<IReportsRepo, ReportsRepo>();
 builder.Services.AddScoped<IReviewsRepo, ReviewsRepo>();
 builder.Services.AddScoped<IAccountsRepo, AccountsRepo>();
+#endregion
+
+#region Managers Services
+builder.Services.AddScoped<IAccountsManager, AccountsManager>();
+builder.Services.AddScoped<IAdminsManager, AdminsManager>();
+builder.Services.AddScoped<ICategoriesManager, CategoriesManager>();
+builder.Services.AddScoped<IClientsManager, ClientsManager>();
+builder.Services.AddScoped<IItemsManager, ItemsManager>();
+builder.Services.AddScoped<IMessagesManager, MessagesManager>();
+builder.Services.AddScoped<IReportsManager, ReportsManager>();
+builder.Services.AddScoped<IReviewsManager, ReviewsManager>();
+builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
 #endregion
 
 
