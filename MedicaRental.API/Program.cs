@@ -1,14 +1,6 @@
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
-using MedicaRental.DAL.Repositories.Accounts;
-using MedicaRental.DAL.Repositories.Admins;
-using MedicaRental.DAL.Repositories.Categories;
-using MedicaRental.DAL.Repositories.Clients;
-using MedicaRental.DAL.Repositories.Items;
-using MedicaRental.DAL.Repositories.Messages;
-using MedicaRental.DAL.Repositories.Reports;
-using MedicaRental.DAL.Repositories.Reviews;
-using MedicaRental.DAL.Repositories.SubCategories;
+using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -101,16 +93,8 @@ builder.Services
         });
 #endregion
 
-#region Repository Services
-builder.Services.AddScoped<IItemsRepo, ItemsRepo>();
-builder.Services.AddScoped<ICategoriesRepo, CategoriesRepo>();
-builder.Services.AddScoped<ISubCategoriesRepo, SubCategoriesRepo>();
-builder.Services.AddScoped<IClientsRepo, ClientsRepo>();
-builder.Services.AddScoped<IAdminsRepo, AdminsRepo>();
-builder.Services.AddScoped<IMessagesRepo, MessagesRepo>();
-builder.Services.AddScoped<IReportsRepo, ReportsRepo>();
-builder.Services.AddScoped<IReviewsRepo, ReviewsRepo>();
-builder.Services.AddScoped<IAccountsRepo, AccountsRepo>();
+#region Unit Of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 #endregion
 
 #region Managers Services

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories.Messages
+namespace MedicaRental.DAL.Repositories;
+
+public interface IMessagesRepo
 {
-    public interface IMessagesRepo
-    {
-    }
 }
