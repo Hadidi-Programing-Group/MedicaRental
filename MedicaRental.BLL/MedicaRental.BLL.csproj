@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MedicaRental.DAL\MedicaRental.DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dtos\Account\" />
+    <Folder Include="Dtos\Admin\" />
+    <Folder Include="Dtos\Category\" />
+    <Folder Include="Dtos\Client\" />
+    <Folder Include="Dtos\Item\" />
+    <Folder Include="Dtos\Message\" />
+    <Folder Include="Dtos\Report\" />
+    <Folder Include="Dtos\Review\" />
+    <Folder Include="Dtos\SubCategory\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      dotnet: 6.0
+  pre_build:
+    commands:
+      - dotnet restore MedicaRental.csproj
+  build:
+    commands:
+      - dotnet build MedicaRental.csproj
+  post_build:
+    commands:
+      - dotnet publish -c Release -o ./app/ MedicaRental.csproj
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'app' 
