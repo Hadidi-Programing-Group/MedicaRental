@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,6 @@ public class UserRoleValidationAttribute : ValidationAttribute
 {
     public override bool IsValid(object? value)
     {
-        if (int.TryParse(value?.ToString(), out int role))
-            return Enum.IsDefined(typeof(UserRoles), role);
-        return 
-            false;
+        return Enum.IsDefined(typeof(UserRoles), value!);
     }
 }

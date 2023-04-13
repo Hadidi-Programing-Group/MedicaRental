@@ -66,7 +66,7 @@ public class ClientsManager : IClientsManager
             return new ClientRegisterStatusDto
             (
                 isCreated: false,
-                RegisterMessage: e.Message
+                RegisterMessage: "National ID is already registered"
             );
 
         }

@@ -13,12 +13,6 @@ public class Base64StringImageValidationAttribute : ValidationAttribute
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        ClientRegisterInfoDto? instance = validationContext.ObjectInstance as ClientRegisterInfoDto;
-
-        if (instance is null)
-            return new ValidationResult("Object is null");
-
-
         if (!TryConvertFromBase64String(value?.ToString()))
         {
             return new ValidationResult("Image is in invalid format");
