@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Managers;
 
-public interface IManagerrtsManager
+public interface IReportsManager
 {
 }
