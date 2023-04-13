@@ -18,14 +18,14 @@ namespace MedicaRental.DAL.Repositories
             _context = context;
         }
 
-        public void AddAsync(TEntity entity)
+        public async Task AddAsync(TEntity entity)
         {
-            _context.Set<TEntity>().AddAsync(entity);
+            await _context.Set<TEntity>().AddAsync(entity);
         }
 
-        public void AddRangeAsync(IEnumerable<TEntity> entities)
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
         {
-            _context.Set<TEntity>().AddRangeAsync(entities);
+            await _context.Set<TEntity>().AddRangeAsync(entities);
         }
 
         public void Delete(TEntity entity)
