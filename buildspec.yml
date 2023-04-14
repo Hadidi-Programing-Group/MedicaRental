@@ -10,9 +10,9 @@ phases:
     commands:
       - dotnet restore 
       - echo Info about dbcontext
-      - dotnet ef dbcontext info --project .\MedicaRental.API\MedicaRental.API.csproj
+      - dotnet ef dbcontext info --project MedicaRental.API\MedicaRental.API.csproj
       - echo Updateing DataBase
-      - dotnet ef database update --project .\MedicaRental.API\MedicaRental.API.csproj
+      - dotnet ef database update --project MedicaRental.API\MedicaRental.API.csproj
   build:
     commands:
       - dotnet build 
