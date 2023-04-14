@@ -1,4 +1,5 @@
-﻿using MedicaRental.DAL.Models;
+﻿using MedicaRental.DAL.Configurations;
+using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -28,6 +29,7 @@ namespace MedicaRental.DAL.Context
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
 
             builder.Entity<Item>(entity =>
             {
@@ -146,6 +148,16 @@ namespace MedicaRental.DAL.Context
                 entity.Property(i => i.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(i => !i.IsDeleted);
             });
+
+            builder.ApplyConfiguration(new ItemEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ClientEntityTypeConfiguration());
+            builder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
+            builder.ApplyConfiguration(new SubCategoryEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ReviewEntityTypeConfiguration());
+            builder.ApplyConfiguration(new MessageEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ReportEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ItemPreviousRentersEntityTypeConfiguration());
+
         }
 
         public override void RemoveRange(IEnumerable<object> entities)
