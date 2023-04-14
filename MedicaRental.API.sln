@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicaRental.API", "MedicaRental.API\MedicaRental.API.csproj", "{41E88059-9DE0-492E-8F5F-BC0FEAFB7812}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedicaRental.API", "MedicaRental.API\MedicaRental.API.csproj", "{41E88059-9DE0-492E-8F5F-BC0FEAFB7812}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicaRental.DAL", "MedicaRental.DAL\MedicaRental.DAL.csproj", "{41895E31-65AA-41FD-A41F-87F9C9709763}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedicaRental.DAL", "MedicaRental.DAL\MedicaRental.DAL.csproj", "{41895E31-65AA-41FD-A41F-87F9C9709763}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicaRental.BLL", "MedicaRental.BLL\MedicaRental.BLL.csproj", "{F68CD007-CC7E-4907-9BAC-57EB044409EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedicaRental.BLL", "MedicaRental.BLL\MedicaRental.BLL.csproj", "{F68CD007-CC7E-4907-9BAC-57EB044409EF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC466368-0E38-462B-8828-6AFB0417280C}"
+	ProjectSection(SolutionItems) = preProject
+		buildspec.yml = buildspec.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
