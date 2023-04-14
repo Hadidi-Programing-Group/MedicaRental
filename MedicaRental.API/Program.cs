@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 #region Main Services
-builder.Services.AddDbContext<MedicaRentalDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MedicaRentalDbConn")));
+builder.Services.AddDbContext<MedicaRentalDbContext>(options => options.UseSqlServer(GetRDSConnectionString()));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -133,3 +133,19 @@ app.MapControllers();
 app.MapGet("/", () => "Hello World");
 app.MapGet("/Hi", () => "GitHub Acctions Works !!");
 app.Run();
+
+string GetRDSConnectionString()
+{
+    var appConfig = System.Configuration.ConfigurationManager.AppSettings;
+
+    string dbname = appConfig["RDS_DB_NAME"];
+
+    if (string.IsNullOrEmpty(dbname)) return builder.Configuration.GetConnectionString("MedicaRentalDbConn");
+
+    string username = appConfig["RDS_USERNAME"];
+    string password = appConfig["RDS_PASSWORD"];
+    string hostname = appConfig["RDS_HOSTNAME"];
+    string port = appConfig["RDS_PORT"];
+
+    return "Data Source=" + hostname + ";Initial Catalog=" + dbname + ";User ID=" + username + ";Password=" + password + ";";
+}
