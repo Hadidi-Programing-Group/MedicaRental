@@ -20,11 +20,6 @@ public class ReportEntityTypeConfiguration : IEntityTypeConfiguration<Report>
         .HasForeignKey(i => i.ReporteeId)
         .OnDelete(DeleteBehavior.Restrict);
 
-        //builder.HasOne(i => i.Reported)
-        //.WithMany(sc => sc.Reports)
-        //.HasForeignKey(i => i.ReporteeId)
-        //.OnDelete(DeleteBehavior.Restrict);
-
         builder.Property(r => r.IsDeleted).HasDefaultValue(false);
         builder.HasQueryFilter(r => !r.IsDeleted);
     }

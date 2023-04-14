@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230414213254_AddedSellerItemsCollection")]
-    partial class AddedSellerItemsCollection
+    [Migration("20230414225442_ReCreate")]
+    partial class ReCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
