@@ -12,7 +12,7 @@ namespace MedicaRental.DAL.Repositories
         public Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
                                            Expression<Func<TEntity, object>>? include = null);
 
-        public Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>? include = null);
+        public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>? include = null);
 
         public Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null,
                                            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
@@ -20,7 +20,8 @@ namespace MedicaRental.DAL.Repositories
 
         public Task AddAsync(TEntity entity);
         public Task AddRangeAsync(IEnumerable<TEntity> entities);
-        
+
+        public Task DeleteById(TEntity entity);
         public void Delete(TEntity entity);
         public void DeleteRange(IEnumerable<TEntity> entities);
         
