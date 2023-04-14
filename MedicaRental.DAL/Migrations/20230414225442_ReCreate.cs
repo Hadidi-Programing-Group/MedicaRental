@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class AddedSellerItemsCollection : Migration
+    public partial class ReCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

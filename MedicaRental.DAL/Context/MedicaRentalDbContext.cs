@@ -30,125 +30,6 @@ namespace MedicaRental.DAL.Context
         {
             base.OnModelCreating(builder);
 
-
-            builder.Entity<Item>(entity =>
-            {
-                entity.HasKey(i => i.Id);
-
-                entity.HasIndex(i => i.CategoryId);
-
-                entity.HasIndex(i => i.SubCategoryId);
-
-                entity.HasOne(i => i.SubCategory)
-                .WithMany(sc => sc.Items)
-                .HasForeignKey(i => i.SubCategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(i => i.Category)
-                .WithMany(sc => sc.Items)
-                .HasForeignKey(i => i.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.Property(i => i.Price).HasColumnType("money");
-
-                entity.Property(i => i.Image).HasColumnType("image").IsRequired(true);
-                
-                entity.Property(i => i.CurrentRenterId).IsRequired(false);
-
-                entity.Property(i => i.IsDeleted).HasDefaultValue(false);
-                entity.HasQueryFilter(i => !i.IsDeleted);
-            });
-
-            builder.Entity<Client>(entity =>
-            {
-                entity.HasKey(c => c.Id);
-                entity.HasIndex(c => c.Ssn).IsUnique();
-
-                entity.HasMany(c => c.ItemsForRent)
-                .WithOne(i => i.CurrentRenter)
-                .HasForeignKey(i => i.CurrentRenterId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.Property(c => c.NationalIdImage).HasColumnType("image").IsRequired(true);
-                entity.Property(c => c.UnionCardImage).HasColumnType("image").IsRequired(true);
-            });
-
-            builder.Entity<Category>(entity =>
-            {
-                entity.HasKey(c => c.Id);
-                entity.Property(c => c.Icon).HasColumnType("image").IsRequired(true);
-            });
-
-            builder.Entity<SubCategory>(entity =>
-            {
-                entity.HasKey(c => c.Id);
-                entity.Property(c => c.Icon).HasColumnType("image").IsRequired(true);
-            });
-
-            builder.Entity<Review>(entity =>
-            {
-                entity.HasKey(r => r.Id);
-
-                entity.HasOne(r => r.Item)
-                .WithMany(i => i.Reviews)
-                .HasForeignKey(i => i.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.Property(r => r.IsDeleted).HasDefaultValue(false);
-                entity.HasQueryFilter(r => !r.IsDeleted);
-            });
-
-            builder.Entity<Message>(entity =>
-            {
-                entity.HasKey(m => m.Id);
-                entity.HasOne(m => m.Sender)
-                .WithMany(c => c.SentMessages)
-                .HasForeignKey(m => m.SenderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(m => m.Receiver)
-                .WithMany(c => c.ReceivedMessages)
-                .HasForeignKey(m => m.ReceiverId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.Property(m => m.IsDeleted).HasDefaultValue(false);
-                entity.HasQueryFilter(m => !m.IsDeleted);
-            });
-
-            builder.Entity<Report>(entity =>
-            {
-                entity.HasKey(r => r.Id);
-
-                entity.HasOne(i => i.Reportee)
-                .WithMany(sc => sc.Reports)
-                .HasForeignKey(i => i.ReporteeId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                //entity.HasOne(i => i.Reported)
-                //.WithMany(sc => sc.Reports)
-                //.HasForeignKey(i => i.ReporteeId)
-                //.OnDelete(DeleteBehavior.Restrict);
-
-                entity.Property(r => r.IsDeleted).HasDefaultValue(false);
-                entity.HasQueryFilter(r => !r.IsDeleted);
-            });
-
-            builder.Entity<ItemPreviousRenters>(entity =>
-            {
-                entity.HasOne(ir => ir.Client)
-                .WithMany(c => c.RentedItems)
-                .HasForeignKey(i => i.ClientId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(ir => ir.Item)
-                .WithMany(i => i.ItemRenters)
-                .HasForeignKey(i => i.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.Property(i => i.IsDeleted).HasDefaultValue(false);
-                entity.HasQueryFilter(i => !i.IsDeleted);
-            });
-
             builder.ApplyConfiguration(new ItemEntityTypeConfiguration());
             builder.ApplyConfiguration(new ClientEntityTypeConfiguration());
             builder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
@@ -157,7 +38,6 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new MessageEntityTypeConfiguration());
             builder.ApplyConfiguration(new ReportEntityTypeConfiguration());
             builder.ApplyConfiguration(new ItemPreviousRentersEntityTypeConfiguration());
-
         }
 
         public override void RemoveRange(IEnumerable<object> entities)
