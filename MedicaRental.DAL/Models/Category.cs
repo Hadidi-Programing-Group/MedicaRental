@@ -9,5 +9,6 @@
         public byte[]? Icon { get; set; }
 
         public ICollection<Item> Items { get; set; } = new List<Item>();
+        public ICollection<SubCategory> SubCategories { get; set; } = new List<SubCategory>();
     }
 }
