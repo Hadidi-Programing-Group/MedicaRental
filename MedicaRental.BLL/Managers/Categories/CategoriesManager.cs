@@ -4,6 +4,7 @@ using MedicaRental.DAL.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ public class CategoriesManager : ICategoriesManager
 
     public async Task<DeleteCategoryStatusDto> DeleteByIdAsync(int Id)
     {
-         await _unitOfWork.Categories.DeleteById(Id);
+         await _unitOfWork.Categories.DeleteOneById(Id);
          try
         {
             _unitOfWork.Save();
@@ -52,7 +53,7 @@ public class CategoriesManager : ICategoriesManager
     {
         var category = await _unitOfWork.Categories.FindAsync(
             predicate: (c) => c.Id == id,
-            include: c => c.SubCategories
+            includes: new Expression<Func<Category, object>>[] { c => c.SubCategories }
             );
 
         if (category is null)

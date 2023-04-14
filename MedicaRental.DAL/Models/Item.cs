@@ -59,6 +59,6 @@ namespace MedicaRental.DAL.Models
 
         [Range(0, 5)]
         [NotMapped]
-        public float Rating { get => 0; }
+        public double Rating { get => Reviews.Average(r => r.Rating); }
     }
 }
