@@ -9,12 +9,8 @@ phases:
   pre_build:
     commands:
       - dotnet restore 
-  check_db_connecttion:
-    commands:
       - echo Info about dbcontext
       - dotnet ef dbcontext info --project .\MedicaRental.API\MedicaRental.API.csproj
-  update_database:
-    commands:
       - echo Updateing DataBase
       - dotnet ef database update --project .\MedicaRental.API\MedicaRental.API.csproj
   build:
