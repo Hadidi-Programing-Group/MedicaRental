@@ -19,6 +19,7 @@ public interface IUnitOfWork : IDisposable
     IEntityRepo<Message> Messages {get;}
     IEntityRepo<Report> Reports {get;}
     IEntityRepo<Review> Reviews {get;}
+    IEntityRepo<ItemPreviousRenters> ItemPreviousRenters { get;}
 
     int Save();
 }
