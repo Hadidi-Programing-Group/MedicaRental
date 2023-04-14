@@ -21,7 +21,7 @@ namespace MedicaRental.DAL.Repositories
         public Task AddAsync(TEntity entity);
         public Task AddRangeAsync(IEnumerable<TEntity> entities);
 
-        public Task DeleteById(TEntity entity);
+        public Task DeleteById<TypeId>(TypeId Id);
         public void Delete(TEntity entity);
         public void DeleteRange(IEnumerable<TEntity> entities);
         
