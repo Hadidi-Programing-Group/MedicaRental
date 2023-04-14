@@ -130,4 +130,5 @@ app.UseAuthorization();
 app.MapControllers();
 #endregion
 
+app.MapGet("/", () => "Hello World");
 app.Run();
