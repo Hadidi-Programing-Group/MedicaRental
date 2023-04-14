@@ -1,6 +1,7 @@
 ﻿using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.Repositories;
+using MedicaRental.DAL.Repositories.ItemsPreviousRenters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ public class UnitOfWork : IUnitOfWork
     private IEntityRepo<Message>? _messages;
     private IEntityRepo<Report>? _reports;
     private IEntityRepo<Review>? _reviews;
+    private IEntityRepo<ItemPreviousRenters>? _itemPreviousRenters;
     #endregion
 
     public UnitOfWork(MedicaRentalDbContext context)
@@ -42,6 +44,7 @@ public class UnitOfWork : IUnitOfWork
     public IEntityRepo<Message> Messages => _messages ??= new MessagesRepo(_context);
     public IEntityRepo<Report> Reports => _reports ??= new ReportsRepo(_context);
     public IEntityRepo<Review> Reviews => _reviews ??= new ReviewsRepo(_context);
+    public IEntityRepo<ItemPreviousRenters> ItemPreviousRenters => _itemPreviousRenters ??= new ItemsPreviousRentersRepo(_context);
     #endregion
 
     private bool disposed = false;

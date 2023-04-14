@@ -45,8 +45,14 @@ namespace MedicaRental.DAL.Models
         [ForeignKey("Seller")]
         public string SellerId { get; set; } = string.Empty;
         public Client? Seller { get; set; }
-        
+
+        [ForeignKey("CurrentRenter")]
+        public string? CurrentRenterId { get; set; } = string.Empty;
+        public Client? CurrentRenter { get; set; }
+
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        
+        public ICollection<ItemPreviousRenters> ItemRenters { get; set; } = new List<ItemPreviousRenters>();
 
         [NotMapped]
         public bool InStock { get => Stock == 0; }

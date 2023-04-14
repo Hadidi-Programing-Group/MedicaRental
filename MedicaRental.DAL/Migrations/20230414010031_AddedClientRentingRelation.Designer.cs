@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230413031337_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230414010031_AddedClientRentingRelation")]
+    partial class AddedClientRentingRelation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -165,6 +165,9 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CurrentRenterId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -211,11 +214,48 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("CurrentRenterId");
+
                     b.HasIndex("SellerId");
 
                     b.HasIndex("SubCategoryId");
 
                     b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.ItemPreviousRenters", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemPreviousRenters");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Message", b =>
@@ -511,8 +551,12 @@ namespace MedicaRental.DAL.Migrations
                     b.HasOne("MedicaRental.DAL.Models.Category", "Category")
                         .WithMany("Items")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("MedicaRental.DAL.Models.Client", "CurrentRenter")
+                        .WithMany()
+                        .HasForeignKey("CurrentRenterId");
 
                     b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
                         .WithMany()
@@ -523,14 +567,35 @@ namespace MedicaRental.DAL.Migrations
                     b.HasOne("MedicaRental.DAL.Models.SubCategory", "SubCategory")
                         .WithMany("Items")
                         .HasForeignKey("SubCategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
 
+                    b.Navigation("CurrentRenter");
+
                     b.Navigation("Seller");
 
                     b.Navigation("SubCategory");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.ItemPreviousRenters", b =>
+                {
+                    b.HasOne("MedicaRental.DAL.Models.Client", "Client")
+                        .WithMany("RentedItems")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MedicaRental.DAL.Models.Item", "Item")
+                        .WithMany("ItemRenters")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Message", b =>
@@ -538,13 +603,13 @@ namespace MedicaRental.DAL.Migrations
                     b.HasOne("MedicaRental.DAL.Models.Client", "Receiver")
                         .WithMany("ReceivedMessages")
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("MedicaRental.DAL.Models.Client", "Sender")
                         .WithMany("SentMessages")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Receiver");
@@ -571,7 +636,7 @@ namespace MedicaRental.DAL.Migrations
                     b.HasOne("MedicaRental.DAL.Models.Client", "Reportee")
                         .WithMany("Reports")
                         .HasForeignKey("ReporteeId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("MedicaRental.DAL.Models.Review", "Review")
@@ -600,7 +665,7 @@ namespace MedicaRental.DAL.Migrations
                     b.HasOne("MedicaRental.DAL.Models.Item", "Item")
                         .WithMany("Reviews")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Client");
@@ -679,6 +744,8 @@ namespace MedicaRental.DAL.Migrations
                 {
                     b.Navigation("ReceivedMessages");
 
+                    b.Navigation("RentedItems");
+
                     b.Navigation("Reports");
 
                     b.Navigation("SentMessages");
@@ -686,6 +753,8 @@ namespace MedicaRental.DAL.Migrations
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Item", b =>
                 {
+                    b.Navigation("ItemRenters");
+
                     b.Navigation("Reviews");
                 });
 

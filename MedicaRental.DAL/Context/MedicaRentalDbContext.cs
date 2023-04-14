@@ -21,6 +21,7 @@ namespace MedicaRental.DAL.Context
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<Report> Reports => Set<Report>();
+        public DbSet<ItemPreviousRenters> ItemPreviousRenters => Set<ItemPreviousRenters>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 
@@ -39,16 +40,18 @@ namespace MedicaRental.DAL.Context
                 entity.HasOne(i => i.SubCategory)
                 .WithMany(sc => sc.Items)
                 .HasForeignKey(i => i.SubCategoryId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(i => i.Category)
                 .WithMany(sc => sc.Items)
                 .HasForeignKey(i => i.CategoryId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(i => i.Price).HasColumnType("money");
 
                 entity.Property(i => i.Image).HasColumnType("image").IsRequired(true);
+                
+                entity.Property(i => i.CurrentRenterId).IsRequired(false);
 
                 entity.Property(i => i.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(i => !i.IsDeleted);
@@ -81,7 +84,7 @@ namespace MedicaRental.DAL.Context
                 entity.HasOne(r => r.Item)
                 .WithMany(i => i.Reviews)
                 .HasForeignKey(i => i.ItemId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(r => r.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(r => !r.IsDeleted);
@@ -93,12 +96,12 @@ namespace MedicaRental.DAL.Context
                 entity.HasOne(m => m.Sender)
                 .WithMany(c => c.SentMessages)
                 .HasForeignKey(m => m.SenderId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(m => m.Receiver)
                 .WithMany(c => c.ReceivedMessages)
                 .HasForeignKey(m => m.ReceiverId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(m => m.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(m => !m.IsDeleted);
@@ -111,15 +114,31 @@ namespace MedicaRental.DAL.Context
                 entity.HasOne(i => i.Reportee)
                 .WithMany(sc => sc.Reports)
                 .HasForeignKey(i => i.ReporteeId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
                 //entity.HasOne(i => i.Reported)
                 //.WithMany(sc => sc.Reports)
                 //.HasForeignKey(i => i.ReporteeId)
-                //.OnDelete(DeleteBehavior.NoAction);
+                //.OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(r => r.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(r => !r.IsDeleted);
+            });
+
+            builder.Entity<ItemPreviousRenters>(entity =>
+            {
+                entity.HasOne(ir => ir.Client)
+                .WithMany(c => c.RentedItems)
+                .HasForeignKey(i => i.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(ir => ir.Item)
+                .WithMany(i => i.ItemRenters)
+                .HasForeignKey(i => i.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(i => i.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(i => !i.IsDeleted);
             });
         }
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class AddedClientRentingRelation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -231,12 +231,14 @@ namespace MedicaRental.DAL.Migrations
                         name: "FK_Messages_Clients_ReceiverId",
                         column: x => x.ReceiverId,
                         principalTable: "Clients",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Messages_Clients_SenderId",
                         column: x => x.SenderId,
                         principalTable: "Clients",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -257,7 +259,8 @@ namespace MedicaRental.DAL.Migrations
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     SubCategoryId = table.Column<int>(type: "int", nullable: false),
-                    SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CurrentRenterId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -266,6 +269,12 @@ namespace MedicaRental.DAL.Migrations
                         name: "FK_Items_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Items_Clients_CurrentRenterId",
+                        column: x => x.CurrentRenterId,
+                        principalTable: "Clients",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Items_Clients_SellerId",
@@ -277,7 +286,37 @@ namespace MedicaRental.DAL.Migrations
                         name: "FK_Items_SubCategories_SubCategoryId",
                         column: x => x.SubCategoryId,
                         principalTable: "SubCategories",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemPreviousRenters",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemPreviousRenters", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemPreviousRenters_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemPreviousRenters_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -305,7 +344,8 @@ namespace MedicaRental.DAL.Migrations
                         name: "FK_Reviews_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -334,7 +374,8 @@ namespace MedicaRental.DAL.Migrations
                         name: "FK_Reports_Clients_ReporteeId",
                         column: x => x.ReporteeId,
                         principalTable: "Clients",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Reports_Items_ItemId",
                         column: x => x.ItemId,
@@ -398,9 +439,24 @@ namespace MedicaRental.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ItemPreviousRenters_ClientId",
+                table: "ItemPreviousRenters",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemPreviousRenters_ItemId",
+                table: "ItemPreviousRenters",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Items_CategoryId",
                 table: "Items",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Items_CurrentRenterId",
+                table: "Items",
+                column: "CurrentRenterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_SellerId",
@@ -479,6 +535,9 @@ namespace MedicaRental.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ItemPreviousRenters");
 
             migrationBuilder.DropTable(
                 name: "Reports");
