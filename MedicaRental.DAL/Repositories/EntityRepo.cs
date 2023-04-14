@@ -28,9 +28,11 @@ namespace MedicaRental.DAL.Repositories
             await _context.Set<TEntity>().AddRangeAsync(entities);
         }
 
-        public async Task DeleteById(TEntity entity)
+        public async Task DeleteById<TypeId>(TypeId Id)
         {
-            await _context.Set<TEntity>().FindAsync(entity);
+            var entity = await _context.Set<TEntity>().FindAsync(Id);
+            if (entity is null)
+                return;
             Delete(entity);
         }
 
