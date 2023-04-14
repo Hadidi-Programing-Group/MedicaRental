@@ -10,11 +10,4 @@
     <ProjectReference Include="..\MedicaRental.DAL\MedicaRental.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dtos\Admin\" />
-    <Folder Include="Dtos\Message\" />
-    <Folder Include="Dtos\Report\" />
-    <Folder Include="Dtos\SubCategory\" />
-  </ItemGroup>
-
 </Project>
