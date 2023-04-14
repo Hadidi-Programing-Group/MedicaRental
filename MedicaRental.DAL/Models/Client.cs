@@ -24,6 +24,8 @@ namespace MedicaRental.DAL.Models
 
         public ICollection<Report> Reports { get; set; } = new List<Report>();
 
+        public ICollection<Item> ItemsForRent { get; set; } = new List<Item>();
+
         public ICollection<ItemPreviousRenters> RentedItems { get; set; } = new List<ItemPreviousRenters>();
 
         public AppUser? User { get; set; }

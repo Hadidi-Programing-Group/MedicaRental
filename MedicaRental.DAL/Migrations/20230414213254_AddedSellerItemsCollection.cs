@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class AddedClientRentingRelation : Migration
+    public partial class AddedSellerItemsCollection : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -275,7 +275,8 @@ namespace MedicaRental.DAL.Migrations
                         name: "FK_Items_Clients_CurrentRenterId",
                         column: x => x.CurrentRenterId,
                         principalTable: "Clients",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Items_Clients_SellerId",
                         column: x => x.SellerId,

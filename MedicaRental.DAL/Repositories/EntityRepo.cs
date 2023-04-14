@@ -18,41 +18,92 @@ namespace MedicaRental.DAL.Repositories
             _context = context;
         }
 
-        public async Task AddAsync(TEntity entity)
+        public async Task<bool> AddAsync(TEntity entity)
         {
-            await _context.Set<TEntity>().AddAsync(entity);
+            try
+            {
+                await _context.Set<TEntity>().AddAsync(entity);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+        public async Task<bool> AddRangeAsync(IEnumerable<TEntity> entities)
         {
-            await _context.Set<TEntity>().AddRangeAsync(entities);
+            try
+            {
+                await _context.Set<TEntity>().AddRangeAsync(entities);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public async Task DeleteById<TypeId>(TypeId Id)
+        public async Task<bool> DeleteOneById<TypeId>(TypeId id)
         {
-            var entity = await _context.Set<TEntity>().FindAsync(Id);
+            var entity = await _context.Set<TEntity>().FindAsync(id);
             if (entity is null)
-                return;
+                return false;
+
             Delete(entity);
+            return true;
         }
 
-        public void Delete(TEntity entity)
+        public async Task<List<TypeId>> DeleteManyById<TypeId>(IEnumerable<TypeId> ids)
         {
-           _context.Set<TEntity>().Remove(entity);
+            List<TypeId> failedIds = new();
+
+            foreach (var id in ids)
+            {
+                var res = await DeleteOneById(id);
+
+                if (!res) failedIds.Add(id);
+            }
+
+            return failedIds;
         }
 
-        public void DeleteRange(IEnumerable<TEntity> entities)
+        public bool Delete(TEntity entity)
         {
-           _context.Set<TEntity>().RemoveRange(entities);
+            try
+            {
+                _context.Set<TEntity>().Remove(entity);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Expression<Func<TEntity, object>>? include = null)
+        public bool DeleteRange(IEnumerable<TEntity> entities)
+        {
+            try
+            {
+                _context.Set<TEntity>().RemoveRange(entities);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Expression<Func<TEntity, object>>[]? includes = null)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
-            if (include != null)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             if (predicate != null)
@@ -68,28 +119,34 @@ namespace MedicaRental.DAL.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>? include = null)
+        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>[]? includes = null)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
             query = query.Where(predicate);
 
-            if (include != null)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             return await query.FirstOrDefaultAsync();
         }
-        
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Expression<Func<TEntity, object>>? include = null)
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Expression<Func<TEntity, object>>[]? includes = null)
         {
 
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
-            if (include != null)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             if (orderBy != null)
@@ -100,14 +157,30 @@ namespace MedicaRental.DAL.Repositories
             return await query.ToListAsync();
         }
 
-        public void Update(TEntity entity)
+        public bool Update(TEntity entity)
         {
-            _context.Update<TEntity>(entity);
+            try
+            {
+                _context.Update(entity);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public void UpdateRange(IEnumerable<TEntity> entities)
+        public bool UpdateRange(IEnumerable<TEntity> entities)
         {
-            _context.UpdateRange(entities);
+            try
+            {
+                _context.UpdateRange(entities);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

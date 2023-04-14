@@ -553,8 +553,9 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("MedicaRental.DAL.Models.Client", "CurrentRenter")
-                        .WithMany()
-                        .HasForeignKey("CurrentRenterId");
+                        .WithMany("ItemsForRent")
+                        .HasForeignKey("CurrentRenterId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
                         .WithMany()
@@ -674,7 +675,7 @@ namespace MedicaRental.DAL.Migrations
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>
                 {
                     b.HasOne("MedicaRental.DAL.Models.Category", "Category")
-                        .WithMany()
+                        .WithMany("SubCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -736,10 +737,14 @@ namespace MedicaRental.DAL.Migrations
             modelBuilder.Entity("MedicaRental.DAL.Models.Category", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("SubCategories");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
                 {
+                    b.Navigation("ItemsForRent");
+
                     b.Navigation("ReceivedMessages");
 
                     b.Navigation("RentedItems");

@@ -7,5 +7,12 @@ namespace MedicaRental.API.Controllers
     [ApiController]
     public class ItemsController : ControllerBase
     {
+        [HttpGet]
+        public async Task<ActionResult> GetAll(string filters, string orderby, string includes)
+        {
+            Console.WriteLine();
+
+            return Ok();
+        }
     }
 }

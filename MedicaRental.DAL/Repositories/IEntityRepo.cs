@@ -10,22 +10,23 @@ namespace MedicaRental.DAL.Repositories
     public interface IEntityRepo<TEntity> where TEntity : class
     {
         public Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-                                           Expression<Func<TEntity, object>>? include = null);
+                                           Expression<Func<TEntity, object>>[]? includes = null);
 
-        public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>? include = null);
+        public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>[]? includes = null);
 
         public Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null,
                                            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-                                           Expression<Func<TEntity, object>>? include = null);
+                                           Expression<Func<TEntity, object>>[]? includes = null);
 
-        public Task AddAsync(TEntity entity);
-        public Task AddRangeAsync(IEnumerable<TEntity> entities);
+        public Task<bool> AddAsync(TEntity entity);
+        public Task<bool> AddRangeAsync(IEnumerable<TEntity> entities);
 
-        public Task DeleteById<TypeId>(TypeId Id);
-        public void Delete(TEntity entity);
-        public void DeleteRange(IEnumerable<TEntity> entities);
+        public Task<bool> DeleteOneById<TypeId>(TypeId id);
+        public Task<List<TypeId>> DeleteManyById<TypeId>(IEnumerable<TypeId> ids);
+        public bool Delete(TEntity entity);
+        public bool DeleteRange(IEnumerable<TEntity> entities);
         
-        public void Update(TEntity entity);
-        public void UpdateRange(IEnumerable<TEntity> entities);
+        public bool Update(TEntity entity);
+        public bool UpdateRange(IEnumerable<TEntity> entities);
     }
 }

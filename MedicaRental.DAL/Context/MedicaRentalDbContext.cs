@@ -61,6 +61,12 @@ namespace MedicaRental.DAL.Context
             {
                 entity.HasKey(c => c.Id);
                 entity.HasIndex(c => c.Ssn).IsUnique();
+
+                entity.HasMany(c => c.ItemsForRent)
+                .WithOne(i => i.CurrentRenter)
+                .HasForeignKey(i => i.CurrentRenterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
                 entity.Property(c => c.NationalIdImage).HasColumnType("image").IsRequired(true);
                 entity.Property(c => c.UnionCardImage).HasColumnType("image").IsRequired(true);
             });
