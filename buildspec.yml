@@ -5,10 +5,10 @@ phases:
       dotnet: 6.0
   pre_build:
     commands:
-      - dotnet restore MedicaRental.csproj
+      - dotnet restore 
   build:
     commands:
-      - dotnet build MedicaRental.csproj
+      - dotnet build 
   post_build:
     commands:
       - dotnet publish -c Release -o ./app/ MedicaRental.csproj
