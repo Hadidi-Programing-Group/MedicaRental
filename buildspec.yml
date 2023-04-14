@@ -3,9 +3,16 @@ phases:
   install:
     runtime-versions:
       dotnet: 6.0
+    commands:
+      - echo Installing Entity Framework Core tools reference - .NET CLI
+      - dotnet tool install --global dotnet-ef
   pre_build:
     commands:
       - dotnet restore 
+      - echo Info about dbcontext
+      - dotnet ef dbcontext info
+      - echo Updateing DataBase
+      - dotnet ef database update --project .\MedicaRental.API\MedicaRental.API.csproj
   build:
     commands:
       - dotnet build 
