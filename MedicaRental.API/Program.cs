@@ -138,14 +138,14 @@ string GetRDSConnectionString()
 {
     var appConfig = System.Configuration.ConfigurationManager.AppSettings;
 
-    string dbname = appConfig["RDS_DB_NAME"];
+    string dbname = appConfig["RDS_DB_NAME"] ?? string.Empty;
 
     if (string.IsNullOrEmpty(dbname)) return builder.Configuration.GetConnectionString("MedicaRentalDbConn");
 
-    string username = appConfig["RDS_USERNAME"];
-    string password = appConfig["RDS_PASSWORD"];
-    string hostname = appConfig["RDS_HOSTNAME"];
-    string port = appConfig["RDS_PORT"];
+    string username = appConfig["RDS_USERNAME"] ?? string.Empty;
+    string password = appConfig["RDS_PASSWORD"] ?? string.Empty;
+    string hostname = appConfig["RDS_HOSTNAME"] ?? string.Empty;
+    string port = appConfig["RDS_PORT"] ?? string.Empty;
 
-    return "Data Source=" + hostname + ";Initial Catalog=" + dbname + ";User ID=" + username + ";Password=" + password + ";";
+    return $"Data Source={hostname};Initial Catalog={dbname};User ID={username};Password={password};";
 }
