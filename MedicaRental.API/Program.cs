@@ -131,4 +131,5 @@ app.MapControllers();
 #endregion
 
 app.MapGet("/", () => "Hello World");
+app.MapGet("/Hi", () => "GitHub Acctions Works !!");
 app.Run();
