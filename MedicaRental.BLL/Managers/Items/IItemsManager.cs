@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MedicaRental.BLL.Dtos.Item;
+using MedicaRental.BLL.Dtos;
 
 namespace MedicaRental.BLL.Managers;
 
@@ -26,14 +26,12 @@ public interface IItemsManager
     public Task<SellerItemDto> FindItemForSellerAsync();
     public Task<RenterItemDto> FindItemForRenterAsync();
 
-    public void AddItemAsync(AddItemDto item);
-    public void AddItemsAsync(IEnumerable<AddItemDto> items);
-
-    public void UpdateItem(UpdateItemDto item);
-    public void UpdateItems();
-
-    public void DeleteOneItemById(int id);
-    public void DeleteManyItemsById(IEnumerable<int> ids);
-    public void DeleteItem(DeleteItemDto item);
-    public void DeleteItems(IEnumerable<DeleteItemDto> items);
+    public Task<StatusDto> AddItemAsync(AddItemDto item);
+    public Task<StatusDto> AddItemsAsync(IEnumerable<AddItemDto> items);
+    
+    public Task<StatusDto> UpdateItem(UpdateItemDto item);
+    public Task<StatusDto> UpdateItems();
+    
+    public Task<StatusDto> DeleteItem(int id);
+    public Task<StatusDto> DeleteItems(IEnumerable<int> ids);
 }
