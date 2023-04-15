@@ -37,10 +37,9 @@ public class AccountsManager : IAccountsManager
                 StatusCode: System.Net.HttpStatusCode.NotFound
                 );
 
-        var lockUser = await _userManager.SetLockoutEnabledAsync(user, true);
         var lockDate = await _userManager.SetLockoutEndDateAsync(user, blockUserInfo.EndDate);
 
-        if (lockUser.Succeeded && lockDate.Succeeded)
+        if (lockDate.Succeeded)
             return new StatusDto(
                 StatusCode: System.Net.HttpStatusCode.OK,
                 StatusMessage: $"User {blockUserInfo.Email} is blocked untill {blockUserInfo.EndDate}"
@@ -136,5 +135,29 @@ public class AccountsManager : IAccountsManager
                 RegisterMessage: "User Created Successfully",
                 NewUser: newUser
             );
+    }
+
+    public async Task<StatusDto> UnBlockUserAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null)
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be found",
+                StatusCode: System.Net.HttpStatusCode.NotFound
+                );
+
+        var lockDate = await _userManager.SetLockoutEndDateAsync(user, null);
+
+        if (lockDate.Succeeded)
+            return new StatusDto(
+                StatusCode: System.Net.HttpStatusCode.OK,
+                StatusMessage: $"User {email} is unblocked"
+                );
+
+        else
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be unblocked",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
+                );
     }
 }

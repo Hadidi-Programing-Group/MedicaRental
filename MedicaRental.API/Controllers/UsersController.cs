@@ -15,12 +15,21 @@ namespace MedicaRental.API.Controllers
         {
             _accountsManager = accountsManager;
         }
+
         [HttpPost]
         [Route("BlockUser")]
         public async Task<ActionResult<StatusDto>> BlockUserAsync(BlockUserInfoDto blockUserInfo)
         {
             var blockingStatus =  await _accountsManager.BlockUserAsync(blockUserInfo);
-            return Ok(blockingStatus);
+            return StatusCode((int) blockingStatus.StatusCode, blockingStatus.StatusMessage);
+        }
+
+        [HttpPost]
+        [Route("UnBlockUser")]
+        public async Task<ActionResult<StatusDto>> UnBlockUserAsync(string Email)
+        {
+            StatusDto blockingStatus = await _accountsManager.UnBlockUserAsync(Email);
+            return StatusCode((int)blockingStatus.StatusCode, blockingStatus.StatusMessage);
         }
     }
 }

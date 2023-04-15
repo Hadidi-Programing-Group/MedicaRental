@@ -14,4 +14,5 @@ public interface IAccountsManager
     Task DeleteAsync(AppUser newUser);
     Task<LoginStatusWithTokenDto> LoginAsync(LoginInfoDto loginInfoDto);
     Task<BaseUserRegisterStatusDto> RegisterNewUserAsync(BaseUserRegisterInfoDto baseUserRegisterInfoDto);
+    Task<StatusDto> UnBlockUserAsync(string email);
 }
