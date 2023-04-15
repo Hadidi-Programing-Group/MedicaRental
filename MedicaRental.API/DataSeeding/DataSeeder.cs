@@ -104,6 +104,8 @@ public class DataSeeder
             };
 
             await _unitOfWork.Categories.AddRangeAsync(CategoryList);
+            _unitOfWork.Save();
+
         }
 
         var subCategoryList = (await _unitOfWork.SubCategories.GetAllAsync()).ToList();
@@ -124,6 +126,8 @@ public class DataSeeder
             };
 
             await _unitOfWork.SubCategories.AddRangeAsync(subCategoryList);
+            _unitOfWork.Save();
+
         }
 
         #endregion
@@ -299,12 +303,13 @@ public class DataSeeder
             },
         };
             await _unitOfWork.Items.AddRangeAsync(itemList);
+            _unitOfWork.Save();
+
         }
 
 
         #endregion
 
-        _unitOfWork.Save();
 
     }
 }
