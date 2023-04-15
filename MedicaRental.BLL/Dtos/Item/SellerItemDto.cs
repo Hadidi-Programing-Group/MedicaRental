@@ -24,5 +24,5 @@ namespace MedicaRental.BLL.Dtos
         ClientBasicInfoDto CurrentRenter,
         IEnumerable<ReviewBasicDto> Reviews,
         IEnumerable<RentOperationDto> PreviousRents
-    ) : BaseDtos(StatusMessage, StatusCode);
+    ) : StatusDto(StatusMessage, StatusCode);
 }
