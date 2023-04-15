@@ -1,3 +1,4 @@
+using MedicaRental.API.DataSeeding;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.UnitOfWork;
@@ -117,6 +118,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+#region SeedingIdentity
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await IdentitySeeder.SeedAsync(services);
+}
+#endregion
 
 
 # region Middelwares
