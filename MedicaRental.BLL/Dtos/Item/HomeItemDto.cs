@@ -28,5 +28,5 @@ namespace MedicaRental.BLL.Dtos
         int SubCategoryId,
         string SellerId,
         string? CurrentRenterId
-    ) : BaseDtos(StatusMessage, StatusCode);
+    ) : StatusDto(StatusMessage, StatusCode);
 }

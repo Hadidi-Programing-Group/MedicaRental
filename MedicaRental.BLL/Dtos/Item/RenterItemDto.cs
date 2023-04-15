@@ -22,5 +22,5 @@ namespace MedicaRental.BLL.Dtos
         SubCategoryDto SubCategory,
         ClientBasicInfoDto Seller,
         IEnumerable<ReviewBasicDto> Reviews
-    ) : BaseDtos(StatusMessage, StatusCode);
+    ) : StatusDto(StatusMessage, StatusCode);
 }
