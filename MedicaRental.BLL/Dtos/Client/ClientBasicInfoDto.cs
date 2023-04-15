@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.BLL.Dtos.Client
+namespace MedicaRental.BLL.Dtos
 {
     public record ClientBasicInfoDto
     (
-
+        string Id,
+        string Name,
+        int Rating
     );
 }
