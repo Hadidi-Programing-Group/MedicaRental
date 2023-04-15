@@ -10,7 +10,9 @@ namespace MedicaRental.BLL.Managers;
 
 public interface IAccountsManager
 {
+    Task<StatusDto> BlockUserAsync(BlockUserInfoDto blockUserInfo);
     Task DeleteAsync(AppUser newUser);
     Task<LoginStatusWithTokenDto> LoginAsync(LoginInfoDto loginInfoDto);
     Task<BaseUserRegisterStatusDto> RegisterNewUserAsync(BaseUserRegisterInfoDto baseUserRegisterInfoDto);
+    Task<StatusDto> UnBlockUserAsync(string email);
 }

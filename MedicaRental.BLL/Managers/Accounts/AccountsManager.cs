@@ -28,6 +28,30 @@ public class AccountsManager : IAccountsManager
         _configuration = configuration;
     }
 
+    public async Task<StatusDto> BlockUserAsync(BlockUserInfoDto blockUserInfo)
+    {
+        var user = await _userManager.FindByEmailAsync(blockUserInfo.Email);
+        if (user is null)
+            return new StatusDto(
+                StatusMessage: $"User {blockUserInfo.Email} coudn't be found",
+                StatusCode: System.Net.HttpStatusCode.NotFound
+                );
+
+        var lockDate = await _userManager.SetLockoutEndDateAsync(user, blockUserInfo.EndDate);
+
+        if (lockDate.Succeeded)
+            return new StatusDto(
+                StatusCode: System.Net.HttpStatusCode.OK,
+                StatusMessage: $"User {blockUserInfo.Email} is blocked untill {blockUserInfo.EndDate}"
+                );
+
+        else
+            return new StatusDto(
+                StatusMessage: $"User {blockUserInfo.Email} coudn't be blocked",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
+                );
+    }
+
     public Task DeleteAsync(AppUser newUser)
     {
         return _userManager.DeleteAsync(newUser);
@@ -37,11 +61,16 @@ public class AccountsManager : IAccountsManager
     {
         var user = await _userManager.FindByEmailAsync(loginInfoDto.Email);
         if (user is null)
-            return new LoginStatusWithTokenDto(false, null, null);
+            return new LoginStatusWithTokenDto("Email or password is not correct", System.Net.HttpStatusCode.NotFound, false, null, null);
 
         var isAuth = await _userManager.CheckPasswordAsync(user, loginInfoDto.Password);
         if (!isAuth)
-            return new LoginStatusWithTokenDto(false, null, null);
+            return new LoginStatusWithTokenDto("Email or password is not correct", System.Net.HttpStatusCode.NotFound, false, null, null);
+
+        var isBlocked = await _userManager.IsLockedOutAsync(user);
+        if (isBlocked)
+            return new LoginStatusWithTokenDto("This Account is blocked", System.Net.HttpStatusCode.Unauthorized, false, null, null);
+
 
         var ClaimsList = await _userManager.GetClaimsAsync(user);
 
@@ -59,7 +88,7 @@ public class AccountsManager : IAccountsManager
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenString = tokenHandler.WriteToken(token);
 
-        return new LoginStatusWithTokenDto(true, tokenString, expiry);
+        return new LoginStatusWithTokenDto("Login Successful", System.Net.HttpStatusCode.OK, true, tokenString, expiry);
     }
 
     public async Task<BaseUserRegisterStatusDto> RegisterNewUserAsync(BaseUserRegisterInfoDto baseUserRegisterInfoDto)
@@ -106,5 +135,29 @@ public class AccountsManager : IAccountsManager
                 RegisterMessage: "User Created Successfully",
                 NewUser: newUser
             );
+    }
+
+    public async Task<StatusDto> UnBlockUserAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null)
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be found",
+                StatusCode: System.Net.HttpStatusCode.NotFound
+                );
+
+        var lockDate = await _userManager.SetLockoutEndDateAsync(user, null);
+
+        if (lockDate.Succeeded)
+            return new StatusDto(
+                StatusCode: System.Net.HttpStatusCode.OK,
+                StatusMessage: $"User {email} is unblocked"
+                );
+
+        else
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be unblocked",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
+                );
     }
 }

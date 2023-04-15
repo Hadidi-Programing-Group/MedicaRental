@@ -42,11 +42,7 @@ namespace MedicaRental.API.Controllers
         {
             LoginStatusWithTokenDto loginStatus = await _accountsManager.LoginAsync(loginInfoDto);
 
-            if (!loginStatus.isAuthenticated)
-                return Unauthorized("Email or Password is incorrect");
-
-            return loginStatus;
-            
+            return StatusCode((int)loginStatus.StatusCode, loginStatus);
         }
 
         [HttpPost]
