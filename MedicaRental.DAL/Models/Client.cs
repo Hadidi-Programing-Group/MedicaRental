@@ -31,6 +31,9 @@ namespace MedicaRental.DAL.Models
         public AppUser? User { get; set; }
 
         [NotMapped]
-        public float Rating { get => 0; }
+        public int Rating { get => (int)RentedItems.SelectMany(ri => ri.Item?.Reviews??new List<Review>()).Average(r => r.Rating); }
+
+        [NotMapped]
+        public string Name { get => User?.Name ?? ""; }
     }
 }
