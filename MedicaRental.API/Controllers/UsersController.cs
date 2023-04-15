@@ -7,5 +7,10 @@ namespace MedicaRental.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        [HttpPost]
+        public ActionResult BlockUser(string Id)
+        {
+            return Ok();
+        }
     }
 }
