@@ -123,7 +123,7 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await IdentitySeeder.SeedAsync(services);
+    await DataSeeder.SeedAsync(services);
 }
 #endregion
 
