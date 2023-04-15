@@ -8,7 +8,7 @@ namespace MedicaRental.API.Controllers
     public class UsersController : ControllerBase
     {
         [HttpPost]
-        public ActionResult BlockUser(string Id)
+        public ActionResult BlockUser(string email, DateTime? endDate)
         {
             return Ok();
         }
