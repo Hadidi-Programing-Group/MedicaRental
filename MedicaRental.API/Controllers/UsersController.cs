@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Managers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaRental.API.Controllers
@@ -7,10 +9,17 @@ namespace MedicaRental.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        [HttpPost]
-        public ActionResult BlockUser(string email, DateTime? endDate)
+        private readonly IAccountsManager _accountsManager;
+
+        public UsersController(IAccountsManager accountsManager)
         {
-            return Ok();
+            _accountsManager = accountsManager;
+        }
+        [HttpPost]
+        public async Task<ActionResult<StatusDto>> BlockUserAsync(string email, DateTime? endDate)
+        {
+            var blockingStatus =  await _accountsManager.BlockUserAsync(email, endDate);
+            return Ok(blockingStatus);
         }
     }
 }

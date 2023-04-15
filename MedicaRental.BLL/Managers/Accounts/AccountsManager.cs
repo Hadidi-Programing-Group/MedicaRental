@@ -28,6 +28,32 @@ public class AccountsManager : IAccountsManager
         _configuration = configuration;
     }
 
+    public async Task<StatusDto> BlockUserAsync(string email, DateTime? endDate)
+    {
+        endDate ??= DateTime.Now.AddYears(20);
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null)
+            return new StatusDto(
+                StatusMessage: "User coudn't be found",
+                StatusCode: System.Net.HttpStatusCode.NotFound
+                );
+
+        var lockUser = await _userManager.SetLockoutEnabledAsync(user, true);
+        var lockDate = await _userManager.SetLockoutEndDateAsync(user, endDate);
+
+        if (lockUser.Succeeded && lockDate.Succeeded)
+            return new StatusDto(
+                StatusCode: System.Net.HttpStatusCode.OK,
+                StatusMessage: $"User is blocked untill {endDate}"
+                );
+
+        else
+            return new StatusDto(
+                StatusMessage: "User coudn't be blocked",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
+                );
+    }
+
     public Task DeleteAsync(AppUser newUser)
     {
         return _userManager.DeleteAsync(newUser);
