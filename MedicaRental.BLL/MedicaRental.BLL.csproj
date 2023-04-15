@@ -17,7 +17,6 @@
     <Folder Include="Dtos\Message\" />
     <Folder Include="Dtos\Report\" />
     <Folder Include="Dtos\Review\" />
-    <Folder Include="Dtos\SubCategory\" />
   </ItemGroup>
 
 </Project>
