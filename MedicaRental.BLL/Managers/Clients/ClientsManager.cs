@@ -17,13 +17,56 @@ public class ClientsManager : IClientsManager
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAccountsManager _accountsManager;
+    private readonly UserManager<AppUser> _userManager;
 
     public ClientsManager(IUnitOfWork unitOfWork,
-        IAccountsManager accountsManager
+        IAccountsManager accountsManager,
+        UserManager<AppUser> userManager
         )
     {
         _unitOfWork = unitOfWork;
         _accountsManager = accountsManager;
+        _userManager = userManager;
+    }
+
+    public async Task<StatusDto> ApproveUserAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null)
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be found",
+                StatusCode: System.Net.HttpStatusCode.NotFound
+                );
+        var client = await _unitOfWork.Clients.FindAsync(c => c.Id == user.Id);
+        if (client is null)
+            return new StatusDto(
+                StatusMessage: $"User {email} is not a client and can't be approved to rent",
+                StatusCode: System.Net.HttpStatusCode.NotFound
+                );
+
+        client.IsGrantedRent = true;
+        var isUpdated = _unitOfWork.Clients.Update(client);
+        if (!isUpdated)
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be updated",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
+                );
+
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto(
+                StatusMessage: $"User {email} is approved to rent",
+                StatusCode: System.Net.HttpStatusCode.OK
+                );
+        }
+        catch
+        {
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be updated",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
+                );
+        }
     }
 
     public async Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto clientRegisterInfoDto)

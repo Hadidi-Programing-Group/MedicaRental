@@ -10,5 +10,6 @@ namespace MedicaRental.BLL.Managers;
 
 public interface IClientsManager
 {
+    Task<StatusDto> ApproveUserAsync(string email);
     Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto registerInfoDto);
 }

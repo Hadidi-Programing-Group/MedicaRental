@@ -10,10 +10,12 @@ namespace MedicaRental.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IAccountsManager _accountsManager;
+        private readonly IClientsManager _clientsManager;
 
-        public UsersController(IAccountsManager accountsManager)
+        public UsersController(IAccountsManager accountsManager, IClientsManager clientsManager)
         {
             _accountsManager = accountsManager;
+            _clientsManager = clientsManager;
         }
 
         [HttpPost]
@@ -29,6 +31,14 @@ namespace MedicaRental.API.Controllers
         public async Task<ActionResult<StatusDto>> UnBlockUserAsync(string Email)
         {
             StatusDto blockingStatus = await _accountsManager.UnBlockUserAsync(Email);
+            return StatusCode((int)blockingStatus.StatusCode, blockingStatus.StatusMessage);
+        }
+
+        [HttpPost]
+        [Route("ApproveUser")]
+        public async Task<ActionResult<StatusDto>> ApproveUserAsync(string Email)
+        {
+            StatusDto blockingStatus = await _clientsManager.ApproveUserAsync(Email);
             return StatusCode((int)blockingStatus.StatusCode, blockingStatus.StatusMessage);
         }
     }
