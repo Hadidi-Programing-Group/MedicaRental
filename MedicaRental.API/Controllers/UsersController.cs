@@ -16,9 +16,10 @@ namespace MedicaRental.API.Controllers
             _accountsManager = accountsManager;
         }
         [HttpPost]
-        public async Task<ActionResult<StatusDto>> BlockUserAsync(string email, DateTime? endDate)
+        [Route("BlockUser")]
+        public async Task<ActionResult<StatusDto>> BlockUserAsync(BlockUserInfoDto blockUserInfo)
         {
-            var blockingStatus =  await _accountsManager.BlockUserAsync(email, endDate);
+            var blockingStatus =  await _accountsManager.BlockUserAsync(blockUserInfo);
             return Ok(blockingStatus);
         }
     }

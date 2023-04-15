@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-public record LoginInfoDto
+public record BlockUserInfoDto
 {
 
     [Required(ErrorMessage = "Email is required")]
@@ -15,5 +15,5 @@ public record LoginInfoDto
     [RegularExpression(@"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Email format is not valid it must be in the form name@example.com")]
     public string Email { get; set; } = string.Empty;
 
-    public string Password { get; set; } = string.Empty;
+    public DateTime EndDate { get; set; } = DateTime.Now.AddYears(20);
 }

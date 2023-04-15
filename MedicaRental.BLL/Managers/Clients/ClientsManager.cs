@@ -60,7 +60,7 @@ public class ClientsManager : IClientsManager
             await _unitOfWork.Clients.AddAsync(newClient);
             _unitOfWork.Save();
         }
-        catch (Exception e)
+        catch
         {
             await _accountsManager.DeleteAsync(newUser);
             return new ClientRegisterStatusDto
