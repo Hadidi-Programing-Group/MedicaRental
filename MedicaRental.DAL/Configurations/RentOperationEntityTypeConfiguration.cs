@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Configurations
 {
-    internal class ItemPreviousRentersEntityTypeConfiguration : IEntityTypeConfiguration<ItemPreviousRenters>
+    internal class RentOperationEntityTypeConfiguration : IEntityTypeConfiguration<RentOperation>
     {
-        public void Configure(EntityTypeBuilder<ItemPreviousRenters> builder)
+        public void Configure(EntityTypeBuilder<RentOperation> builder)
         {
             builder.HasOne(ir => ir.Client)
-               .WithMany(c => c.RentedItems)
+               .WithMany(c => c.RentOperations)
                .HasForeignKey(i => i.ClientId)
                .OnDelete(DeleteBehavior.Restrict);
 
@@ -22,8 +22,6 @@ namespace MedicaRental.DAL.Configurations
             .WithMany(i => i.ItemRenters)
             .HasForeignKey(i => i.ItemId)
             .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Property(i => i.Price).HasColumnType("money");
 
             builder.Property(i => i.IsDeleted).HasDefaultValue(false);
             builder.HasQueryFilter(i => !i.IsDeleted);

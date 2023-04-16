@@ -23,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
     private IEntityRepo<Report>? _reports;
     private IEntityRepo<Review>? _reviews;
     private IEntityRepo<Brand>? _brands;
-    private IEntityRepo<ItemPreviousRenters>? _itemPreviousRenters;
+    private IEntityRepo<RentOperation>? _rentOperations;
     #endregion
 
     public UnitOfWork(MedicaRentalDbContext context)
@@ -45,7 +45,7 @@ public class UnitOfWork : IUnitOfWork
     public IEntityRepo<Report> Reports => _reports ??= new ReportsRepo(_context);
     public IEntityRepo<Review> Reviews => _reviews ??= new ReviewsRepo(_context);
     public IEntityRepo<Brand> Brands => _brands ??= new BrandsRepo(_context);
-    public IEntityRepo<ItemPreviousRenters> ItemPreviousRenters => _itemPreviousRenters ??= new ItemsPreviousRentersRepo(_context);
+    public IEntityRepo<RentOperation> RentOperations => _rentOperations ??= new RentOperationsRepo(_context);
     #endregion
 
     private bool disposed = false;

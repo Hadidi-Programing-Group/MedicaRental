@@ -52,7 +52,7 @@ namespace MedicaRental.DAL.Models
 
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         
-        public ICollection<ItemPreviousRenters> ItemRenters { get; set; } = new List<ItemPreviousRenters>();
+        public ICollection<RentOperation> ItemRenters { get; set; } = new List<RentOperation>();
 
         [NotMapped]
         public bool InStock { get => Stock == 0; }

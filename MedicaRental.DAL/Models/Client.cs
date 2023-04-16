@@ -28,7 +28,7 @@ namespace MedicaRental.DAL.Models
         
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
-        public ICollection<ItemPreviousRenters> RentedItems { get; set; } = new List<ItemPreviousRenters>();
+        public ICollection<RentOperation> RentOperations { get; set; } = new List<RentOperation>();
 
         public AppUser? User { get; set; }
 
