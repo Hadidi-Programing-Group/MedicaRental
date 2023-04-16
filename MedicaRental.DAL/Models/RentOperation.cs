@@ -31,7 +31,7 @@ namespace MedicaRental.DAL.Models
         public Item? Item { get; set; }
 
         [ForeignKey("Review")]
-        public Guid ReviewId { get; set; }
+        public Guid? ReviewId { get; set; }
         public Review? Review { get; set; }
 
         public bool IsDeleted { get; set; }
