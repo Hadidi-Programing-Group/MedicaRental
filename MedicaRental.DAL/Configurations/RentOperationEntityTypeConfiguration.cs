@@ -13,15 +13,17 @@ namespace MedicaRental.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<RentOperation> builder)
         {
-            builder.HasOne(ir => ir.Client)
+            builder.HasOne(ro => ro.Client)
                .WithMany(c => c.RentOperations)
                .HasForeignKey(i => i.ClientId)
                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(ir => ir.Item)
+            builder.HasOne(ro => ro.Item)
             .WithMany(i => i.ItemRenters)
             .HasForeignKey(i => i.ItemId)
             .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(ro => ro.Price).HasColumnType("money");
 
             builder.Property(i => i.IsDeleted).HasDefaultValue(false);
             builder.HasQueryFilter(i => !i.IsDeleted);
