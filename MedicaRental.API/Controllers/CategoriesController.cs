@@ -28,7 +28,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("{Id}")]
-        public async Task<ActionResult<CategoryWithSubCategoriesDto>> GetAllWithSubCategories(int Id)
+        public async Task<ActionResult<CategoryWithSubCategoriesDto>> GetAllWithSubCategories(Guid Id)
         {
             CategoryWithSubCategoriesDto? categoryWithSubCategories = await _categoriesManager.GetCategoryWithSubCategories(Id);
             if (categoryWithSubCategories is null) 
@@ -54,7 +54,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPut]
         [Route("{Id}")]
-        public async Task<ActionResult> UpdateCategory(int Id, UpdateCategoryDto updateCategoryDto)
+        public async Task<ActionResult> UpdateCategory(Guid Id, UpdateCategoryDto updateCategoryDto)
         {
             UpdateCategoryStatusDto updateCategoryStatus = await _categoriesManager.UpdateNewCategory(Id, updateCategoryDto);
 
@@ -70,7 +70,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpDelete]
         [Route("{Id}")]
-        public async Task<ActionResult> DeleteCategoryAsync(int Id)
+        public async Task<ActionResult> DeleteCategoryAsync(Guid Id)
         {
             DeleteCategoryStatusDto deleteCategoryStatus = await _categoriesManager.DeleteByIdAsync(Id);
 
