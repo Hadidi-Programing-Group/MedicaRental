@@ -19,7 +19,7 @@ phases:
       - dotnet build 
   post_build:
     commands:
-      - dotnet publish -c Release -o ./app
+      - dotnet publish MedicaRental.API/MedicaRental.API.csproj -c Release -o ./app
 artifacts:
   files:
     - '**/*'

@@ -156,6 +156,11 @@ string GetRDSConnectionString()
     string password = Environment.GetEnvironmentVariable("RDS_PASSWORD") ?? string.Empty;
     string hostname = Environment.GetEnvironmentVariable("RDS_HOSTNAME") ?? string.Empty;
     string port = Environment.GetEnvironmentVariable("RDS_PORT") ?? string.Empty;
-
-    return $"Data Source={hostname};Initial Catalog={dbname};User ID={username};Password={password};";
+    string cs =
+        $"Initial Catalog={dbname};" +
+        $"Data Source={hostname};" +
+        $"User ID={username};" +
+        $"Password={password};" +
+        "Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;";
+    return cs;
 }
