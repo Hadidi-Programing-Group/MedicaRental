@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos
 {
-    public record ClientBasicInfoDto
-    (
-        string Id,
-        string Name,
-        int Rating
-    );
+
+    public record SubCategoryBaseDto(Guid Id, string Name);
 }

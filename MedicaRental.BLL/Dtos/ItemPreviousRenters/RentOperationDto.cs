@@ -13,6 +13,6 @@ namespace MedicaRental.BLL.Dtos
         int Id,
         DateTime RentDate,
         DateTime ReturnDate,
-        ClientBasicInfoDto Client
+        ClientBaseDto Client
     );
 }
