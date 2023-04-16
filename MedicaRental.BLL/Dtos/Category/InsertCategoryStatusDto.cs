@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-public record InsertCategoryStatusDto (bool isCreated, int? Id, string StatusMessage);
+public record InsertCategoryStatusDto (bool isCreated, Guid? Id, string StatusMessage);

@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-public record CategoryWithSubCategoriesDto(int Id, string Name, byte[]? Icon, List<SubCategoryDto> SubCategories);
+public record CategoryWithSubCategoriesDto(Guid Id, string Name, byte[]? Icon, List<SubCategoryDto> SubCategories);

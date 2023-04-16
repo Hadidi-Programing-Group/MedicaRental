@@ -1,6 +1,8 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +21,9 @@ public class CategoriesManager : ICategoriesManager
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<DeleteCategoryStatusDto> DeleteByIdAsync(int Id)
+    public async Task<DeleteCategoryStatusDto> DeleteByIdAsync(Guid id)
     {
-         await _unitOfWork.Categories.DeleteOneById(Id);
+         await _unitOfWork.Categories.DeleteOneById(id);
          try
         {
             _unitOfWork.Save();
@@ -49,11 +51,11 @@ public class CategoriesManager : ICategoriesManager
             ));
     }
 
-    public async Task<CategoryWithSubCategoriesDto?> GetCategoryWithSubCategories(int id)
+    public async Task<CategoryWithSubCategoriesDto?> GetCategoryWithSubCategories(Guid id)
     {
         var category = await _unitOfWork.Categories.FindAsync(
             predicate: (c) => c.Id == id,
-            includes: new Expression<Func<Category, object>>[] { c => c.SubCategories }
+            include: source => source.Include(c => c.SubCategories)
             );
 
         if (category is null)
@@ -101,7 +103,7 @@ public class CategoriesManager : ICategoriesManager
         }
     }
 
-    public async Task<UpdateCategoryStatusDto> UpdateNewCategory(int id, UpdateCategoryDto updateCategoryDto)
+    public async Task<UpdateCategoryStatusDto> UpdateNewCategory(Guid id, UpdateCategoryDto updateCategoryDto)
     {
         var category = await _unitOfWork.Categories.FindAsync(c => c.Id == id);
         if (category is null)
