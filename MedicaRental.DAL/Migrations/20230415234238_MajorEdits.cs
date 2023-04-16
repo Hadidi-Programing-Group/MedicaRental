@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class ReCreate : Migration
+    public partial class MajorEdits : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,11 +51,24 @@ namespace MedicaRental.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Brands",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CountryOfOrigin = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<byte[]>(type: "image", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Brands", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Icon = table.Column<byte[]>(type: "image", nullable: false)
                 },
@@ -196,11 +209,10 @@ namespace MedicaRental.DAL.Migrations
                 name: "SubCategories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Icon = table.Column<byte[]>(type: "image", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -245,36 +257,35 @@ namespace MedicaRental.DAL.Migrations
                 name: "Items",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Serial = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Make = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "money", nullable: false),
                     Image = table.Column<byte[]>(type: "image", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    SubCategoryId = table.Column<int>(type: "int", nullable: false),
-                    SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CurrentRenterId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    IsListed = table.Column<bool>(type: "bit", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BrandId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Items", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Items_Brands_BrandId",
+                        column: x => x.BrandId,
+                        principalTable: "Brands",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Items_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Items_Clients_CurrentRenterId",
-                        column: x => x.CurrentRenterId,
-                        principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -295,12 +306,14 @@ namespace MedicaRental.DAL.Migrations
                 name: "ItemPreviousRenters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<decimal>(type: "money", nullable: false),
                     ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReviewId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
@@ -313,6 +326,12 @@ namespace MedicaRental.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_ItemPreviousRenters_Clients_SellerId",
+                        column: x => x.SellerId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_ItemPreviousRenters_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
@@ -324,13 +343,14 @@ namespace MedicaRental.DAL.Migrations
                 name: "Reviews",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     ClientReview = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ItemId = table.Column<int>(type: "int", nullable: false)
+                    SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RentOperationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -341,6 +361,18 @@ namespace MedicaRental.DAL.Migrations
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reviews_Clients_SellerId",
+                        column: x => x.SellerId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Reviews_ItemPreviousRenters_RentOperationId",
+                        column: x => x.RentOperationId,
+                        principalTable: "ItemPreviousRenters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Reviews_Items_ItemId",
                         column: x => x.ItemId,
@@ -359,8 +391,8 @@ namespace MedicaRental.DAL.Migrations
                     ReportedId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ReporteeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MessageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ReviewId = table.Column<int>(type: "int", nullable: true),
-                    ItemId = table.Column<int>(type: "int", nullable: true)
+                    ReviewId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -450,14 +482,19 @@ namespace MedicaRental.DAL.Migrations
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ItemPreviousRenters_SellerId",
+                table: "ItemPreviousRenters",
+                column: "SellerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Items_BrandId",
+                table: "Items",
+                column: "BrandId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Items_CategoryId",
                 table: "Items",
                 column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Items_CurrentRenterId",
-                table: "Items",
-                column: "CurrentRenterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_SellerId",
@@ -515,6 +552,17 @@ namespace MedicaRental.DAL.Migrations
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Reviews_RentOperationId",
+                table: "Reviews",
+                column: "RentOperationId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_SellerId",
+                table: "Reviews",
+                column: "SellerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SubCategories_CategoryId",
                 table: "SubCategories",
                 column: "CategoryId");
@@ -538,9 +586,6 @@ namespace MedicaRental.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ItemPreviousRenters");
-
-            migrationBuilder.DropTable(
                 name: "Reports");
 
             migrationBuilder.DropTable(
@@ -553,7 +598,13 @@ namespace MedicaRental.DAL.Migrations
                 name: "Reviews");
 
             migrationBuilder.DropTable(
+                name: "ItemPreviousRenters");
+
+            migrationBuilder.DropTable(
                 name: "Items");
+
+            migrationBuilder.DropTable(
+                name: "Brands");
 
             migrationBuilder.DropTable(
                 name: "Clients");

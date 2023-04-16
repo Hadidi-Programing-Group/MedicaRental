@@ -22,6 +22,7 @@ namespace MedicaRental.DAL.Context
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<Report> Reports => Set<Report>();
+        public DbSet<Brand> Brands => Set<Brand>();
         public DbSet<ItemPreviousRenters> ItemPreviousRenters => Set<ItemPreviousRenters>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
@@ -37,6 +38,7 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new ReviewEntityTypeConfiguration());
             builder.ApplyConfiguration(new MessageEntityTypeConfiguration());
             builder.ApplyConfiguration(new ReportEntityTypeConfiguration());
+            builder.ApplyConfiguration(new BrandEntityTypeConfiguration());
             builder.ApplyConfiguration(new ItemPreviousRentersEntityTypeConfiguration());
         }
 
