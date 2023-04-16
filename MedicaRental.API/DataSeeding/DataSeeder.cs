@@ -114,15 +114,15 @@ public class DataSeeder
         if (!subCategoryList.Any())
         {
             subCategoryList = new List<SubCategory> {
-                new SubCategory { Name = "Subcategory 1", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 1 },
-                new SubCategory { Name = "Subcategory 2", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 2 },
-                new SubCategory { Name = "Subcategory 3", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 3 },
-                new SubCategory { Name = "Subcategory 4", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 4 },
-                new SubCategory { Name = "Subcategory 5", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 5 },
-                new SubCategory { Name = "Subcategory 6", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 6 },
-                new SubCategory { Name = "Subcategory 7", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 7 },
-                new SubCategory { Name = "Subcategory 8", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 8 },
-                new SubCategory { Name = "Subcategory 9", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = 9 }
+                new SubCategory { Name = "Subcategory 1", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
+                new SubCategory { Name = "Subcategory 2", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
+                new SubCategory { Name = "Subcategory 3", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
+                new SubCategory { Name = "Subcategory 4", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
+                new SubCategory { Name = "Subcategory 5", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
+                new SubCategory { Name = "Subcategory 6", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
+                new SubCategory { Name = "Subcategory 7", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
+                new SubCategory { Name = "Subcategory 8", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
+                new SubCategory { Name = "Subcategory 9", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() }
             };
 
             await _unitOfWork.SubCategories.AddRangeAsync(subCategoryList);
@@ -130,6 +130,28 @@ public class DataSeeder
 
         }
 
+        #endregion
+
+        #region Seed Brands
+        var BrandList = (await _unitOfWork.Brands.GetAllAsync()).ToList();
+        if (!BrandList.Any())
+        {
+            BrandList = new List<Brand> {
+                new Brand { Name = "Brand 1", CountryOfOrigin = "China", Image = Convert.FromBase64String(Base64StringImage) },
+                new Brand { Name = "Brand 2", CountryOfOrigin = "United Stated", Image = Convert.FromBase64String(Base64StringImage) },
+                new Brand { Name = "Brand 3", CountryOfOrigin = "Japan", Image = Convert.FromBase64String(Base64StringImage) },
+                new Brand { Name = "Brand 4", CountryOfOrigin = "Germany", Image = Convert.FromBase64String(Base64StringImage) },
+                new Brand { Name = "Brand 5", CountryOfOrigin = "France", Image = Convert.FromBase64String(Base64StringImage) },
+                new Brand { Name = "Brand 6", CountryOfOrigin = "United Kingdom", Image = Convert.FromBase64String(Base64StringImage) },
+                new Brand { Name = "Brand 7", CountryOfOrigin = "Taiwan", Image = Convert.FromBase64String(Base64StringImage) },
+                new Brand { Name = "Brand 8", CountryOfOrigin = "China", Image = Convert.FromBase64String(Base64StringImage) },
+                new Brand { Name = "Brand 9", CountryOfOrigin = "Japan", Image = Convert.FromBase64String(Base64StringImage) }
+            };
+
+            await _unitOfWork.Brands.AddRangeAsync(BrandList);
+            _unitOfWork.Save();
+
+        }
         #endregion
 
         #region SeedItems
@@ -140,177 +162,174 @@ public class DataSeeder
 
         if (!itemList.Any())
         {
-            itemList = new List<Item> {
-            new Item {
-                Name = "Dental Chair 1",
-                Description = "This is a high-quality dental chair with ergonomic design.",
-                Serial = "SN001",
-                Model = "Model A",
-                Make = "Manufacturer X",
-                Country = "USA",
-                Stock = 10,
-                Price = 5000,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[0].Id, 
-                SubCategoryId = subCategoryList[0].Id,
-                SellerId = client1.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Handpiece 1",
-                Description = "This is a high-speed dental handpiece for precise cutting.",
-                Serial = "SN002",
-                Model = "Model B",
-                Make = "Manufacturer Y",
-                Country = "Japan",
-                Stock = 5,
-                Price = 300,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[1].Id,
-                SubCategoryId = subCategoryList[1].Id,
-                SellerId = client1.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Chair 1",
-                Description = "This is a high-quality dental chair with ergonomic design.",
-                Serial = "SN001",
-                Model = "Model A",
-                Make = "Manufacturer X",
-                Country = "USA",
-                Stock = 10,
-                Price = 5000,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[2].Id,
-                SubCategoryId = subCategoryList[2].Id,
-                SellerId = client1.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Handpiece 1",
-                Description = "This is a high-speed dental handpiece for precise cutting.",
-                Serial = "SN002",
-                Model = "Model B",
-                Make = "Manufacturer Y",
-                Country = "Japan",
-                Stock = 5,
-                Price = 300,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[3].Id,
-                SubCategoryId = subCategoryList[3].Id,
-                SellerId = client1.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Handpiece 1",
-                Description = "This is a high-speed dental handpiece for precise cutting.",
-                Serial = "SN002",
-                Model = "Model B",
-                Make = "Manufacturer Y",
-                Country = "Japan",
-                Stock = 5,
-                Price = 300,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[4].Id,
-                SubCategoryId = subCategoryList[4].Id,
-                SellerId = client1.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Chair 1",
-                Description = "This is a high-quality dental chair with ergonomic design.",
-                Serial = "SN001",
-                Model = "Model A",
-                Make = "Manufacturer X",
-                Country = "USA",
-                Stock = 10,
-                Price = 5000,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[0].Id,
-                SubCategoryId = subCategoryList[0].Id,
-                SellerId = client2.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Handpiece 1",
-                Description = "This is a high-speed dental handpiece for precise cutting.",
-                Serial = "SN002",
-                Model = "Model B",
-                Make = "Manufacturer Y",
-                Country = "Japan",
-                Stock = 5,
-                Price = 300,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[1].Id,
-                SubCategoryId = subCategoryList[1].Id,
-                SellerId = client2.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Chair 1",
-                Description = "This is a high-quality dental chair with ergonomic design.",
-                Serial = "SN001",
-                Model = "Model A",
-                Make = "Manufacturer X",
-                Country = "USA",
-                Stock = 10,
-                Price = 5000,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[2].Id,
-                SubCategoryId = subCategoryList[2].Id,
-                SellerId = client2.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Handpiece 1",
-                Description = "This is a high-speed dental handpiece for precise cutting.",
-                Serial = "SN002",
-                Model = "Model B",
-                Make = "Manufacturer Y",
-                Country = "Japan",
-                Stock = 5,
-                Price = 300,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[3].Id,
-                SubCategoryId = subCategoryList[3].Id,
-                SellerId = client2.Id,
-                CurrentRenterId = null
-            },
-            new Item {
-                Name = "Dental Handpiece 1",
-                Description = "This is a high-speed dental handpiece for precise cutting.",
-                Serial = "SN002",
-                Model = "Model B",
-                Make = "Manufacturer Y",
-                Country = "Japan",
-                Stock = 5,
-                Price = 300,
-                Image = Convert.FromBase64String(Base64StringImage),
-                IsDeleted = false,
-                CategoryId = CategoryList[4].Id,
-                SubCategoryId = subCategoryList[4].Id,
-                SellerId = client2.Id,
-                CurrentRenterId = null
-            },
-        };
+            itemList = new List<Item>
+            {
+                new Item {
+                    Name = "Dental Chair 1",
+                    Description = "This is a high-quality dental chair with ergonomic design.",
+                    Serial = "SN001",
+                    Model = "Model A",
+                    Stock = 10,
+                    Price = 5000,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[0].Id,
+                    SubCategoryId = subCategoryList[0].Id,
+                    SellerId = client1.Id,
+                    BrandId = BrandList[9].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Handpiece 1",
+                    Description = "This is a high-speed dental handpiece for precise cutting.",
+                    Serial = "SN002",
+                    Model = "Model B",
+                    Stock = 5,
+                    Price = 300,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[1].Id,
+                    SubCategoryId = subCategoryList[1].Id,
+                    SellerId = client1.Id,
+                    BrandId = BrandList[8].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Chair 1",
+                    Description = "This is a high-quality dental chair with ergonomic design.",
+                    Serial = "SN001",
+                    Model = "Model A",
+                    Stock = 10,
+                    Price = 5000,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[2].Id,
+                    SubCategoryId = subCategoryList[2].Id,
+                    SellerId = client1.Id,
+                    BrandId = BrandList[7].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Handpiece 1",
+                    Description = "This is a high-speed dental handpiece for precise cutting.",
+                    Serial = "SN002",
+                    Model = "Model B",
+                    Stock = 5,
+                    Price = 300,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[3].Id,
+                    SubCategoryId = subCategoryList[3].Id,
+                    SellerId = client1.Id,
+                    BrandId = BrandList[6].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Handpiece 1",
+                    Description = "This is a high-speed dental handpiece for precise cutting.",
+                    Serial = "SN002",
+                    Model = "Model B",
+                    Stock = 5,
+                    Price = 300,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[4].Id,
+                    SubCategoryId = subCategoryList[4].Id,
+                    SellerId = client1.Id,
+                    BrandId = BrandList[5].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Chair 1",
+                    Description = "This is a high-quality dental chair with ergonomic design.",
+                    Serial = "SN001",
+                    Model = "Model A",
+                    Stock = 10,
+                    Price = 5000,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[0].Id,
+                    SubCategoryId = subCategoryList[0].Id,
+                    SellerId = client2.Id,
+                    BrandId = BrandList[4].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Handpiece 1",
+                    Description = "This is a high-speed dental handpiece for precise cutting.",
+                    Serial = "SN002",
+                    Model = "Model B",
+                    Stock = 5,
+                    Price = 300,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[1].Id,
+                    SubCategoryId = subCategoryList[1].Id,
+                    SellerId = client2.Id,
+                    BrandId = BrandList[3].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Chair 1",
+                    Description = "This is a high-quality dental chair with ergonomic design.",
+                    Serial = "SN001",
+                    Model = "Model A",
+                    Stock = 10,
+                    Price = 5000,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[2].Id,
+                    SubCategoryId = subCategoryList[2].Id,
+                    SellerId = client2.Id,
+                    BrandId = BrandList[2].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Handpiece 1",
+                    Description = "This is a high-speed dental handpiece for precise cutting.",
+                    Serial = "SN002",
+                    Model = "Model B",
+                    Stock = 5,
+                    Price = 300,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[3].Id,
+                    SubCategoryId = subCategoryList[3].Id,
+                    SellerId = client2.Id,
+                    BrandId = BrandList[1].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                },
+                new Item {
+                    Name = "Dental Handpiece 1",
+                    Description = "This is a high-speed dental handpiece for precise cutting.",
+                    Serial = "SN002",
+                    Model = "Model B",
+                    BrandId = BrandList[0].Id,
+                    CreationDate = DateTime.Now,
+                    IsListed = true,
+                    Stock = 5,
+                    Price = 300,
+                    Image = Convert.FromBase64String(Base64StringImage),
+                    IsDeleted = false,
+                    CategoryId = CategoryList[4].Id,
+                    SubCategoryId = subCategoryList[4].Id,
+                    SellerId = client2.Id,
+
+                },
+            };
             await _unitOfWork.Items.AddRangeAsync(itemList);
             _unitOfWork.Save();
-
         }
-
-
         #endregion
-
-
     }
 }
 

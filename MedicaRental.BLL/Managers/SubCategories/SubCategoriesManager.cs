@@ -18,7 +18,7 @@ public class SubCategoriesManager : ISubCategoriesManager
     {
         unitOfWork = _unitOfWork;
     }
-    public async Task<DeleteSubCategoryStatusDto> DeleteByIdAsync(int id)
+    public async Task<DeleteSubCategoryStatusDto> DeleteByIdAsync(Guid id)
     {
         await unitOfWork.SubCategories.DeleteOneById(id);
         try
@@ -45,10 +45,10 @@ public class SubCategoriesManager : ISubCategoriesManager
             Id: SubCat.Id,
             Name: SubCat.Name,
             Icon: SubCat.Icon,
-            categoryId: SubCat.CategoryId));
+            CategoryId: SubCat.CategoryId));
     }
 
-    public async Task<SubCategoriesDto?> GetByIdAsync(int? id)
+    public async Task<SubCategoriesDto?> GetByIdAsync(Guid? id)
     {
         var SubCategory = await unitOfWork.SubCategories.FindAsync(
             predicate: S => S.Id == id);
@@ -58,7 +58,7 @@ public class SubCategoriesManager : ISubCategoriesManager
             Id: SubCategory.Id,
             Name: SubCategory.Name,
             Icon: SubCategory.Icon,
-            categoryId: SubCategory.CategoryId);
+            CategoryId: SubCategory.CategoryId);
     }
 
 
@@ -102,7 +102,7 @@ public class SubCategoriesManager : ISubCategoriesManager
 
     }
 
-    public async Task<UpdateSubCategoryStatusDto> UpdateSubCategory(int id, UpdateSubCategoryDto updateSubCategory)
+    public async Task<UpdateSubCategoryStatusDto> UpdateSubCategory(Guid id, UpdateSubCategoryDto updateSubCategory)
     {
         var SubCat = await unitOfWork.SubCategories.FindAsync(predicate: C => C.Id == id);
         if (SubCat is null)
