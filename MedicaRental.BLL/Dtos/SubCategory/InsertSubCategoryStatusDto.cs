@@ -5,5 +5,5 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
-public record InsertSubCategoryStatusDto(bool isCreated, int? Id, string StatusMessage);
+public record InsertSubCategoryStatusDto(bool isCreated, Guid? Id, string StatusMessage);
 

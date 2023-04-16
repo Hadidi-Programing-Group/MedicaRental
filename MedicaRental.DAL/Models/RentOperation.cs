@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Models
 {
-    public class ItemPreviousRenters : ISoftDeletable
+    public class RentOperation : ISoftDeletable
     {
         public Guid Id { get; set; }
 

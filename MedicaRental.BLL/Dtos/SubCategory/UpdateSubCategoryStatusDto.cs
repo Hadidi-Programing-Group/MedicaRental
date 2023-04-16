@@ -5,5 +5,5 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
-public record UpdateSubCategoryStatusDto(bool isUpdated, int? Id, string StatusMessage);
+public record UpdateSubCategoryStatusDto(bool isUpdated, Guid? Id, string StatusMessage);
 
