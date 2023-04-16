@@ -299,7 +299,7 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ReviewId")
+                    b.Property<Guid?>("ReviewId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SellerId")
@@ -311,6 +311,8 @@ namespace MedicaRental.DAL.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("ReviewId");
 
                     b.HasIndex("SellerId");
 
@@ -389,9 +391,6 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("RentOperationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("SellerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -401,9 +400,6 @@ namespace MedicaRental.DAL.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("RentOperationId")
-                        .IsUnique();
 
                     b.HasIndex("SellerId");
 
@@ -646,6 +642,10 @@ namespace MedicaRental.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MedicaRental.DAL.Models.Review", "Review")
+                        .WithMany()
+                        .HasForeignKey("ReviewId");
+
                     b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
                         .WithMany()
                         .HasForeignKey("SellerId")
@@ -655,6 +655,8 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Item");
+
+                    b.Navigation("Review");
 
                     b.Navigation("Seller");
                 });
@@ -710,12 +712,6 @@ namespace MedicaRental.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MedicaRental.DAL.Models.RentOperation", "RentOperation")
-                        .WithOne("Review")
-                        .HasForeignKey("MedicaRental.DAL.Models.Review", "RentOperationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
                         .WithMany("Reviews")
                         .HasForeignKey("SellerId")
@@ -725,8 +721,6 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Item");
-
-                    b.Navigation("RentOperation");
 
                     b.Navigation("Seller");
                 });
@@ -825,11 +819,6 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("ItemRenters");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("MedicaRental.DAL.Models.RentOperation", b =>
-                {
-                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>

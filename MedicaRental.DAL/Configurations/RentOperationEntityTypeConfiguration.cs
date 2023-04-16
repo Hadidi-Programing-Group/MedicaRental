@@ -25,6 +25,8 @@ namespace MedicaRental.DAL.Configurations
 
             builder.Property(ro => ro.Price).HasColumnType("money");
 
+            builder.Property(ro => ro.ReviewId).IsRequired(false);
+
             builder.Property(i => i.IsDeleted).HasDefaultValue(false);
             builder.HasQueryFilter(i => !i.IsDeleted);
         }
