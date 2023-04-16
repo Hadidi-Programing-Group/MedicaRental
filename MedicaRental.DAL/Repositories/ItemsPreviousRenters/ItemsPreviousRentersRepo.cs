@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories.ItemsPreviousRenters
+namespace MedicaRental.DAL.Repositories
 {
     public class ItemsPreviousRentersRepo : EntityRepo<ItemPreviousRenters>, IItemsPreviousRentersRepo
     {
