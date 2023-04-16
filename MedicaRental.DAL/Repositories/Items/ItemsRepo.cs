@@ -16,4 +16,14 @@ public class ItemsRepo : EntityRepo<Item>, IItemsRepo
     {
         _context = context;
     }
+
+    public bool HasRenters(Item item)
+    {
+        return item.ItemRenters.Any(r => r.ReturnDate > DateTime.Now);   
+    }
+
+    public bool HasRenters(IEnumerable<Item> items)
+    {
+        return items.Any(i => i.ItemRenters.Any(r => r.ReturnDate > DateTime.Now));
+    }
 }
