@@ -33,9 +33,8 @@ public class ItemEntityTypeConfiguration : IEntityTypeConfiguration<Item>
 
         builder.Property(i => i.Image).HasColumnType("image").IsRequired(true);
 
-        builder.Property(i => i.CurrentRenterId).IsRequired(false);
-
         builder.Property(i => i.IsDeleted).HasDefaultValue(false);
-        builder.HasQueryFilter(i => !i.IsDeleted);
+
+        builder.HasQueryFilter(i => !i.IsDeleted && i.IsListed);
     }
 }

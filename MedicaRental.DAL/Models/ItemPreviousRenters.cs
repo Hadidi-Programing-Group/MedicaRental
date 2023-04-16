@@ -10,21 +10,29 @@ namespace MedicaRental.DAL.Models
 {
     public class ItemPreviousRenters : ISoftDeletable
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public DateTime RentDate { get; set; }
 
         public DateTime ReturnDate { get; set; }
 
+        public decimal Price { get; set; }
+
         [ForeignKey("Client")]
         public string ClientId { get; set; } = string.Empty;
-        
-        [ForeignKey("Item")]
-        public int ItemId { get; set; }
-        
         public Client? Client { get; set; }
-        
+
+        [ForeignKey("Seller")]
+        public string SellerId { get; set; } = string.Empty;
+        public Client? Seller { get; set; }
+
+        [ForeignKey("Item")]
+        public Guid ItemId { get; set; }
         public Item? Item { get; set; }
+
+        [ForeignKey("Review")]
+        public Guid ReviewId { get; set; }
+        public Review? Review { get; set; }
 
         public bool IsDeleted { get; set; }
     }

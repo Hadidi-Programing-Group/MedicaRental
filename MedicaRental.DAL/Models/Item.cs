@@ -11,7 +11,7 @@ namespace MedicaRental.DAL.Models
 {
     public class Item : ISoftDeletable
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; } = string.Empty;
 
@@ -20,10 +20,6 @@ namespace MedicaRental.DAL.Models
         public string Serial { get; set; } = string.Empty;
 
         public string Model { get; set; } = string.Empty;
-
-        public string Make { get; set; } = string.Empty;
-
-        public string Country { get; set; } = string.Empty;
 
         [Range(0, int.MaxValue)]
         public int Stock { get; set; }
@@ -34,21 +30,25 @@ namespace MedicaRental.DAL.Models
 
         public bool IsDeleted { get; set; }
 
+        public bool IsListed { get; set; } = true;
+
+        public DateTime CreationDate { get; init; } 
+
+        [ForeignKey("Brand")]
+        public Guid BrandId { get; set; }
+        public Brand? Brand { get; set; }
+
         [ForeignKey("Category")]
-        public int CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
         public Category? Category { get; set; }
 
         [ForeignKey("SubCategory")]
-        public int SubCategoryId { get; set; }
+        public Guid SubCategoryId { get; set; }
         public SubCategory? SubCategory { get; set; }
 
         [ForeignKey("Seller")]
         public string SellerId { get; set; } = string.Empty;
         public Client? Seller { get; set; }
-
-        [ForeignKey("CurrentRenter")]
-        public string? CurrentRenterId { get; set; } = string.Empty;
-        public Client? CurrentRenter { get; set; }
 
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         
@@ -59,6 +59,6 @@ namespace MedicaRental.DAL.Models
 
         [Range(0, 5)]
         [NotMapped]
-        public double Rating { get => Reviews.Average(r => r.Rating); }
+        public int Rating { get => (int)Reviews.Average(r => r.Rating); }
     }
 }

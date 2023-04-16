@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories
+namespace MedicaRental.BLL.Dtos
 {
-    public interface IItemsPreviousRentersRepo
-    {
-    }
+    public record CategoryBaseDto(Guid Id, string Name);
 }

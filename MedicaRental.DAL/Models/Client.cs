@@ -25,13 +25,15 @@ namespace MedicaRental.DAL.Models
         public ICollection<Report> Reports { get; set; } = new List<Report>();
 
         public ICollection<Item> ItemsForRent { get; set; } = new List<Item>();
+        
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
         public ICollection<ItemPreviousRenters> RentedItems { get; set; } = new List<ItemPreviousRenters>();
 
         public AppUser? User { get; set; }
 
         [NotMapped]
-        public int Rating { get => (int)RentedItems.SelectMany(ri => ri.Item?.Reviews??new List<Review>()).Average(r => r.Rating); }
+        public int Rating { get => (int)Reviews.Average(r => r.Rating); }
 
         [NotMapped]
         public string Name { get => User?.Name ?? ""; }

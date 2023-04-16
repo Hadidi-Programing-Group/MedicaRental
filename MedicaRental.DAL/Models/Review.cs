@@ -6,7 +6,7 @@ namespace MedicaRental.DAL.Models
 {
     public class Review : ISoftDeletable
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Range(0, 5)]
         public int Rating { get; set; }
@@ -15,12 +15,20 @@ namespace MedicaRental.DAL.Models
 
         public string ClientReview { get; set; } = string.Empty;
      
-        [ForeignKey("User")]
+        [ForeignKey("Client")]
         public string ClientId { get; set; } = string.Empty;
         public Client? Client { get; set; }
 
+        [ForeignKey("Seller")]
+        public string SellerId { get; set; } = string.Empty;
+        public Client? Seller { get; set; }
+
         [ForeignKey("Item")]
-        public int ItemId { get; set; }
+        public Guid ItemId { get; set; }
         public Item? Item { get; set; }
+
+        [ForeignKey("RentOperation")]
+        public Guid RentOperationId { get; set; }
+        public ItemPreviousRenters? RentOperation { get; set; }
     }
 }

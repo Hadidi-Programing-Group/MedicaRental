@@ -13,6 +13,10 @@ using System.Diagnostics.Metrics;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.Net;
+using MedicaRental.BLL.Helpers;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using MedicaRental.DAL.Repositories;
 
 namespace MedicaRental.BLL.Managers;
 
@@ -25,6 +29,7 @@ public class ItemsManager : IItemsManager
         _unitOfWork = unitOfWork;
     }
 
+
     public async Task<StatusDto> AddItemAsync(AddItemDto item)
     {
         Item _item = new()
@@ -33,25 +38,29 @@ public class ItemsManager : IItemsManager
             Description = item.Description,
             Serial = item.Serial,
             Model = item.Model,
-            Make = item.Make,
-            Country = item.Country,
             Stock = item.Stock,
             Price = item.Price,
             Image = Convert.FromBase64String(item.Image),
+            IsListed = item.IsListed,
+            BrandId = item.BrandId,
             CategoryId = item.CategoryId,
             SubCategoryId = item.SubCategoryId,
             SellerId = item.SellerId
         };
 
+
+        var success = await _unitOfWork.Items.AddAsync(_item);
+
+        if (!success)
+            return new StatusDto("Item couldn't be added", HttpStatusCode.BadRequest);
+        
         try
         {
-            await _unitOfWork.Items.AddAsync(_item);
             _unitOfWork.Save();
             return new InsertStatusDto("Item added successfully", HttpStatusCode.Created, _item.Id);
         }
-        catch (Exception ex)
-        {
-            return new StatusDto (ex.Message, HttpStatusCode.BadRequest);
+        catch (Exception ex) { 
+            return new StatusDto($"Item couldn't be added.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
@@ -66,11 +75,11 @@ public class ItemsManager : IItemsManager
                 Description = item.Description,
                 Serial = item.Serial,
                 Model = item.Model,
-                Make = item.Make,
-                Country = item.Country,
                 Stock = item.Stock,
                 Price = item.Price,
                 Image = Convert.FromBase64String(item.Image),
+                IsListed = item.IsListed,
+                BrandId = item.BrandId,
                 CategoryId = item.CategoryId,
                 SubCategoryId = item.SubCategoryId,
                 SellerId = item.SellerId
@@ -79,25 +88,38 @@ public class ItemsManager : IItemsManager
             _items.Add(_item);
         }
 
-        await _unitOfWork.Items.AddRangeAsync(_items);
+        var success = await _unitOfWork.Items.AddRangeAsync(_items);
+
+        if (!success)
+            return new StatusDto("Items couldn't be added", HttpStatusCode.BadRequest);
 
         try
         {
-            await _unitOfWork.Items.AddRangeAsync(_items);
             _unitOfWork.Save();
-            return new StatusDto("Item added successfully", HttpStatusCode.Created);
+            return new StatusDto("Items added successfully", HttpStatusCode.Created);
         }
         catch (Exception ex)
         {
-            return new StatusDto(ex.Message, HttpStatusCode.BadRequest);
+            return new StatusDto($"Items couldn't be added.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
-    public async Task<StatusDto> DeleteItem(int id)
+    public async Task<StatusDto> DeleteItem(Guid id)
     {
-        var succeeded = await _unitOfWork.Items.DeleteOneById(id);
+        var item = await _unitOfWork.Items.FindAsync(predicate: i => i.Id == id, include: source => source.Include(i => i.ItemRenters) , disableTracking: false);
 
-        if(!succeeded) return new StatusDto("No item with the given id.", HttpStatusCode.NotFound);
+        if (item is null) 
+            return new StatusDto("No item with the given id.", HttpStatusCode.NotFound);
+
+        if(item.IsListed) 
+            return new StatusDto("Can't delete a listed item.", HttpStatusCode.BadRequest);
+
+        var hasRenters = ((IItemsRepo)_unitOfWork).HasRenters(item);
+
+        if (hasRenters)
+            return new StatusDto("Can't delete an item that has active renters.", HttpStatusCode.BadRequest);
+
+        _unitOfWork.Items.Delete(item);
 
         try
         {
@@ -106,15 +128,26 @@ public class ItemsManager : IItemsManager
         }
         catch (Exception ex)
         {
-            return new StatusDto($"Item couldn't be deleted.\nCause: {ex.Message}", HttpStatusCode.BadRequest);
+            return new StatusDto($"Item couldn't be deleted.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
-    public async Task<StatusDto> DeleteItems(IEnumerable<int> ids)
+    public async Task<StatusDto> DeleteItems(IEnumerable<Guid> ids)
     {
-        var failed = await _unitOfWork.Items.DeleteManyById(ids);
+        var items = await _unitOfWork.Items.FindAllAsync(predicate: i => ids.Contains(i.Id), include: source => source.Include(i => i.ItemRenters), disableTracking: false);
+        
+        if(items.Count() < ids.Count())
+            return new StatusDto("Some or all items coudn't be found.", HttpStatusCode.NotFound);
 
-        if (failed.Count > 0) return new StatusDto($"{failed.Count} item ids couldn't be found.\noperation aborted.", HttpStatusCode.NotFound);
+        if (items.Any(i => i.IsListed))
+            return new StatusDto("Can't delete a listed item.", HttpStatusCode.BadRequest);
+
+        var hasRenters = ((IItemsRepo)_unitOfWork).HasRenters(items);
+
+        if (hasRenters)
+            return new StatusDto("Can't delete an item that has active renters.", HttpStatusCode.BadRequest);
+
+        _unitOfWork.Items.DeleteRange(items);
 
         try
         {
@@ -123,77 +156,266 @@ public class ItemsManager : IItemsManager
         }
         catch (Exception ex)
         {
-            return new StatusDto($"Items couldn't be deleted.\nCause: {ex.Message}", HttpStatusCode.BadRequest);
+            return new StatusDto($"Items couldn't be deleted.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
-    public Task<StatusDto> UpdateItem(UpdateItemDto item)
+    public async Task<StatusDto> UpdateItem(UpdateItemDto item)
     {
-        throw new NotImplementedException();
+        var _item = await _unitOfWork.Items.FindAsync(predicate: i => i.Id == item.Id, disableTracking: false);
+
+        if (_item is null) return new("Item doesn't exist.", HttpStatusCode.NotFound);
+
+
+        _item.Name = item.Name is null ? _item.Name : item.Name;
+        _item.Description = item.Description is null ? _item.Description : item.Description;
+        _item.Serial = item.Serial is null ? _item.Serial : item.Serial;
+        _item.Model = item.Model is null ? _item.Model : item.Model;
+        _item.Stock = item.Stock is null ? _item.Stock : (int)item.Stock;
+        _item.Price = item.Price is null ? _item.Price : (decimal)item.Price;
+        _item.Image = item.Image is null ? _item.Image : Convert.FromBase64String(item.Image);
+        _item.IsListed = item.IsListed is null ? _item.IsListed : (bool)item.IsListed;
+        _item.BrandId = item.BrandId is null ? _item.BrandId : (Guid)item.BrandId;
+        _item.CategoryId = item.CategoryId is null ? _item.CategoryId : (Guid)item.CategoryId;
+        _item.SubCategoryId = item.SubCategoryId is null ? _item.SubCategoryId : (Guid)item.SubCategoryId;
+
+        var success = _unitOfWork.Items.Update(_item);
+        
+        if (!success)
+            return new StatusDto("Item couldn't be updated", HttpStatusCode.BadRequest);
+
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto("Item updated successfully", HttpStatusCode.NoContent);
+        }
+        catch (Exception ex)
+        {
+            return new StatusDto($"Item couldn't be updated.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
     }
 
-    public Task<StatusDto> UpdateItems()
+    public async Task<StatusDto> UpdateItems(IEnumerable<UpdateItemDto> items)
     {
-        throw new NotImplementedException();
+        var ids = items.Select(x => x.Id).ToList();
+        var _items = await _unitOfWork.Items.FindAllAsync(predicate: i => ids.Contains(i.Id), disableTracking: false);
+
+        if (items.Count() < ids.Count())
+            return new StatusDto("Some or all items coudn't be found.", HttpStatusCode.NotFound);
+
+        var pairs = _items.Zip(items, (_item, item) => (_item, item));
+        
+        foreach ((Item _item, UpdateItemDto item) in pairs)
+        {
+            _item.Name = item.Name is null ? _item.Name : item.Name;
+            _item.Description = item.Description is null ? _item.Description : item.Description;
+            _item.Serial = item.Serial is null ? _item.Serial : item.Serial;
+            _item.Model = item.Model is null ? _item.Model : item.Model;
+            _item.Stock = item.Stock is null ? _item.Stock : (int)item.Stock;
+            _item.Price = item.Price is null ? _item.Price : (decimal)item.Price;
+            _item.Image = item.Image is null ? _item.Image : Convert.FromBase64String(item.Image);
+            _item.IsListed = item.IsListed is null ? _item.IsListed : (bool)item.IsListed;
+            _item.BrandId = item.BrandId is null ? _item.BrandId : (Guid)item.BrandId;
+            _item.CategoryId = item.CategoryId is null ? _item.CategoryId : (Guid)item.CategoryId;
+            _item.SubCategoryId = item.SubCategoryId is null ? _item.SubCategoryId : (Guid)item.SubCategoryId;
+        }        
+
+        var success = _unitOfWork.Items.UpdateRange(_items);
+
+        if (!success)
+            return new StatusDto("Items couldn't be updated", HttpStatusCode.BadRequest);
+
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto("Items updated successfully", HttpStatusCode.NoContent);
+        }
+        catch (Exception ex)
+        {
+            return new StatusDto($"Item couldn't be updated.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
     }
 
-    public Task<HomeItemDto> FindItemAsync()
+    public async Task<HomeItemDto?> FindItemAsync(Guid id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _unitOfWork.Items.FindAsync
+                (
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => id == i.Id,
+                    include: ItemHelper.HomeDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<RenterItemDto> FindItemForRenterAsync()
+    public async Task<RenterItemDto?> FindItemForRenterAsync(Guid id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _unitOfWork.Items.FindAsync
+                (
+                    selector: ItemHelper.RenterDtoSelector,
+                    predicate: i => id == i.Id,
+                    include: ItemHelper.RenterDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<SellerItemDto> FindItemForSellerAsync()
+    public async Task<SellerItemDto?> FindItemForSellerAsync(Guid id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _unitOfWork.Items.FindAsync
+                (
+                    selector: ItemHelper.SellerDtoSelector,
+                    predicate: i => id == i.Id,
+                    include: ItemHelper.SellerDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<HomeItemDto>> GetAllItemsAsync()
+    public async Task<IEnumerable<HomeItemDto>?> GetAllItemsAsync(string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            return await _unitOfWork.Items.GetAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    include: ItemHelper.HomeDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<RenterItemDto>> GetAllItemsForRenterAsync()
+    public async Task<IEnumerable<RenterItemDto>?> GetAllItemsForRenterAsync(string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            return await _unitOfWork.Items.GetAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.RenterDtoSelector,
+                    include: ItemHelper.RenterDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<SellerItemDto>> GetAllItemsForSellerAsync()
+    public async Task<IEnumerable<SellerItemDto>?> GetAllItemsForSellerAsync(string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            return await _unitOfWork.Items.GetAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.SellerDtoSelector,
+                    include: ItemHelper.SellerDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<HomeItemDto>> GetItemsByCategoriesAsync(IEnumerable<int> categoryIds)
+    public async Task<IEnumerable<HomeItemDto>?> GetItemsByCategoriesAsync(IEnumerable<Guid> categoryIds, string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            return await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => categoryIds.Contains(i.CategoryId),
+                    include: ItemHelper.HomeDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<HomeItemDto>> GetItemsByCategoryAsync(int categoryId)
+    public async Task<IEnumerable<HomeItemDto>?> GetItemsByCategoryAsync(Guid categoryId, string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            return await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => categoryId == i.CategoryId,
+                    include: ItemHelper.HomeDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<HomeItemDto>> GetItemsBySearchAsync(string searchText)
+    public async Task<IEnumerable<HomeItemDto>?> GetItemsBySearchAsync(string searchText, string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQueryForSearch(orderBy, searchText);
+            return await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => i.Name.Contains(searchText),
+                    include: ItemHelper.HomeDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<HomeItemDto>> GetItemsBySellerAsync(string sellerId)
+    public async Task<IEnumerable<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            return await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => sellerId == i.SellerId,
+                    include: ItemHelper.HomeDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<HomeItemDto>> GetItemsBySubCategoriesAsync(IEnumerable<int> subcategoryIds)
+    public async Task<IEnumerable<HomeItemDto>?> GetItemsBySubCategoriesAsync(IEnumerable<Guid> subcategoryIds, string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            return await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => subcategoryIds.Contains(i.SubCategoryId),
+                    include: ItemHelper.HomeDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 
-    public Task<IEnumerable<HomeItemDto>> GetItemsBySubCategoryAsync(int subcategoryId)
+    public async Task<IEnumerable<HomeItemDto>?> GetItemsBySubCategoryAsync(Guid subcategoryId, string? orderBy)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            return await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => subcategoryId == i.SubCategoryId,
+                    include: ItemHelper.HomeDtoInclude
+                );
+        }
+        catch (Exception) { return null; }
     }
 }

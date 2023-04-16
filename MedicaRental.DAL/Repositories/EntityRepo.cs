@@ -1,5 +1,6 @@
 ﻿using MedicaRental.DAL.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,18 +55,20 @@ namespace MedicaRental.DAL.Repositories
             return true;
         }
 
-        public async Task<List<TypeId>> DeleteManyById<TypeId>(IEnumerable<TypeId> ids)
+        public async Task<bool> DeleteManyById<TypeId>(IEnumerable<TypeId> ids)
         {
-            List<TypeId> failedIds = new();
+            List<TEntity> entities = new();
 
             foreach (var id in ids)
             {
-                var res = await DeleteOneById(id);
+                var entity = await _context.Set<TEntity>().FindAsync(id);
+                
+                if (entity is null) return false;
+                entities.Add(entity);
 
-                if (!res) failedIds.Add(id);
             }
 
-            return failedIds;
+            return DeleteRange(entities);
         }
 
         public bool Delete(TEntity entity)
@@ -94,69 +97,6 @@ namespace MedicaRental.DAL.Repositories
             }
         }
 
-        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Expression<Func<TEntity, object>>[]? includes = null)
-        {
-            IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
-            }
-
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            if (orderBy != null)
-            {
-                query = orderBy(query);
-            }
-
-            return await query.ToListAsync();
-        }
-
-        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>>[]? includes = null)
-        {
-            IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            query = query.Where(predicate);
-
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
-            }
-
-            return await query.FirstOrDefaultAsync();
-        }
-
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Expression<Func<TEntity, object>>[]? includes = null)
-        {
-
-            IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
-            }
-
-            if (orderBy != null)
-            {
-                query = orderBy(query);
-            }
-
-            return await query.ToListAsync();
-        }
-
         public bool Update(TEntity entity)
         {
             try
@@ -181,6 +121,149 @@ namespace MedicaRental.DAL.Repositories
             {
                 return false;
             }
+        }
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+            
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            query = query.Where(predicate);
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        {
+
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (orderBy != null)
+            {
+                return await orderBy(query).Select(selector).ToListAsync();
+            }
+            else
+            {
+                return await query.Select(selector).ToListAsync();
+            }
+        }
+
+        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            if (orderBy != null)
+            {
+                return await orderBy(query).Select(selector).ToListAsync();
+            }
+            else
+            {
+                return await query.Select(selector).ToListAsync();
+            }
+        }
+
+        public async Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.Select(selector).FirstOrDefaultAsync();
         }
     }
 }

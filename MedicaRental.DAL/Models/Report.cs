@@ -24,11 +24,11 @@ namespace MedicaRental.DAL.Models
         public Message? Message { get; set; }
 
         [ForeignKey("Review")]
-        public int? ReviewId { get; set; }
+        public Guid? ReviewId { get; set; }
         public Review? Review { get; set; }
 
         [ForeignKey("Item")]
-        public int? ItemId { get; set; }
+        public Guid? ItemId { get; set; }
         public Item? Item { get; set; }
     }
 }

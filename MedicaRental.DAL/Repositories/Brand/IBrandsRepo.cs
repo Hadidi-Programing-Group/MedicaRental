@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Repositories
 {
-    public interface IItemsPreviousRentersRepo
+    public interface IBrandsRepo
     {
     }
 }

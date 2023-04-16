@@ -16,10 +16,10 @@ public class ClientEntityTypeConfiguration : IEntityTypeConfiguration<Client>
         builder.HasKey(c => c.Id);
         builder.HasIndex(c => c.Ssn).IsUnique();
 
-        builder.HasMany(c => c.ItemsForRent)
-        .WithOne(i => i.CurrentRenter)
-        .HasForeignKey(i => i.CurrentRenterId)
-        .OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(c => c.Reviews)
+            .WithOne(r => r.Seller)
+            .HasForeignKey(r => r.SellerId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(c => c.NationalIdImage).HasColumnType("image").IsRequired(true);
         builder.Property(c => c.UnionCardImage).HasColumnType("image").IsRequired(true);

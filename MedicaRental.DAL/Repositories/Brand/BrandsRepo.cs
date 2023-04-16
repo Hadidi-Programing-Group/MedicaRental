@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Repositories
 {
-    public class ItemsPreviousRentersRepo : EntityRepo<ItemPreviousRenters>, IItemsPreviousRentersRepo
+    public class BrandsRepo : EntityRepo<Brand>, IBrandsRepo
     {
         private readonly MedicaRentalDbContext _context;
 
-        public ItemsPreviousRentersRepo(MedicaRentalDbContext context) : base(context)
+        public BrandsRepo(MedicaRentalDbContext context) : base(context)
         {
             _context = context;
         }

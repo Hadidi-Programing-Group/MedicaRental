@@ -106,6 +106,7 @@ builder.Services.AddScoped<IItemsManager, ItemsManager>();
 builder.Services.AddScoped<IMessagesManager, MessagesManager>();
 builder.Services.AddScoped<IReportsManager, ReportsManager>();
 builder.Services.AddScoped<IReviewsManager, ReviewsManager>();
+builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
 #endregion
 

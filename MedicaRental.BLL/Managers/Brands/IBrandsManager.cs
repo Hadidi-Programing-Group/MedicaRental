@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.DAL.Repositories
+namespace MedicaRental.BLL.Managers
 {
-    public interface IItemsPreviousRentersRepo
+    public interface IBrandsManager
     {
     }
 }

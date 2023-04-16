@@ -23,6 +23,8 @@ namespace MedicaRental.DAL.Configurations
             .HasForeignKey(i => i.ItemId)
             .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(i => i.Price).HasColumnType("money");
+
             builder.Property(i => i.IsDeleted).HasDefaultValue(false);
             builder.HasQueryFilter(i => !i.IsDeleted);
         }

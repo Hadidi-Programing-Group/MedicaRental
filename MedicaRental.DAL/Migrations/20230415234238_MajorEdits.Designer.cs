@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230414225442_ReCreate")]
-    partial class ReCreate
+    [Migration("20230415234238_MajorEdits")]
+    partial class MajorEdits
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -97,13 +97,33 @@ namespace MedicaRental.DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.Brand", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CountryOfOrigin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("image");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brands");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("Icon")
                         .IsRequired()
@@ -152,21 +172,18 @@ namespace MedicaRental.DAL.Migrations
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Item", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<Guid>("BrandId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CurrentRenterId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -181,9 +198,8 @@ namespace MedicaRental.DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Make")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsListed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Model")
                         .IsRequired()
@@ -207,14 +223,14 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubCategoryId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SubCategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("BrandId");
 
-                    b.HasIndex("CurrentRenterId");
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("SellerId");
 
@@ -225,11 +241,9 @@ namespace MedicaRental.DAL.Migrations
 
             modelBuilder.Entity("MedicaRental.DAL.Models.ItemPreviousRenters", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ClientId")
                         .IsRequired()
@@ -240,8 +254,11 @@ namespace MedicaRental.DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("money");
 
                     b.Property<DateTime>("RentDate")
                         .HasColumnType("datetime2");
@@ -249,11 +266,20 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("ReviewId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SellerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("SellerId");
 
                     b.ToTable("ItemPreviousRenters");
                 });
@@ -304,8 +330,8 @@ namespace MedicaRental.DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<int?>("ItemId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("MessageId")
                         .HasColumnType("uniqueidentifier");
@@ -318,8 +344,8 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("ReviewId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ReviewId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Statement")
                         .IsRequired()
@@ -342,11 +368,9 @@ namespace MedicaRental.DAL.Migrations
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Review", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ClientId")
                         .IsRequired()
@@ -361,11 +385,18 @@ namespace MedicaRental.DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("RentOperationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SellerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -373,19 +404,22 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("ItemId");
 
+                    b.HasIndex("RentOperationId")
+                        .IsUnique();
+
+                    b.HasIndex("SellerId");
+
                     b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("Icon")
                         .IsRequired()
@@ -548,19 +582,20 @@ namespace MedicaRental.DAL.Migrations
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Item", b =>
                 {
+                    b.HasOne("MedicaRental.DAL.Models.Brand", "Brand")
+                        .WithMany("Items")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MedicaRental.DAL.Models.Category", "Category")
                         .WithMany("Items")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MedicaRental.DAL.Models.Client", "CurrentRenter")
-                        .WithMany("ItemsForRent")
-                        .HasForeignKey("CurrentRenterId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
-                        .WithMany()
+                        .WithMany("ItemsForRent")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -571,9 +606,9 @@ namespace MedicaRental.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("Brand");
 
-                    b.Navigation("CurrentRenter");
+                    b.Navigation("Category");
 
                     b.Navigation("Seller");
 
@@ -594,9 +629,17 @@ namespace MedicaRental.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
+                        .WithMany()
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Client");
 
                     b.Navigation("Item");
+
+                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Message", b =>
@@ -669,9 +712,25 @@ namespace MedicaRental.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MedicaRental.DAL.Models.ItemPreviousRenters", "RentOperation")
+                        .WithOne("Review")
+                        .HasForeignKey("MedicaRental.DAL.Models.Review", "RentOperationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
+                        .WithMany("Reviews")
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Client");
 
                     b.Navigation("Item");
+
+                    b.Navigation("RentOperation");
+
+                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>
@@ -736,6 +795,11 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.Brand", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Category", b =>
                 {
                     b.Navigation("Items");
@@ -753,6 +817,8 @@ namespace MedicaRental.DAL.Migrations
 
                     b.Navigation("Reports");
 
+                    b.Navigation("Reviews");
+
                     b.Navigation("SentMessages");
                 });
 
@@ -761,6 +827,11 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("ItemRenters");
 
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.ItemPreviousRenters", b =>
+                {
+                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>

@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-public record CategoryDto (int Id,  string Name, byte[]? Icon);
+public record CategoryDto (Guid Id,  string Name, byte[]? Icon);
