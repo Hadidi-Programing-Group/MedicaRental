@@ -22,6 +22,7 @@ public class DataSeeder
 
         var _unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
         #endregion
+        
         #region SeedAdmin
 
         // Seed default admin user
@@ -114,15 +115,15 @@ public class DataSeeder
         if (!subCategoryList.Any())
         {
             subCategoryList = new List<SubCategory> {
-                new SubCategory { Name = "Subcategory 1", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
-                new SubCategory { Name = "Subcategory 2", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
-                new SubCategory { Name = "Subcategory 3", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
-                new SubCategory { Name = "Subcategory 4", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
-                new SubCategory { Name = "Subcategory 5", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
-                new SubCategory { Name = "Subcategory 6", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
-                new SubCategory { Name = "Subcategory 7", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
-                new SubCategory { Name = "Subcategory 8", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() },
-                new SubCategory { Name = "Subcategory 9", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = new Guid() }
+                new SubCategory { Name = "Subcategory 1", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[0].Id },
+                new SubCategory { Name = "Subcategory 2", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[1].Id },
+                new SubCategory { Name = "Subcategory 3", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[2].Id },
+                new SubCategory { Name = "Subcategory 4", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[3].Id },
+                new SubCategory { Name = "Subcategory 5", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[4].Id },
+                new SubCategory { Name = "Subcategory 6", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[5].Id },
+                new SubCategory { Name = "Subcategory 7", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[6].Id },
+                new SubCategory { Name = "Subcategory 8", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[7].Id },
+                new SubCategory { Name = "Subcategory 9", Icon = Convert.FromBase64String(Base64StringImage), CategoryId = CategoryList[8].Id }
             };
 
             await _unitOfWork.SubCategories.AddRangeAsync(subCategoryList);
@@ -176,7 +177,7 @@ public class DataSeeder
                     CategoryId = CategoryList[0].Id,
                     SubCategoryId = subCategoryList[0].Id,
                     SellerId = client1.Id,
-                    BrandId = BrandList[9].Id,
+                    BrandId = BrandList[8].Id,
                     CreationDate = DateTime.Now,
                     IsListed = true,
                 },
