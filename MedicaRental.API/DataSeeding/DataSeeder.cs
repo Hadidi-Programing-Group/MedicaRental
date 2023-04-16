@@ -22,7 +22,7 @@ public class DataSeeder
 
         var _unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
         #endregion
-        
+
         #region SeedAdmin
 
         // Seed default admin user
@@ -133,7 +133,7 @@ public class DataSeeder
 
         #endregion
 
-        #region Seed Brands
+        #region SeedBrands
         var BrandList = (await _unitOfWork.Brands.GetAllAsync()).ToList();
         if (!BrandList.Any())
         {
@@ -330,6 +330,412 @@ public class DataSeeder
             await _unitOfWork.Items.AddRangeAsync(itemList);
             _unitOfWork.Save();
         }
+        #endregion
+
+        #region SeedMessages
+        var messagesList = (await _unitOfWork.Messages.GetAllAsync()).ToList();
+
+        if (!messagesList.Any())
+        {
+            messagesList = new()
+            {
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi1",
+                    ReceiverId = client1.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi2",
+                    ReceiverId = client2.Id,
+                    SenderId = client1.Id,
+                    Timestamp = DateTime.Now,
+                },
+            };
+        }
+        await _unitOfWork.Messages.AddRangeAsync(messagesList);
+        _unitOfWork.Save();
+        #endregion
+
+        #region SeedRentOperations
+        var rentoperationsList = (await _unitOfWork.RentOperations.GetAllAsync()).ToList();
+
+        if (!rentoperationsList.Any())
+        {
+            rentoperationsList = new()
+            {
+                new()
+                {
+                    ClientId = itemList[0].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[0].SellerId,
+                    Price = 100,
+                    ItemId = itemList[0].Id,
+                    RentDate = DateTime.Now.AddDays(-5),
+                    ReturnDate = DateTime.Now.AddDays(+5),
+                    ReviewId = null
+                },
+                new()
+                {
+                    ClientId = itemList[1].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[1].SellerId,
+                    Price = 100,
+                    ItemId = itemList[1].Id,
+                    RentDate = DateTime.Now.AddDays(-5),
+                    ReturnDate = DateTime.Now.AddDays(-1),
+                    ReviewId = null
+                },
+                new()
+                {
+                    ClientId = itemList[2].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[2].SellerId,
+                    Price = 100,
+                    ItemId = itemList[2].Id,
+                    RentDate = DateTime.Now.AddDays(-8),
+                    ReturnDate = DateTime.Now,
+                    ReviewId = null
+                },
+                new()
+                {
+                    ClientId = itemList[3].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[3].SellerId,
+                    Price = 100,
+                    ItemId = itemList[3].Id,
+                    RentDate = DateTime.Now.AddDays(-7),
+                    ReturnDate = DateTime.Now.AddDays(+5),
+                    ReviewId = null
+                },
+                new()
+                {
+                    ClientId = itemList[4].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[4].SellerId,
+                    Price = 100,
+                    ItemId = itemList[4].Id,
+                    RentDate = DateTime.Now.AddDays(-10),
+                    ReturnDate = DateTime.Now.AddDays(+2),
+                    ReviewId = null
+                },
+                new()
+                {
+                    ClientId = itemList[5].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[5].SellerId,
+                    Price = 1420,
+                    ItemId = itemList[5].Id,
+                    RentDate = DateTime.Now.AddDays(-5),
+                    ReturnDate = DateTime.Now.AddDays(+30),
+                    ReviewId = null
+                },
+                new()
+                {
+                    ClientId = itemList[6].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[6].SellerId,
+                    Price = 200,
+                    ItemId = itemList[6].Id,
+                    RentDate = DateTime.Now.AddDays(-5),
+                    ReturnDate = DateTime.Now.AddDays(+2),
+                    ReviewId = null
+                },
+                new()
+                {
+                    ClientId = itemList[7].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[7].SellerId,
+                    Price = 300,
+                    ItemId = itemList[7].Id,
+                    RentDate = DateTime.Now.AddDays(-5),
+                    ReturnDate = DateTime.Now.AddDays(-2),
+                    ReviewId = null
+                },
+                new()
+                {
+                    ClientId = itemList[8].SellerId == client1.Id? client2.Id : client1.Id,
+                    SellerId = itemList[8].SellerId,
+                    Price = 500,
+                    ItemId = itemList[8].Id,
+                    RentDate = DateTime.Now.AddDays(-5),
+                    ReturnDate = DateTime.Now.AddDays(+5),
+                    ReviewId = null
+                }
+            };
+        }
+        await _unitOfWork.RentOperations.AddRangeAsync(rentoperationsList);
+        _unitOfWork.Save();
+        #endregion
+
+        #region SeedReviews
+        var reviewsList = (await _unitOfWork.Reviews.GetAllAsync()).ToList();
+
+        if (!reviewsList.Any())
+        {
+            reviewsList = new()
+            {
+                new()
+                {
+                    ClientReview = "good",
+                    ClientId = rentoperationsList[0].ClientId,
+                    SellerId = rentoperationsList[0].SellerId,
+                    ItemId = rentoperationsList[0].ItemId,
+                    Rating = 4,
+                },
+                new()
+                {
+                    ClientReview = "good",
+                    ClientId = rentoperationsList[1].ClientId,
+                    SellerId = rentoperationsList[1].SellerId,
+                    ItemId = rentoperationsList[1].ItemId,
+                    Rating = 4,
+                },
+                new()
+                {
+                    ClientReview = "good",
+                    ClientId = rentoperationsList[2].ClientId,
+                    SellerId = rentoperationsList[2].SellerId,
+                    ItemId = rentoperationsList[2].ItemId,
+                    Rating = 4,
+                },
+                new()
+                {
+                    ClientReview = "good",
+                    ClientId = rentoperationsList[3].ClientId,
+                    SellerId = rentoperationsList[3].SellerId,
+                    ItemId = rentoperationsList[3].ItemId,
+                    Rating = 4,
+                },
+                new()
+                {
+                    ClientReview = "good",
+                    ClientId = rentoperationsList[4].ClientId,
+                    SellerId = rentoperationsList[4].SellerId,
+                    ItemId = rentoperationsList[4].ItemId,
+                    Rating = 4,
+                },
+                new()
+                {
+                    ClientReview = "good",
+                    ClientId = rentoperationsList[5].ClientId,
+                    SellerId = rentoperationsList[5].SellerId,
+                    ItemId = rentoperationsList[5].ItemId,
+                    Rating = 4,
+                },
+                new()
+                {
+                    ClientReview = "good",
+                    ClientId = rentoperationsList[6].ClientId,
+                    SellerId = rentoperationsList[6].SellerId,
+                    ItemId = rentoperationsList[6].ItemId,
+                    Rating = 4,
+                },
+
+            };
+        }
+        await _unitOfWork.Reviews.AddRangeAsync(reviewsList);
+        _unitOfWork.Save();
+        #endregion
+
+        #region AssignRentOperationAReview
+        rentoperationsList[0].ReviewId = reviewsList[0].Id;
+        rentoperationsList[1].ReviewId = reviewsList[1].Id;
+        rentoperationsList[2].ReviewId = reviewsList[2].Id;
+        rentoperationsList[3].ReviewId = reviewsList[3].Id;
+        rentoperationsList[4].ReviewId = reviewsList[4].Id;
+        rentoperationsList[5].ReviewId = reviewsList[5].Id;
+        rentoperationsList[6].ReviewId = reviewsList[6].Id;
+        _unitOfWork.RentOperations.UpdateRange(rentoperationsList);
+        _unitOfWork.Save();
+        #endregion
+
+        #region SeedReports
+        var reportsList = (await _unitOfWork.Reports.GetAllAsync()).ToList();
+
+        if (!reportsList.Any())
+        {
+            reportsList = new()
+            {
+                new()
+                {
+                    ItemId = itemList[0].Id,
+                    MessageId = null,
+                    ReviewId = null,
+                    Statement = "report report report report report",
+                    ReportedId = itemList[0].SellerId,
+                    ReporteeId = itemList[0].SellerId == client1.Id? client2.Id : client1.Id,
+                },
+                new()
+                {
+                    ItemId = itemList[5].Id,
+                    MessageId = null,
+                    ReviewId = null,
+                    Statement = "report report report report report",
+                    ReportedId = itemList[5].SellerId,
+                    ReporteeId = itemList[5].SellerId == client1.Id? client2.Id : client1.Id,
+                },
+                new()
+                {
+                    ItemId = null,
+                    MessageId = messagesList[0].Id,
+                    ReviewId = null,
+                    Statement = "report report report report report",
+                    ReportedId = messagesList[0].SenderId,
+                    ReporteeId = messagesList[0].ReceiverId == client1.Id? client2.Id : client1.Id,
+                },
+                new()
+                {
+                    ItemId = null,
+                    MessageId = messagesList[8].Id,
+                    ReviewId = null,
+                    Statement = "report report report report report",
+                    ReportedId = messagesList[8].SenderId,
+                    ReporteeId = messagesList[8].ReceiverId == client1.Id? client2.Id : client1.Id,
+                },
+                new()
+                {
+                    ItemId = null,
+                    MessageId = null,
+                    ReviewId = reviewsList[0].Id,
+                    Statement = "report report report report report",
+                    ReportedId = reviewsList[0].ClientId,
+                    ReporteeId = reviewsList[0].ClientId == client1.Id? client2.Id : client1.Id,
+                },
+                new()
+                {
+                    ItemId = null,
+                    MessageId = null,
+                    ReviewId = reviewsList[5].Id,
+                    Statement = "report report report report report",
+                    ReportedId = reviewsList[5].ClientId,
+                    ReporteeId = reviewsList[5].ClientId == client1.Id? client2.Id : client1.Id,
+                },
+
+            };
+        }
+        await _unitOfWork.Reports.AddRangeAsync(reportsList);
+        _unitOfWork.Save();
         #endregion
     }
 }
