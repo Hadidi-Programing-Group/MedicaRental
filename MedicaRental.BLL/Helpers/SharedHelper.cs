@@ -8,6 +8,8 @@ namespace MedicaRental.BLL.Helpers
 {
     public static class SharedHelper
     {
+        public const int Take = 12;
+
         public const string HighToLow = "PriceDesc";
 
         public const string LowToHigh = "PriceAsc";
