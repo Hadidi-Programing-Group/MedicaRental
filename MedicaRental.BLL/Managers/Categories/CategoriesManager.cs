@@ -23,8 +23,8 @@ public class CategoriesManager : ICategoriesManager
 
     public async Task<DeleteCategoryStatusDto> DeleteByIdAsync(Guid id)
     {
-         await _unitOfWork.Categories.DeleteOneById(id);
-         try
+        await _unitOfWork.Categories.DeleteOneById(id);
+        try
         {
             _unitOfWork.Save();
             return new DeleteCategoryStatusDto(
@@ -41,14 +41,23 @@ public class CategoriesManager : ICategoriesManager
         }
     }
 
-    public async Task<IEnumerable<CategoryDto>> GetAllAsyc()
+    public async Task<IEnumerable<CategoryWithSubCategoriesDto>> GetAllAsyc()
     {
-        var categories = await _unitOfWork.Categories.GetAllAsync();
-        return categories.Select(category => new CategoryDto(
-            Id: category.Id,
-            Name: category.Name,
-            Icon: category.Icon
-            ));
+        var categories = await _unitOfWork.Categories.GetAllAsync(
+            include: source => source.Include(category => category.SubCategories),
+            selector: category => new CategoryWithSubCategoriesDto(
+                category.Id,
+                category.Name,
+                category.Icon,
+                category.SubCategories.Select(sc => new SubCategoryDto(
+                sc.Id,
+                sc.Name,
+                sc.Icon
+                )).ToList()
+            )
+        );
+
+        return categories;
     }
 
     public async Task<CategoryWithSubCategoriesDto?> GetCategoryWithSubCategories(Guid id)
@@ -86,7 +95,7 @@ public class CategoriesManager : ICategoriesManager
         await _unitOfWork.Categories.AddAsync(category);
         try
         {
-             _unitOfWork.Save();
+            _unitOfWork.Save();
             return new InsertCategoryStatusDto(
                 isCreated: true,
                 Id: category.Id,

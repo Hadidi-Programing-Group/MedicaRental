@@ -17,11 +17,11 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CategoryDto>>> GetAll()
+        public async Task<ActionResult<List<CategoryWithSubCategoriesDto>>> GetAll()
         {
-            List<CategoryDto> Categories = (await _categoriesManager.GetAllAsyc()).ToList();
-            if (Categories is null)
-                return NotFound();
+            List<CategoryWithSubCategoriesDto> Categories = (await _categoriesManager.GetAllAsyc()).ToList();
+
+            if (Categories is null) return BadRequest();
 
             return Categories;
         }
