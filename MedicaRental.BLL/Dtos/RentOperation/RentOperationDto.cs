@@ -1,4 +1,4 @@
-﻿using MedicaRental.BLL.Dtos;
+﻿using MedicaRental.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,9 +10,15 @@ namespace MedicaRental.BLL.Dtos
 {
     public record RentOperationDto
     (
-        int Id,
+        Guid Id,
         DateTime RentDate,
         DateTime ReturnDate,
-        ClientBaseDto Client
+        decimal Price,
+        string UserId,
+        string UserName,
+        Guid ItemId,
+        string ItemName,
+        Guid? ReviewId,
+        int? Rating
     );
 }

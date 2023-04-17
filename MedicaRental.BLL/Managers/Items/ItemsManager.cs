@@ -32,34 +32,20 @@ public class ItemsManager : IItemsManager
 
     public async Task<StatusDto> AddItemAsync(AddItemDto item)
     {
-        Item _item = new()
-        {
-            Name = item.Name,
-            Description = item.Description,
-            Serial = item.Serial,
-            Model = item.Model,
-            Stock = item.Stock,
-            Price = item.Price,
-            Image = Convert.FromBase64String(item.Image),
-            IsListed = item.IsListed,
-            BrandId = item.BrandId,
-            CategoryId = item.CategoryId,
-            SubCategoryId = item.SubCategoryId,
-            SellerId = item.SellerId
-        };
-
+        Item _item = ItemHelper.MapAddDto(item);
 
         var success = await _unitOfWork.Items.AddAsync(_item);
 
         if (!success)
             return new StatusDto("Item couldn't be added", HttpStatusCode.BadRequest);
-        
+
         try
         {
             _unitOfWork.Save();
             return new InsertStatusDto("Item added successfully", HttpStatusCode.Created, _item.Id);
         }
-        catch (Exception ex) { 
+        catch (Exception ex)
+        {
             return new StatusDto($"Item couldn't be added.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
@@ -69,21 +55,7 @@ public class ItemsManager : IItemsManager
         List<Item> _items = new();
         foreach (var item in items)
         {
-            Item _item = new()
-            {
-                Name = item.Name,
-                Description = item.Description,
-                Serial = item.Serial,
-                Model = item.Model,
-                Stock = item.Stock,
-                Price = item.Price,
-                Image = Convert.FromBase64String(item.Image),
-                IsListed = item.IsListed,
-                BrandId = item.BrandId,
-                CategoryId = item.CategoryId,
-                SubCategoryId = item.SubCategoryId,
-                SellerId = item.SellerId
-            };
+            Item _item = ItemHelper.MapAddDto(item);
 
             _items.Add(_item);
         }
@@ -106,12 +78,12 @@ public class ItemsManager : IItemsManager
 
     public async Task<StatusDto> DeleteItem(Guid id)
     {
-        var item = await _unitOfWork.Items.FindAsync(predicate: i => i.Id == id, include: source => source.Include(i => i.ItemRenters) , disableTracking: false);
+        var item = await _unitOfWork.Items.FindAsync(predicate: i => i.Id == id, include: source => source.Include(i => i.ItemRenters), disableTracking: false);
 
-        if (item is null) 
+        if (item is null)
             return new StatusDto("No item with the given id.", HttpStatusCode.NotFound);
 
-        if(item.IsListed) 
+        if (item.IsListed)
             return new StatusDto("Can't delete a listed item.", HttpStatusCode.BadRequest);
 
         var hasRenters = ((IItemsRepo)_unitOfWork).HasRenters(item);
@@ -135,8 +107,8 @@ public class ItemsManager : IItemsManager
     public async Task<StatusDto> DeleteItems(IEnumerable<Guid> ids)
     {
         var items = await _unitOfWork.Items.FindAllAsync(predicate: i => ids.Contains(i.Id), include: source => source.Include(i => i.ItemRenters), disableTracking: false);
-        
-        if(items.Count() < ids.Count())
+
+        if (items.Count() < ids.Count())
             return new StatusDto("Some or all items coudn't be found.", HttpStatusCode.NotFound);
 
         if (items.Any(i => i.IsListed))
@@ -166,21 +138,10 @@ public class ItemsManager : IItemsManager
 
         if (_item is null) return new("Item doesn't exist.", HttpStatusCode.NotFound);
 
-
-        _item.Name = item.Name is null ? _item.Name : item.Name;
-        _item.Description = item.Description is null ? _item.Description : item.Description;
-        _item.Serial = item.Serial is null ? _item.Serial : item.Serial;
-        _item.Model = item.Model is null ? _item.Model : item.Model;
-        _item.Stock = item.Stock is null ? _item.Stock : (int)item.Stock;
-        _item.Price = item.Price is null ? _item.Price : (decimal)item.Price;
-        _item.Image = item.Image is null ? _item.Image : Convert.FromBase64String(item.Image);
-        _item.IsListed = item.IsListed is null ? _item.IsListed : (bool)item.IsListed;
-        _item.BrandId = item.BrandId is null ? _item.BrandId : (Guid)item.BrandId;
-        _item.CategoryId = item.CategoryId is null ? _item.CategoryId : (Guid)item.CategoryId;
-        _item.SubCategoryId = item.SubCategoryId is null ? _item.SubCategoryId : (Guid)item.SubCategoryId;
+        _item = ItemHelper.MapUpdateDto(_item, item);
 
         var success = _unitOfWork.Items.Update(_item);
-        
+
         if (!success)
             return new StatusDto("Item couldn't be updated", HttpStatusCode.BadRequest);
 
@@ -200,27 +161,17 @@ public class ItemsManager : IItemsManager
         var ids = items.Select(x => x.Id).ToList();
         var _items = await _unitOfWork.Items.FindAllAsync(predicate: i => ids.Contains(i.Id), disableTracking: false);
 
-        if (items.Count() < ids.Count())
+        if (items.Count() != _items.Count())
             return new StatusDto("Some or all items coudn't be found.", HttpStatusCode.NotFound);
 
-        var pairs = _items.Zip(items, (_item, item) => (_item, item));
-        
-        foreach ((Item _item, UpdateItemDto item) in pairs)
-        {
-            _item.Name = item.Name is null ? _item.Name : item.Name;
-            _item.Description = item.Description is null ? _item.Description : item.Description;
-            _item.Serial = item.Serial is null ? _item.Serial : item.Serial;
-            _item.Model = item.Model is null ? _item.Model : item.Model;
-            _item.Stock = item.Stock is null ? _item.Stock : (int)item.Stock;
-            _item.Price = item.Price is null ? _item.Price : (decimal)item.Price;
-            _item.Image = item.Image is null ? _item.Image : Convert.FromBase64String(item.Image);
-            _item.IsListed = item.IsListed is null ? _item.IsListed : (bool)item.IsListed;
-            _item.BrandId = item.BrandId is null ? _item.BrandId : (Guid)item.BrandId;
-            _item.CategoryId = item.CategoryId is null ? _item.CategoryId : (Guid)item.CategoryId;
-            _item.SubCategoryId = item.SubCategoryId is null ? _item.SubCategoryId : (Guid)item.SubCategoryId;
-        }        
+        List<Item> updatedItems = new();
 
-        var success = _unitOfWork.Items.UpdateRange(_items);
+        for (int i = 0; i < items.Count(); i++)
+        {
+            updatedItems.Add(ItemHelper.MapUpdateDto(_items.ElementAt(i), items.ElementAt(i)));
+        }
+
+        var success = _unitOfWork.Items.UpdateRange(updatedItems);
 
         if (!success)
             return new StatusDto("Items couldn't be updated", HttpStatusCode.BadRequest);
@@ -422,7 +373,7 @@ public class ItemsManager : IItemsManager
     public async Task<StatusDto> UnListItem(Guid id)
     {
         var item = await _unitOfWork.Items.FindAsync(
-            predicate: i => i.Id == id, 
+            predicate: i => i.Id == id,
             disableTracking: false);
 
         if (item == null)
@@ -435,7 +386,7 @@ public class ItemsManager : IItemsManager
                 item.IsListed = false;
                 _unitOfWork.Save();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return new($"Item couldn't be updated.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
             }
