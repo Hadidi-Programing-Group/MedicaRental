@@ -33,7 +33,7 @@ namespace MedicaRental.DAL.Models
         public AppUser? User { get; set; }
 
         [NotMapped]
-        public int Rating { get => (int)Reviews.Average(r => r.Rating); }
+        public int Rating { get => Reviews.Count == 0 ? 0 : (int)Reviews.Average(r => r.Rating); }
 
         [NotMapped]
         public string Name { get => User?.Name ?? ""; }
