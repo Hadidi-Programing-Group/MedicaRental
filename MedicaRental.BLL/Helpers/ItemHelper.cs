@@ -18,15 +18,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MedicaRental.BLL.Helpers
 {
     public static class ItemHelper
-    {
-        public const string HighToLow = "PriceDesc";
-        
-        public const string LowToHigh = "PriceAsc";
-        
-        public const string RateDesc = "RateDesc";
-        
-        public const string RateAsc = "RateAsc";
-        
+    {   
         public static Expression<Func<Item, HomeItemDto>> HomeDtoSelector = i => new
         (
             i.Id,
@@ -88,14 +80,13 @@ namespace MedicaRental.BLL.Helpers
 
         public static Func<IQueryable<Item>, IOrderedQueryable<Item>>? GetOrderByQuery(string? orderBy)
         {
-
             Func<IQueryable<Item>, IOrderedQueryable<Item>>? orderQuery = orderBy switch
             {
                 null => null,
-                HighToLow => new(q => q.OrderByDescending(i => i.Price)),
-                LowToHigh => new(q => q.OrderBy(i => i.Price)),
-                RateDesc => new(q => q.OrderByDescending(i => i.Rating)),
-                RateAsc => new(q => q.OrderBy(i => i.Rating)),
+                SharedHelper.HighToLow => new(q => q.OrderByDescending(i => i.Price)),
+                SharedHelper.LowToHigh => new(q => q.OrderBy(i => i.Price)),
+                SharedHelper.RateDesc => new(q => q.OrderByDescending(i => i.Rating)),
+                SharedHelper.RateAsc => new(q => q.OrderBy(i => i.Rating)),
                 _ => throw new ArgumentException()
             };
 
@@ -104,40 +95,53 @@ namespace MedicaRental.BLL.Helpers
 
         public static Func<IQueryable<Item>, IOrderedQueryable<Item>>? GetOrderByQueryForSearch(string? orderBy, string searchText)
         {
-
             Func<IQueryable<Item>, IOrderedQueryable<Item>>? orderQuery = orderBy switch
             {
-                null => new(q => q.OrderByDescending(i => LevDistance(i.Name, searchText))),
-                HighToLow => new(q => q.OrderByDescending(i => LevDistance(i.Name, searchText)).ThenByDescending(i => i.Price)),
-                LowToHigh => new(q => q.OrderByDescending(i => LevDistance(i.Name, searchText)).ThenBy(i => i.Price)),
-                RateDesc => new(q => q.OrderByDescending(i => LevDistance(i.Name, searchText)).ThenByDescending(i => i.Rating)),
-                RateAsc => new(q => q.OrderByDescending(i => LevDistance(i.Name, searchText)).ThenBy(i => i.Rating)),
+                null => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText))),
+                SharedHelper.HighToLow => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenByDescending(i => i.Price)),
+                SharedHelper.LowToHigh => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenBy(i => i.Price)),
+                SharedHelper.RateDesc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenByDescending(i => i.Rating)),
+                SharedHelper.RateAsc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenBy(i => i.Rating)),
                 _ => throw new ArgumentException()
             };
 
             return orderQuery;
         }
-
-        public static int LevDistance(string s, string t)
+    
+        public static Item MapAddDto(AddItemDto item)
         {
-            int m = s.Length;
-            int n = t.Length;
-            int[,] d = new int[m + 1, n + 1];
-            for (int i = 0; i <= m; i++)
-                d[i, 0] = i;
-            for (int j = 0; j <= n; j++)
-                d[0, j] = j;
-            for (int j = 1; j <= n; j++)
+            return new()
             {
-                for (int i = 1; i <= m; i++)
-                {
-                    if (s[i - 1] == t[j - 1])
-                        d[i, j] = d[i - 1, j - 1];
-                    else
-                        d[i, j] = Math.Min(d[i - 1, j] + 1, Math.Min(d[i, j - 1] + 1, d[i - 1, j - 1] + 1));
-                }
-            }
-            return d[m, n];
+                Name = item.Name,
+                Description = item.Description,
+                Serial = item.Serial,
+                Model = item.Model,
+                Stock = item.Stock,
+                Price = item.Price,
+                Image = Convert.FromBase64String(item.Image),
+                IsListed = item.IsListed,
+                BrandId = item.BrandId,
+                CategoryId = item.CategoryId,
+                SubCategoryId = item.SubCategoryId,
+                SellerId = item.SellerId
+            };
+        }
+
+        public static Item MapUpdateDto(Item item, UpdateItemDto updated)
+        {
+            item.Name = updated.Name is null ? item.Name : updated.Name;
+            item.Description = updated.Description is null ? item.Description : updated.Description;
+            item.Serial = updated.Serial is null ? item.Serial : updated.Serial;
+            item.Model = updated.Model is null ? item.Model : updated.Model;
+            item.Stock = updated.Stock is null ? item.Stock : (int)updated.Stock;
+            item.Price = updated.Price is null ? item.Price : (decimal)updated.Price;
+            item.Image = updated.Image is null ? item.Image : Convert.FromBase64String(updated.Image);
+            item.IsListed = updated.IsListed is null ? item.IsListed : (bool)updated.IsListed;
+            item.BrandId = updated.BrandId is null ? item.BrandId : (Guid)updated.BrandId;
+            item.CategoryId = updated.CategoryId is null ? item.CategoryId : (Guid)updated.CategoryId;
+            item.SubCategoryId = updated.SubCategoryId is null ? item.SubCategoryId : (Guid)updated.SubCategoryId;
+
+            return item;
         }
     }
 }
