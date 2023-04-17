@@ -18,9 +18,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetAllItems(string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetAllItems(int page, string? orderBy)
         {
-            var items = await _itemsManager.GetAllItemsAsync(orderBy);
+            var items = await _itemsManager.GetAllItemsAsync(page, orderBy);
 
             if (items is null) return BadRequest();
 
@@ -28,9 +28,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("seller/{sellerId}")]
-        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetItemsBySeller(string sellerId, string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySeller(string sellerId, int page, string? orderBy)
         {
-            var items = await _itemsManager.GetItemsBySellerAsync(sellerId, orderBy);
+            var items = await _itemsManager.GetItemsBySellerAsync(sellerId, page, orderBy);
 
             if (items is null) return BadRequest();
 
@@ -38,9 +38,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("search/{searchText}")]
-        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetItemsBySearch(string searchText, string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySearch(string searchText, int page, string? orderBy)
         {
-            var items = await _itemsManager.GetItemsBySearchAsync(searchText, orderBy);
+            var items = await _itemsManager.GetItemsBySearchAsync(searchText, page, orderBy);
 
             if (items is null) return BadRequest();
 
@@ -48,9 +48,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("category/{categoryId}")]
-        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetItemsByCategory(Guid categoryId, string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsByCategory(Guid categoryId, int page, string? orderBy)
         {
-            var items = await _itemsManager.GetItemsByCategoryAsync(categoryId, orderBy);
+            var items = await _itemsManager.GetItemsByCategoryAsync(categoryId, page, orderBy);
 
             if (items is null) return BadRequest();
 
@@ -58,9 +58,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("subcategory/{subcategoryId}")]
-        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetItemsBySubCategory(Guid subcategoryId, string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySubCategory(Guid subcategoryId, int page, string? orderBy)
         {
-            var items = await _itemsManager.GetItemsBySubCategoryAsync(subcategoryId, orderBy);
+            var items = await _itemsManager.GetItemsBySubCategoryAsync(subcategoryId, page, orderBy);
 
             if (items is null) return BadRequest();
 
@@ -68,9 +68,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("categories")]
-        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetItemsByCategories([FromQuery] IEnumerable<Guid> categoryIds, string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsByCategories([FromQuery] IEnumerable<Guid> categoryIds, int page, string? orderBy)
         {
-            var items = await _itemsManager.GetItemsByCategoriesAsync(categoryIds, orderBy);
+            var items = await _itemsManager.GetItemsByCategoriesAsync(categoryIds, page, orderBy);
 
             if (items is null) return BadRequest();
 
@@ -78,9 +78,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("subcategories")]
-        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetItemsBySubCategories([FromQuery] IEnumerable<Guid> subcategoryIds, string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySubCategories([FromQuery] IEnumerable<Guid> subcategoryIds, int page, string? orderBy)
         {
-            var items = await _itemsManager.GetItemsBySubCategoriesAsync(subcategoryIds, orderBy);
+            var items = await _itemsManager.GetItemsBySubCategoriesAsync(subcategoryIds, page, orderBy);
 
             if (items is null) return BadRequest();
 
@@ -88,9 +88,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("forseller")]
-        public async Task<ActionResult<IEnumerable<SellerItemDto>>> GetAllItemsForSeller(string? orderBy)
+        public async Task<ActionResult<PageDto<SellerItemDto>>> GetAllItemsForSeller(int page, string? orderBy)
         {
-            var items = await _itemsManager.GetAllItemsForSellerAsync(orderBy);
+            var items = await _itemsManager.GetAllItemsForSellerAsync(page, orderBy);
 
             if (items is null) return BadRequest();
 
@@ -98,9 +98,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("forrenter")]
-        public async Task<ActionResult<IEnumerable<RenterItemDto>>> GetAllItemsForRenter(string? orderBy)
+        public async Task<ActionResult<PageDto<RenterItemDto>>> GetAllItemsForRenter(int page, string? orderBy)
         {
-            var items = await _itemsManager.GetAllItemsForRenterAsync(orderBy);
+            var items = await _itemsManager.GetAllItemsForRenterAsync(page, orderBy);
 
             if (items is null) return BadRequest();
 
