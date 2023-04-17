@@ -8,5 +8,8 @@ using System.Threading.Tasks;
 namespace MedicaRental.BLL.Dtos
 {
     public record StatusDto(string StatusMessage, HttpStatusCode StatusCode);
+    
     public record InsertStatusDto(string StatusMessage, HttpStatusCode StatusCode, Guid Id) : StatusDto(StatusMessage, StatusCode);
+
+    public record PageDto<TDto>(IEnumerable<TDto> Data, int Count);
 }

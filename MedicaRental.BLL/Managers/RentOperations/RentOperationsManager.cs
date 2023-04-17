@@ -20,63 +20,98 @@ namespace MedicaRental.BLL.Managers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<RentOperationDto>?> GetOnRentItemsAsync(string userId, string? orderBy)
+        public async Task<PageDto<RentOperationDto>?> GetOnRentItemsAsync(string userId, int page, string? orderBy)
         {
             try
             {
                 var orderByQuery = RentOperationHelper.GetOrderByQuery(orderBy);
-                return await _unitOfWork.RentOperations.FindAllAsync
+                var data = await _unitOfWork.RentOperations.FindAllAsync
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Renter,
                         predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now,
-                        include: RentOperationHelper.RentOperationDtoInclude_Renter
+                        include: RentOperationHelper.RentOperationDtoInclude_Renter,
+                        skip: page > 1? SharedHelper.Take * page : null,
+                        take: SharedHelper.Take
                     );
+
+                var count = await _unitOfWork.RentOperations.GetCountAsync
+                    (
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now
+                    );
+
+                return new(data, count);
             }
             catch (Exception) { return null; }
         }
-        public async Task<IEnumerable<RentOperationDto>?> GetOnRentItemsHistoryAsync(string userId, string? orderBy)
+        public async Task<PageDto<RentOperationDto>?> GetOnRentItemsHistoryAsync(string userId, int page, string? orderBy)
         {
             try
             {
                 var orderByQuery = RentOperationHelper.GetOrderByQuery(orderBy);
-                return await _unitOfWork.RentOperations.FindAllAsync
+                
+                var data = await _unitOfWork.RentOperations.FindAllAsync
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Renter,
                         predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now,
-                        include: RentOperationHelper.RentOperationDtoInclude_Renter
+                        include: RentOperationHelper.RentOperationDtoInclude_Renter,
+                        skip: page > 1 ? SharedHelper.Take * page : null,
+                        take: SharedHelper.Take
                     );
+
+                var count = await _unitOfWork.RentOperations.GetCountAsync
+                    (
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now
+                    );
+                return new(data, count);
             }
             catch (Exception) { return null; }
         }
-        public async Task<IEnumerable<RentOperationDto>?> GetRentedItemsAsync(string userId, string? orderBy)
+        public async Task<PageDto<RentOperationDto>?> GetRentedItemsAsync(string userId, int page, string? orderBy)
         {
             try
             {
                 var orderByQuery = RentOperationHelper.GetOrderByQuery(orderBy);
-                return await _unitOfWork.RentOperations.FindAllAsync
+                var data = await _unitOfWork.RentOperations.FindAllAsync
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Owner,
                         predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now,
-                        include: RentOperationHelper.RentOperationDtoInclude_Owner
+                        include: RentOperationHelper.RentOperationDtoInclude_Owner,
+                        skip: page > 1 ? SharedHelper.Take * page : null,
+                        take: SharedHelper.Take
                     );
+
+                var count = await _unitOfWork.RentOperations.GetCountAsync
+                    (
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now
+                    );
+
+                return new(data, count);
             }
             catch (Exception) { return null; }
         }
-        public async Task<IEnumerable<RentOperationDto>?> GetRentedItemsHistoryAsync(string userId, string? orderBy)
+        public async Task<PageDto<RentOperationDto>?> GetRentedItemsHistoryAsync(string userId, int page, string? orderBy)
         {
             try
             {
                 var orderByQuery = RentOperationHelper.GetOrderByQuery(orderBy);
-                return await _unitOfWork.RentOperations.FindAllAsync
+                var data = await _unitOfWork.RentOperations.FindAllAsync
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Owner,
                         predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now,
-                        include: RentOperationHelper.RentOperationDtoInclude_Owner
+                        include: RentOperationHelper.RentOperationDtoInclude_Owner,
+                        skip: page > 1 ? SharedHelper.Take * page : null,
+                        take: SharedHelper.Take
                     );
+                var count = await _unitOfWork.RentOperations.GetCountAsync
+                    (
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now
+                    );
+
+                return new(data, count);
             }
             catch (Exception) { return null; }
         }

@@ -9,9 +9,9 @@ namespace MedicaRental.BLL.Managers
 {
     public interface IRentOperationsManager
     {
-        public Task<IEnumerable<RentOperationDto>?> GetRentedItemsAsync(string userId, string? orderBy);
-        public Task<IEnumerable<RentOperationDto>?> GetRentedItemsHistoryAsync(string userId, string? orderBy);
-        public Task<IEnumerable<RentOperationDto>?> GetOnRentItemsAsync(string userId, string? orderBy);
-        public Task<IEnumerable<RentOperationDto>?> GetOnRentItemsHistoryAsync(string userId, string? orderBy);
+        public Task<PageDto<RentOperationDto>?> GetRentedItemsAsync(string userId, int page, string? orderBy);
+        public Task<PageDto<RentOperationDto>?> GetRentedItemsHistoryAsync(string userId, int page, string? orderBy);
+        public Task<PageDto<RentOperationDto>?> GetOnRentItemsAsync(string userId, int page, string? orderBy);
+        public Task<PageDto<RentOperationDto>?> GetOnRentItemsHistoryAsync(string userId, int page, string? orderBy);
     }
 }
