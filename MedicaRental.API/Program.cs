@@ -110,6 +110,15 @@ builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
 #endregion
 
+#region CORS Services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:4200")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
+#endregion
 
 
 var app = builder.Build();
@@ -130,7 +139,7 @@ using (var scope = app.Services.CreateScope())
 
 
 # region Middelwares
-app.UseCors();
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 
