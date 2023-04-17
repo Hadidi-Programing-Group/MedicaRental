@@ -480,9 +480,9 @@ public class DataSeeder
                     Timestamp = DateTime.Now,
                 },
             };
+            await _unitOfWork.Messages.AddRangeAsync(messagesList);
+            _unitOfWork.Save();
         }
-        await _unitOfWork.Messages.AddRangeAsync(messagesList);
-        _unitOfWork.Save();
         #endregion
 
         #region SeedRentOperations
@@ -583,9 +583,9 @@ public class DataSeeder
                     ReviewId = null
                 }
             };
+            await _unitOfWork.RentOperations.AddRangeAsync(rentoperationsList);
+            _unitOfWork.Save();
         }
-        await _unitOfWork.RentOperations.AddRangeAsync(rentoperationsList);
-        _unitOfWork.Save();
         #endregion
 
         #region SeedReviews
@@ -653,21 +653,20 @@ public class DataSeeder
                 },
 
             };
+            await _unitOfWork.Reviews.AddRangeAsync(reviewsList);
+            _unitOfWork.Save();
+            #region AssignRentOperationAReview
+            rentoperationsList[0].ReviewId = reviewsList[0].Id;
+            rentoperationsList[1].ReviewId = reviewsList[1].Id;
+            rentoperationsList[2].ReviewId = reviewsList[2].Id;
+            rentoperationsList[3].ReviewId = reviewsList[3].Id;
+            rentoperationsList[4].ReviewId = reviewsList[4].Id;
+            rentoperationsList[5].ReviewId = reviewsList[5].Id;
+            rentoperationsList[6].ReviewId = reviewsList[6].Id;
+            _unitOfWork.RentOperations.UpdateRange(rentoperationsList);
+            _unitOfWork.Save();
+            #endregion
         }
-        await _unitOfWork.Reviews.AddRangeAsync(reviewsList);
-        _unitOfWork.Save();
-        #endregion
-
-        #region AssignRentOperationAReview
-        rentoperationsList[0].ReviewId = reviewsList[0].Id;
-        rentoperationsList[1].ReviewId = reviewsList[1].Id;
-        rentoperationsList[2].ReviewId = reviewsList[2].Id;
-        rentoperationsList[3].ReviewId = reviewsList[3].Id;
-        rentoperationsList[4].ReviewId = reviewsList[4].Id;
-        rentoperationsList[5].ReviewId = reviewsList[5].Id;
-        rentoperationsList[6].ReviewId = reviewsList[6].Id;
-        _unitOfWork.RentOperations.UpdateRange(rentoperationsList);
-        _unitOfWork.Save();
         #endregion
 
         #region SeedReports
@@ -733,9 +732,9 @@ public class DataSeeder
                 },
 
             };
+            await _unitOfWork.Reports.AddRangeAsync(reportsList);
+            _unitOfWork.Save();
         }
-        await _unitOfWork.Reports.AddRangeAsync(reportsList);
-        _unitOfWork.Save();
         #endregion
     }
 }
