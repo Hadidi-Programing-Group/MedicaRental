@@ -34,4 +34,6 @@ public interface IItemsManager
     
     public Task<StatusDto> DeleteItem(Guid id);
     public Task<StatusDto> DeleteItems(IEnumerable<Guid> ids);
+
+    public Task<StatusDto> UnListItem(Guid id);
 }
