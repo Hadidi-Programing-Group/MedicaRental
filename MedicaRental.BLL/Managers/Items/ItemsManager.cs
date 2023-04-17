@@ -418,4 +418,29 @@ public class ItemsManager : IItemsManager
         }
         catch (Exception) { return null; }
     }
+
+    public async Task<StatusDto> UnListItem(Guid id)
+    {
+        var item = await _unitOfWork.Items.FindAsync(
+            predicate: i => i.Id == id, 
+            disableTracking: false);
+
+        if (item == null)
+            return new("Item not found", HttpStatusCode.NotFound);
+
+        if (item.IsListed)
+        {
+            try
+            {
+                item.IsListed = false;
+                _unitOfWork.Save();
+            }
+            catch (Exception ex) 
+            {
+                return new($"Item couldn't be updated.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        return new("Item unlisted successfully", HttpStatusCode.NoContent);
+    }
 }
