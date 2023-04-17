@@ -108,7 +108,7 @@ public class ItemsManager : IItemsManager
     {
         var items = await _unitOfWork.Items.FindAllAsync(predicate: i => ids.Contains(i.Id), include: source => source.Include(i => i.ItemRenters), disableTracking: false);
 
-        if (items.Count() < ids.Count())
+        if (items.Count() != ids.Count())
             return new StatusDto("Some or all items coudn't be found.", HttpStatusCode.NotFound);
 
         if (items.Any(i => i.IsListed))
@@ -229,143 +229,215 @@ public class ItemsManager : IItemsManager
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<HomeItemDto>?> GetAllItemsAsync(string? orderBy)
+    public async Task<PageDto<HomeItemDto>?> GetAllItemsAsync(int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            return await _unitOfWork.Items.GetAllAsync
+            var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
-                    include: ItemHelper.HomeDtoInclude
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+
+            var count = await _unitOfWork.Items.GetCountAsync();
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<RenterItemDto>?> GetAllItemsForRenterAsync(string? orderBy)
+    public async Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            return await _unitOfWork.Items.GetAllAsync
+            var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.RenterDtoSelector,
-                    include: ItemHelper.RenterDtoInclude
+                    include: ItemHelper.RenterDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+
+            var count = await _unitOfWork.Items.GetCountAsync();
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<SellerItemDto>?> GetAllItemsForSellerAsync(string? orderBy)
+    public async Task<PageDto<SellerItemDto>?> GetAllItemsForSellerAsync(int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            return await _unitOfWork.Items.GetAllAsync
+            var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.SellerDtoSelector,
-                    include: ItemHelper.SellerDtoInclude
+                    include: ItemHelper.SellerDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+
+            var count = await _unitOfWork.Items.GetCountAsync();
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<HomeItemDto>?> GetItemsByCategoriesAsync(IEnumerable<Guid> categoryIds, string? orderBy)
+    public async Task<PageDto<HomeItemDto>?> GetItemsByCategoriesAsync(IEnumerable<Guid> categoryIds, int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            return await _unitOfWork.Items.FindAllAsync
+            var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => categoryIds.Contains(i.CategoryId),
-                    include: ItemHelper.HomeDtoInclude
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => categoryIds.Contains(i.CategoryId)
+                );
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<HomeItemDto>?> GetItemsByCategoryAsync(Guid categoryId, string? orderBy)
+    public async Task<PageDto<HomeItemDto>?> GetItemsByCategoryAsync(Guid categoryId, int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            return await _unitOfWork.Items.FindAllAsync
+            var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => categoryId == i.CategoryId,
-                    include: ItemHelper.HomeDtoInclude
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => categoryId == i.CategoryId
+                );
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<HomeItemDto>?> GetItemsBySearchAsync(string searchText, string? orderBy)
+    public async Task<PageDto<HomeItemDto>?> GetItemsBySearchAsync(string searchText, int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQueryForSearch(orderBy, searchText);
-            return await _unitOfWork.Items.FindAllAsync
+            var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => i.Name.Contains(searchText),
-                    include: ItemHelper.HomeDtoInclude
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => i.Name.Contains(searchText)
+                );
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, string? orderBy)
+    public async Task<PageDto<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            return await _unitOfWork.Items.FindAllAsync
+            var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => sellerId == i.SellerId,
-                    include: ItemHelper.HomeDtoInclude
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => sellerId == i.SellerId
+                );
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<HomeItemDto>?> GetItemsBySubCategoriesAsync(IEnumerable<Guid> subcategoryIds, string? orderBy)
+    public async Task<PageDto<HomeItemDto>?> GetItemsBySubCategoriesAsync(IEnumerable<Guid> subcategoryIds, int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            return await _unitOfWork.Items.FindAllAsync
+            var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => subcategoryIds.Contains(i.SubCategoryId),
-                    include: ItemHelper.HomeDtoInclude
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+            
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => subcategoryIds.Contains(i.SubCategoryId)
+                );
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
 
-    public async Task<IEnumerable<HomeItemDto>?> GetItemsBySubCategoryAsync(Guid subcategoryId, string? orderBy)
+    public async Task<PageDto<HomeItemDto>?> GetItemsBySubCategoryAsync(Guid subcategoryId, int page, string? orderBy)
     {
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            return await _unitOfWork.Items.FindAllAsync
+            var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => subcategoryId == i.SubCategoryId,
-                    include: ItemHelper.HomeDtoInclude
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => subcategoryId == i.SubCategoryId
+                );
+
+            return new(data, count);
         }
         catch (Exception) { return null; }
     }
