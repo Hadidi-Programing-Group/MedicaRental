@@ -56,11 +56,11 @@ public class ReportsManager : IReportsManager
             return new ReportDtos(
                 Id : report.Id,
                 Statement : report.Statement,
-                ReportedId : report.ReportedId?.ToString(),
-                ReporteeId : report.ReporteeId?.ToString(),
-                MessageId : (Guid)report.MessageId,
-                ReviewId : (Guid)report.ReviewId,
-                ItemId : (Guid)report.ItemId
+                ReportedId : report.ReportedId,
+                ReporteeId : report.ReporteeId,
+                MessageId : report.MessageId,
+                ReviewId : report.ReviewId,
+                ItemId : report.ItemId
                 );
  
            
@@ -136,7 +136,7 @@ public class ReportsManager : IReportsManager
 
         public async Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport)
         {
-            
+        Console.WriteLine("Dataaaaaaaaaaaaaaaaaaaaaaaa1");
             if (insertReport == null)
             {
                 return new InsertReportStatusDto(false, null, "InsertReportDtos object is null.");
@@ -157,9 +157,11 @@ public class ReportsManager : IReportsManager
 
             
             _unitOfWork.Reports.AddAsync(report);
+       
         try
         {
-  _unitOfWork.Save();
+             _unitOfWork.Save(); 
+            
         }
         catch
         {
