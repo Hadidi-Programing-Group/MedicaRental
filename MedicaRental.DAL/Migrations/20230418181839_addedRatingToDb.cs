@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class MadePropNullable : Migration
+    public partial class addedRatingToDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -192,7 +192,8 @@ namespace MedicaRental.DAL.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsGrantedRent = table.Column<bool>(type: "bit", nullable: false),
                     NationalIdImage = table.Column<byte[]>(type: "image", nullable: false),
-                    UnionCardImage = table.Column<byte[]>(type: "image", nullable: false)
+                    UnionCardImage = table.Column<byte[]>(type: "image", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -271,7 +272,8 @@ namespace MedicaRental.DAL.Migrations
                     BrandId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
