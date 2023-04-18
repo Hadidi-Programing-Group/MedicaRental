@@ -66,6 +66,7 @@ namespace MedicaRental.BLL.Helpers
             new(i.Category!.Id, i.Category.Name),
             new(i.SubCategory!.Id, i.SubCategory.Name),
             new(i.Seller!.Id, i.Seller.Name, i.Seller.Rating),
+            i.Reviews.Select(r => new ReviewBaseDto(r.Id, r.Rating, r.ClientReview, r.Client!.Name)),
             Convert.ToBase64String(i.Image!)
          );
 
@@ -85,7 +86,8 @@ namespace MedicaRental.BLL.Helpers
 
         public static Func<IQueryable<Item>, IIncludableQueryable<Item, object>> RenterDtoInclude = source => source
         .Include(i => i.Brand).Include(i => i.Category).Include(i => i.SubCategory)
-        .Include(i => i.Reviews).Include(i => i.Seller).ThenInclude(s => s!.User!);
+        .Include(i => i.Reviews).ThenInclude(r => r.Client).ThenInclude(c => c!.User)
+        .Include(i => i.Seller).ThenInclude(s => s!.User!);
 
         public static Func<IQueryable<Item>, IIncludableQueryable<Item, object>> SellerDtoInclude = source => source
         .Include(i => i.Brand).Include(i => i.Category).Include(i => i.SubCategory)
