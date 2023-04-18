@@ -18,7 +18,10 @@ using Microsoft.EntityFrameworkCore;
 namespace MedicaRental.BLL.Helpers
 {
     public static class ItemHelper
-    {   
+    {
+        public const string DateCreatedDesc = "DateCreatedDesc";
+        public const string DateCreatedAsc = "DateCreatedAsc";
+
         public static Expression<Func<Item, HomeItemDto>> HomeDtoSelector = i => new
         (
             i.Id,
@@ -66,6 +69,17 @@ namespace MedicaRental.BLL.Helpers
             Convert.ToBase64String(i.Image!)
          );
 
+        public static Expression<Func<Item, ListItemDto>> ListedDtoSelector = i => new
+        (
+            i.Id,
+            i.Name,
+            i.Price,
+            i.Stock,
+            i.Category!.Name,
+            i.SubCategory!.Name,
+            i.Rating
+         );
+
         public static Func<IQueryable<Item>, IIncludableQueryable<Item, object>> HomeDtoInclude = source => source
         .Include(i => i.Seller).Include(i => i.Brand).Include(i => i.Reviews);
 
@@ -77,6 +91,9 @@ namespace MedicaRental.BLL.Helpers
         .Include(i => i.Brand).Include(i => i.Category).Include(i => i.SubCategory)
         .Include(i => i.Reviews).ThenInclude(r => r.Client!).ThenInclude(c => c!.User!);
 
+        public static Func<IQueryable<Item>, IIncludableQueryable<Item, object>> ListedDtoInclude = source => source
+        .Include(i => i.Category).Include(i => i.SubCategory).Include(i => i.Reviews);
+
 
         public static Func<IQueryable<Item>, IOrderedQueryable<Item>>? GetOrderByQuery(string? orderBy)
         {
@@ -87,6 +104,8 @@ namespace MedicaRental.BLL.Helpers
                 SharedHelper.LowToHigh => new(q => q.OrderBy(i => i.Price)),
                 SharedHelper.RateDesc => new(q => q.OrderByDescending(i => i.Rating)),
                 SharedHelper.RateAsc => new(q => q.OrderBy(i => i.Rating)),
+                DateCreatedDesc => new(q => q.OrderByDescending(i => i.CreationDate)),
+                DateCreatedAsc => new(q => q.OrderBy(i => i.CreationDate)),
                 _ => throw new ArgumentException()
             };
 
@@ -102,6 +121,8 @@ namespace MedicaRental.BLL.Helpers
                 SharedHelper.LowToHigh => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenBy(i => i.Price)),
                 SharedHelper.RateDesc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenByDescending(i => i.Rating)),
                 SharedHelper.RateAsc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenBy(i => i.Rating)),
+                DateCreatedDesc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenByDescending(i => i.CreationDate)),
+                DateCreatedAsc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenBy(i => i.CreationDate)),
                 _ => throw new ArgumentException()
             };
 

@@ -1,7 +1,7 @@
 ﻿namespace MedicaRental.BLL.Dtos
 {
     //include categ, subcateg, reviews
-    public record ListedItemDto
+    public record ListItemDto
     (
         Guid Id,
         string Name,
