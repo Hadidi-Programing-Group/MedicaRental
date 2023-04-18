@@ -101,5 +101,22 @@ namespace MedicaRental.DAL.Context
                 return base.Remove(entity);
             }
         }
+
+        public async Task UpdateDailyRatings()
+        {
+           await Items.ForEachAsync(async i =>
+            {
+                i.Rating = await CalculateDailyRatingForItem(i.Id);
+            });
+
+            await SaveChangesAsync();
+        }
+
+        private async Task<int> CalculateDailyRatingForItem(Guid id)
+        {
+            var averageRating = await  Reviews.Where(r => r.ItemId == id).AverageAsync(r => r.Rating);
+
+            return  (int)averageRating;
+        }
     }
 }
