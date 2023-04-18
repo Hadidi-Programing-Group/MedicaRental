@@ -58,7 +58,6 @@ namespace MedicaRental.DAL.Models
         public bool InStock { get => Stock == 0; }
 
         [Range(0, 5)]
-        [NotMapped]
-        public int Rating { get => Reviews.Count == 0 ? 0 : (int)Reviews.Average(r => r.Rating); }
+        public int Rating { get; set; } = 0;
     }
 }
