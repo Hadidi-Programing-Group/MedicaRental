@@ -10,5 +10,5 @@ using System.Threading.Tasks;
 namespace MedicaRental.BLL.Dtos.Report;
 
 
-public record InsertReportDtos(string Statement,string ReportedId,string ReporteeId,
+public record InsertReportDtos(string Name,string Statement,string ReportedId,string ReporteeId,
    Guid? MessageId, Guid? ReviewId,Guid? ItemId);
