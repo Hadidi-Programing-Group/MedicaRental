@@ -8,4 +8,4 @@ using System.Threading.Tasks;
 namespace MedicaRental.BLL.Dtos.Report;
 
 
-public record ReportDtos(Guid Id, string Statement, string ReportedId, string ReporteeId, Guid MessageId, Guid ReviewId, Guid ItemId);
+public record ReportDtos(Guid Id, string Statement, string ReportedId, string ReporteeId, Guid? MessageId, Guid? ReviewId, Guid? ItemId);
