@@ -1,4 +1,5 @@
 ﻿using MedicaRental.DAL.Context;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicaRental.DAL.Models
@@ -7,8 +8,20 @@ namespace MedicaRental.DAL.Models
     {
         public Guid Id { get; set; }
 
+        public string Name { get; set; } = string.Empty;
+
         public string Statement { get; set; } = string.Empty;
-        
+
+
+        public bool IsSolved { get; set; } = false;
+
+        //[ReadOnly(true)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime? SolveDate { get; set; }
+
+
         public bool IsDeleted { get; set; }
 
         [ForeignKey("Reported")]

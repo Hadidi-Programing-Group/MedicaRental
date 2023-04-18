@@ -4,6 +4,7 @@ using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.VisualBasic;
 using System.Security.Claims;
 
 namespace MedicaRental.API.DataSeeding;
@@ -1006,6 +1007,10 @@ public class DataSeeder
                     Statement = "report report report report report",
                     ReportedId = itemList[0].SellerId,
                     ReporteeId = itemList[0].SellerId == client1.Id? client2.Id : client1.Id,
+                    Name = "Report title",
+                    CreatedDate = DateTime.Now,
+                    SolveDate = DateTime.Now
+                   
                 },
                 new()
                 {
@@ -1015,6 +1020,9 @@ public class DataSeeder
                     Statement = "report report report report report",
                     ReportedId = itemList[5].SellerId,
                     ReporteeId = itemList[5].SellerId == client1.Id? client2.Id : client1.Id,
+                     Name = "Report title",
+                    CreatedDate = DateTime.Now,
+                    SolveDate = DateTime.Now
                 },
                 new()
                 {
@@ -1024,6 +1032,9 @@ public class DataSeeder
                     Statement = "report report report report report",
                     ReportedId = messagesList[0].SenderId,
                     ReporteeId = messagesList[0].ReceiverId == client1.Id? client2.Id : client1.Id,
+                     Name = "Report title",
+                    CreatedDate = DateTime.Now,
+                    SolveDate = DateTime.Now
                 },
                 new()
                 {
@@ -1033,6 +1044,9 @@ public class DataSeeder
                     Statement = "report report report report report",
                     ReportedId = messagesList[8].SenderId,
                     ReporteeId = messagesList[8].ReceiverId == client1.Id? client2.Id : client1.Id,
+                     Name = "Report title",
+                    CreatedDate = DateTime.Now,
+                    SolveDate = DateTime.Now
                 },
                 new()
                 {
@@ -1042,6 +1056,9 @@ public class DataSeeder
                     Statement = "report report report report report",
                     ReportedId = reviewsList[0].ClientId,
                     ReporteeId = reviewsList[0].ClientId == client1.Id? client2.Id : client1.Id,
+                     Name = "Report title",
+                    CreatedDate = DateTime.Now,
+                    SolveDate = DateTime.Now
                 },
                 new()
                 {
@@ -1051,6 +1068,9 @@ public class DataSeeder
                     Statement = "report report report report report",
                     ReportedId = reviewsList[5].ClientId,
                     ReporteeId = reviewsList[5].ClientId == client1.Id? client2.Id : client1.Id,
+                     Name = "Report title",
+                    CreatedDate = DateTime.Now,
+                    SolveDate = DateTime.Now
                 },
 
             };
