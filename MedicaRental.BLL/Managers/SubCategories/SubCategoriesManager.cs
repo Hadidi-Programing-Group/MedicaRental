@@ -40,12 +40,17 @@ public class SubCategoriesManager : ISubCategoriesManager
 
     public async Task<IEnumerable<SubCategoriesDto>> GetAllAsync()
     {
-        var SubCategories = await unitOfWork.SubCategories.GetAllAsync();
-        return SubCategories.Select(SubCat => new SubCategoriesDto(
-            Id: SubCat.Id,
-            Name: SubCat.Name,
-            Icon: SubCat.Icon,
-            CategoryId: SubCat.CategoryId));
+        var SubCategories = await unitOfWork.SubCategories.GetAllAsync(
+                selector: SubCat => new SubCategoriesDto
+                (
+                    SubCat.Id,
+                    SubCat.Name,
+                    SubCat.Icon,
+                    SubCat.CategoryId
+                )
+            );
+
+        return SubCategories;
     }
 
     public async Task<SubCategoriesDto?> GetByIdAsync(Guid? id)

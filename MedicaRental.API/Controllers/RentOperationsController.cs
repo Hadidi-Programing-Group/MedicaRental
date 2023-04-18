@@ -17,9 +17,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("onrent/{userId}")]
-        public async Task<ActionResult<IEnumerable<RentOperationDto>?>> GetOnRentItems(string userId, string? orderBy)
+        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItems(string userId, int page, string? orderBy)
         {
-            var operations = await _rentOperationsManager.GetOnRentItemsAsync(userId, orderBy);
+            var operations = await _rentOperationsManager.GetOnRentItemsAsync(userId, page, orderBy);
 
             if (operations is null) return BadRequest();
 
@@ -27,9 +27,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("onrent/history/{userId}")]
-        public async Task<ActionResult<IEnumerable<RentOperationDto>?>> GetOnRentItemsHistory(string userId, string? orderBy)
+        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItemsHistory(string userId, int page, string? orderBy)
         {
-            var operations = await _rentOperationsManager.GetOnRentItemsHistoryAsync(userId, orderBy);
+            var operations = await _rentOperationsManager.GetOnRentItemsHistoryAsync(userId, page, orderBy);
 
             if (operations is null) return BadRequest();
 
@@ -37,9 +37,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("rented/{userId}")]
-        public async Task<ActionResult<IEnumerable<RentOperationDto>?>> GetRentedItems(string userId, string? orderBy)
+        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItems(string userId, int page, string? orderBy)
         {
-            var operations = await _rentOperationsManager.GetRentedItemsAsync(userId, orderBy);
+            var operations = await _rentOperationsManager.GetRentedItemsAsync(userId, page, orderBy);
 
             if (operations is null) return BadRequest();
 
@@ -47,9 +47,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("rented/history/{userId}")]
-        public async Task<ActionResult<IEnumerable<RentOperationDto>?>> GetRentedItemsHistory(string userId, string? orderBy)
+        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItemsHistory(string userId, int page, string? orderBy)
         {
-            var operations = await _rentOperationsManager.GetRentedItemsHistoryAsync(userId, orderBy);
+            var operations = await _rentOperationsManager.GetRentedItemsHistoryAsync(userId, page, orderBy);
 
             if (operations is null) return BadRequest();
 

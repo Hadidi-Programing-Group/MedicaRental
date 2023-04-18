@@ -123,7 +123,7 @@ namespace MedicaRental.DAL.Repositories
             }
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
             
@@ -142,10 +142,20 @@ namespace MedicaRental.DAL.Repositories
                 query = orderBy(query);
             }
 
+            if(skip != null)
+            {
+                query = query.Skip((int)skip);
+            }
+
+            if(take != null)
+            {
+                query = query.Take((int)take);
+            }
+
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
@@ -169,7 +179,17 @@ namespace MedicaRental.DAL.Repositories
                 query = orderBy(query);
             }
 
-            return await query.ToListAsync();
+            if (skip != null)
+            {
+                query = query.Skip((int)skip);
+            }
+
+            if (take != null)
+            {
+                query = query.Take((int)take);
+            }
+
+           return await query.ToListAsync();
         }
 
         public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
@@ -191,9 +211,8 @@ namespace MedicaRental.DAL.Repositories
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true)
         {
-
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
             if (disableTracking)
@@ -208,15 +227,23 @@ namespace MedicaRental.DAL.Repositories
 
             if (orderBy != null)
             {
-                return await orderBy(query).Select(selector).ToListAsync();
+                query = orderBy(query);
             }
-            else
+
+            if (skip != null)
             {
-                return await query.Select(selector).ToListAsync();
+                query = query.Skip((int)skip);
             }
+
+            if (take != null)
+            {
+                query = query.Take((int)take);
+            }
+
+            return await query.Select(selector).ToListAsync();
         }
 
-        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
             if (disableTracking)
@@ -236,12 +263,20 @@ namespace MedicaRental.DAL.Repositories
 
             if (orderBy != null)
             {
-                return await orderBy(query).Select(selector).ToListAsync();
+                query = orderBy(query);
             }
-            else
+
+            if (skip != null)
             {
-                return await query.Select(selector).ToListAsync();
+                query = query.Skip((int)skip);
             }
+
+            if (take != null)
+            {
+                query = query.Take((int)take);
+            }
+
+            return await query.Select(selector).ToListAsync();
         }
 
         public async Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
@@ -264,6 +299,18 @@ namespace MedicaRental.DAL.Repositories
             }
 
             return await query.Select(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<int> GetCountAsync(Expression<Func<TEntity, bool>>? predicate = null)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.CountAsync();
         }
     }
 }
