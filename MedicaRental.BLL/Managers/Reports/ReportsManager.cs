@@ -55,7 +55,11 @@ public class ReportsManager : IReportsManager
         {
             return new ReportDtos(
                 Id : report.Id,
+                Name : report.Name,
                 Statement : report.Statement,
+                IsSolved : report.IsSolved,
+                CreatedDate : report.CreatedDate,
+                SolveDate : report.SolveDate,
                 ReportedId : report.ReportedId,
                 ReporteeId : report.ReporteeId,
                 MessageId : report.MessageId,
@@ -84,7 +88,11 @@ public class ReportsManager : IReportsManager
         {
             foreach( var report in reports)
             {
-                var reportDto = new ReportDtos(report.Id, report.Statement, report.ReportedId, report.ReporteeId,
+                var reportDto = new ReportDtos(report.Id, Name: report.Name,
+                Statement: report.Statement,
+                IsSolved: report.IsSolved,
+                CreatedDate: report.CreatedDate,
+                SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
                 (Guid)report.MessageId, Guid.Empty, Guid.Empty);
                 reportDtos.Add(reportDto);
 
@@ -105,7 +113,11 @@ public class ReportsManager : IReportsManager
         {
             foreach (var report in reports)
             {
-                var reportDto = new ReportDtos(report.Id, report.Statement, report.ReportedId, report.ReporteeId,
+                var reportDto = new ReportDtos(report.Id, Name: report.Name,
+                Statement: report.Statement,
+                IsSolved: report.IsSolved,
+                CreatedDate: report.CreatedDate,
+                SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
                 Guid.Empty, Guid.Empty,(Guid)report.ItemId );
                 reportDtos.Add(reportDto);
 
@@ -125,7 +137,11 @@ public class ReportsManager : IReportsManager
         {
             foreach (var report in reports)
             {
-                var reportDto = new ReportDtos(report.Id, report.Statement, report.ReportedId, report.ReporteeId,
+                var reportDto = new ReportDtos(report.Id, Name: report.Name,
+                Statement: report.Statement,
+                IsSolved: report.IsSolved,
+                CreatedDate: report.CreatedDate,
+                SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
                  Guid.Empty,(Guid)report.ReviewId ,Guid.Empty);
                 reportDtos.Add(reportDto);
 
@@ -136,7 +152,6 @@ public class ReportsManager : IReportsManager
 
         public async Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport)
         {
-        Console.WriteLine("Dataaaaaaaaaaaaaaaaaaaaaaaa1");
             if (insertReport == null)
             {
                 return new InsertReportStatusDto(false, null, "InsertReportDtos object is null.");
@@ -145,6 +160,7 @@ public class ReportsManager : IReportsManager
             
             var report = new Report
             {
+                Name = insertReport.Name,
                 Statement = insertReport.Statement,
                 ReportedId = insertReport.ReportedId,
                 
