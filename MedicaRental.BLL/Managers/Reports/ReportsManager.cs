@@ -156,10 +156,10 @@ public class ReportsManager : IReportsManager
             };
 
             
-            _unitOfWork.Reports.AddAsync(report);
+            await _unitOfWork.Reports.AddAsync(report);
         try
         {
-  _unitOfWork.Save();
+            _unitOfWork.Save();
         }
         catch
         {
