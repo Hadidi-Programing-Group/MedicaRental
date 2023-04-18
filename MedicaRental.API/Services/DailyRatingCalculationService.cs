@@ -46,7 +46,7 @@ public class DailyRatingCalculationService : BackgroundService
             }
 
             // Sleep for 24 hours
-            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+            await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
         }
     }
 
