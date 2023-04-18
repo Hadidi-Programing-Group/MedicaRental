@@ -62,6 +62,8 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost]
+        [Route("InsertReport")]
+
         public async Task<ActionResult> InsertReport(InsertReportDtos insertReportDtos)
         {
             InsertReportStatusDto insertReportStatusDto = await _ReportsManager.InsertNewReport(insertReportDtos);

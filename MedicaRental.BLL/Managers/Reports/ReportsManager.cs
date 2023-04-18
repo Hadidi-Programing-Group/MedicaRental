@@ -136,7 +136,6 @@ public class ReportsManager : IReportsManager
 
         public async Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport)
         {
-        Console.WriteLine("Dataaaaaaaaaaaaaaaaaaaaaaaa1");
             if (insertReport == null)
             {
                 return new InsertReportStatusDto(false, null, "InsertReportDtos object is null.");

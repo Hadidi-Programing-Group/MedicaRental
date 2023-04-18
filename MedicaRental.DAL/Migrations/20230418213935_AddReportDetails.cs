@@ -14,7 +14,7 @@ namespace MedicaRental.DAL.Migrations
                 table: "Reports",
                 type: "datetime2",
                 nullable: false,
-               defaultValueSql: "getdate()");
+                defaultValueSql: "getdate()");
 
             migrationBuilder.AddColumn<bool>(
                 name: "IsSolved",

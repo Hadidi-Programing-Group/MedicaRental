@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230418144731_AddReportDetails")]
+    [Migration("20230418213935_AddReportDetails")]
     partial class AddReportDetails
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -154,6 +154,9 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("image");
 
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
                     b.Property<string>("Ssn")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -211,6 +214,9 @@ namespace MedicaRental.DAL.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("money");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
 
                     b.Property<string>("SellerId")
                         .IsRequired()
