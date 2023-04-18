@@ -231,6 +231,7 @@ public class ItemsManager : IItemsManager
 
     public async Task<PageDto<HomeItemDto>?> GetAllItemsAsync(int page, string? orderBy)
     {
+        Console.WriteLine(page);
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
@@ -239,7 +240,7 @@ public class ItemsManager : IItemsManager
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -260,7 +261,7 @@ public class ItemsManager : IItemsManager
                     orderBy: orderByQuery,
                     selector: ItemHelper.RenterDtoSelector,
                     include: ItemHelper.RenterDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -281,7 +282,7 @@ public class ItemsManager : IItemsManager
                     orderBy: orderByQuery,
                     selector: ItemHelper.SellerDtoSelector,
                     include: ItemHelper.SellerDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -303,7 +304,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => categoryIds.Contains(i.CategoryId),
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -328,7 +329,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => categoryId == i.CategoryId,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -353,7 +354,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => i.Name.Contains(searchText),
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -378,7 +379,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => sellerId == i.SellerId,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -403,7 +404,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => subcategoryIds.Contains(i.SubCategoryId),
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
             
@@ -428,7 +429,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => subcategoryId == i.SubCategoryId,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
