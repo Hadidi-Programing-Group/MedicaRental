@@ -238,8 +238,8 @@ public class ItemsManager : IItemsManager
             var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
-                    selector: ItemHelper.HomeDtoSelector,
-                    include: ItemHelper.HomeDtoInclude,
+                    selector: ItemHelper.RenterDtoSelector,
+                    include: ItemHelper.RenterDtoInclude,
                     skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
@@ -259,8 +259,8 @@ public class ItemsManager : IItemsManager
             var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
-                    selector: ItemHelper.RenterDtoSelector,
-                    include: ItemHelper.RenterDtoInclude,
+                    selector: ItemHelper.SellerDtoSelector,
+                    include: ItemHelper.SellerDtoInclude,
                     skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
@@ -280,8 +280,8 @@ public class ItemsManager : IItemsManager
             var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
-                    selector: ItemHelper.SellerDtoSelector,
-                    include: ItemHelper.SellerDtoInclude,
+                    selector: ItemHelper.HomeDtoSelector,
+                    include: ItemHelper.HomeDtoInclude,
                     skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
