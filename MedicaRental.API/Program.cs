@@ -1,8 +1,11 @@
 using MedicaRental.API.DataSeeding;
+using MedicaRental.API.Services;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -85,12 +88,34 @@ builder.Services
 #endregion
 
 #region Authorization Services
-builder.Services
-    .AddAuthorization(options =>
-    {
-        //options.AddPolicy("", policy => policy
-        //    .RequireClaim(ClaimTypes.Role, "", "", ....));
-    });
+
+var _adminPolicy = new AuthorizationPolicyBuilder()
+    .RequireClaim(ClaimRequirement.AdminClaim)
+    .Build();
+
+var _moderatorPolicy = new AuthorizationPolicyBuilder()
+    .RequireClaim(ClaimRequirement.ModeratorClaim)
+    .Build();
+
+var _clientPolicy = new AuthorizationPolicyBuilder()
+    .RequireClaim(ClaimRequirement.ClientClaim)
+    .Build();
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(ClaimRequirement.AdminPolicy, _adminPolicy);
+    options.AddPolicy(ClaimRequirement.ModeratorClaim, _moderatorPolicy);
+    options.AddPolicy(ClaimRequirement.ClientPolicy, _clientPolicy);
+});
+
+//builder.Services
+//    .AddAuthorization(options =>
+//    {
+//        //options.AddPolicy("", policy => policy
+//        //    .RequireClaim(ClaimTypes.Role, "", "", ....));
+
+//    });
 #endregion
 
 #region Unit Of Work
@@ -119,6 +144,9 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod());
 });
 #endregion
+
+
+builder.Services.AddHostedService<DailyRatingCalculationService>();
 
 
 var app = builder.Build();

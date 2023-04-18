@@ -56,25 +56,24 @@ namespace MedicaRental.API.Controllers
         public async Task<ActionResult<ReportDtos>> GetById(Guid Id)
         {
             ReportDtos? report = await _ReportsManager.GetByIdAsync(Id);
-            if (report is null)
+            if (report == null)
                 return NotFound();
-
             return report;
         }
 
         [HttpPost]
         public async Task<ActionResult> InsertReport(InsertReportDtos insertReportDtos)
         {
-            InsertReportStatusDto insertreportStatusDto = await _ReportsManager.InsertNewReport(insertReportDtos);
+            InsertReportStatusDto insertReportStatusDto = await _ReportsManager.InsertNewReport(insertReportDtos);
 
-            if (!insertreportStatusDto.isCreated)
-                return BadRequest(insertreportStatusDto.StatusMessage);
+            if (!insertReportStatusDto.isCreated)
+                return BadRequest(insertReportStatusDto.StatusMessage);
 
             return CreatedAtAction(
-                actionName: nameof(insertReportDtos),
-                routeValues: new { Id = insertreportStatusDto.Id },
-                value: new { Message = insertreportStatusDto.StatusMessage }
-                );
+                actionName: "GetById", 
+                routeValues: new { id = insertReportStatusDto.Id }, 
+                value: new { Message = insertReportStatusDto.StatusMessage }
+            );
         }
 
 

@@ -231,15 +231,16 @@ public class ItemsManager : IItemsManager
 
     public async Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy)
     {
+        Console.WriteLine(page);
         try
         {
             var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
             var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
-                    selector: ItemHelper.RenterDtoSelector,
-                    include: ItemHelper.RenterDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    selector: ItemHelper.HomeDtoSelector,
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -258,9 +259,9 @@ public class ItemsManager : IItemsManager
             var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
-                    selector: ItemHelper.SellerDtoSelector,
-                    include: ItemHelper.SellerDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    selector: ItemHelper.RenterDtoSelector,
+                    include: ItemHelper.RenterDtoInclude,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -279,10 +280,9 @@ public class ItemsManager : IItemsManager
             var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
-                    selector: ItemHelper.HomeDtoSelector,
-                    predicate: i => i.IsListed,
-                    include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    selector: ItemHelper.SellerDtoSelector,
+                    include: ItemHelper.SellerDtoInclude,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -304,7 +304,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => categoryIds.Contains(i.CategoryId) && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -329,7 +329,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => categoryId == i.CategoryId && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -354,7 +354,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => i.Name.Contains(searchText) && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -379,7 +379,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => sellerId == i.SellerId && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -404,7 +404,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => subcategoryIds.Contains(i.SubCategoryId) && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
             
@@ -429,7 +429,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => subcategoryId == i.SubCategoryId && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
