@@ -1,7 +1,9 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Managers;
+using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaRental.API.Controllers
@@ -11,10 +13,12 @@ namespace MedicaRental.API.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IItemsManager _itemsManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ItemsController(IItemsManager itemsManager)
+        public ItemsController(IItemsManager itemsManager, UserManager<AppUser> userManager)
         {
             _itemsManager = itemsManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -173,10 +177,44 @@ namespace MedicaRental.API.Controllers
             return await _itemsManager.DeleteItems(ids);
         }
         
-        [HttpPut("unlist/{id}")]
-        public async Task<ActionResult<StatusDto>> UnListItem(Guid id)
+        [HttpPut("unlist/{itemId}")]
+        public async Task<ActionResult<StatusDto>> UnListItem(Guid itemId)
         {
-            return await _itemsManager.UnListItem(id);
+            return await _itemsManager.UnListItem(itemId);
+        }
+
+        [HttpPut("relist/{itemId}")]
+        public async Task<ActionResult<StatusDto>> ReListItem(Guid itemId)
+        {
+            return await _itemsManager.ReListItem(itemId);
+        }
+
+        [HttpGet("listed")]
+        public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy)
+        {
+            var userId = "be51b46a-f83e-440e-8072-66684c602453";//_userManager.GetUserId(User);
+
+            if (userId == null) return StatusCode(500);
+            
+            var items = await _itemsManager.GetListedItemsAsync(userId, page, orderBy);
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
+        }
+
+        [HttpGet("unlisted")]
+        public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy)
+        {
+            var userId = "be51b46a-f83e-440e-8072-66684c602453";//_userManager.GetUserId(User);
+
+            if (userId == null) return StatusCode(500);
+
+            var items = await _itemsManager.GetUnListedItemsAsync(userId, page, orderBy);
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
         }
     }
 }

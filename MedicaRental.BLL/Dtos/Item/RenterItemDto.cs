@@ -17,6 +17,7 @@ namespace MedicaRental.BLL.Dtos
         CategoryBaseDto Category,
         SubCategoryBaseDto SubCategory,
         ClientBaseDto Seller,
+        IEnumerable<ReviewBaseDto> Reviews,
         [Base64StringImageValidation]
         string Image
     );

@@ -152,6 +152,9 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("image");
 
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
                     b.Property<string>("Ssn")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -209,6 +212,9 @@ namespace MedicaRental.DAL.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("money");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
 
                     b.Property<string>("SellerId")
                         .IsRequired()

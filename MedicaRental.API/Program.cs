@@ -1,4 +1,5 @@
 using MedicaRental.API.DataSeeding;
+using MedicaRental.API.Services;
 using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
@@ -143,6 +144,9 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod());
 });
 #endregion
+
+
+builder.Services.AddHostedService<DailyRatingCalculationService>();
 
 
 var app = builder.Build();

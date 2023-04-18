@@ -22,6 +22,9 @@ public interface IItemsManager
 
     public Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy);
 
+    public Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy);
+    public Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy);
+
     public Task<HomeItemDto?> FindItemAsync(Guid id);
     public Task<SellerItemDto?> FindItemForSellerAsync(Guid id);
     public Task<RenterItemDto?> FindItemForRenterAsync(Guid id);
@@ -36,4 +39,6 @@ public interface IItemsManager
     public Task<StatusDto> DeleteItems(IEnumerable<Guid> ids);
 
     public Task<StatusDto> UnListItem(Guid id);
+    public Task<StatusDto> ReListItem(Guid id);
+
 }
