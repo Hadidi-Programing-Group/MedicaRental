@@ -1,4 +1,5 @@
 ﻿using MedicaRental.DAL.Context;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicaRental.DAL.Models
@@ -32,8 +33,8 @@ namespace MedicaRental.DAL.Models
 
         public AppUser? User { get; set; }
 
-        [NotMapped]
-        public int Rating { get => Reviews.Count == 0 ? 0 : (int)Reviews.Average(r => r.Rating); }
+        [Range(0, 5)]
+        public int Rating { get; set; } = 0;
 
         [NotMapped]
         public string Name { get => User?.Name ?? ""; }

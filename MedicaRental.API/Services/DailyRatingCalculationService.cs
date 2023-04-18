@@ -24,6 +24,7 @@ public class DailyRatingCalculationService : BackgroundService
                 var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
 
                 var items = await unitOfWork.Items.GetAllAsync(disableTracking: false);
+                var clients = await unitOfWork.Clients.GetAllAsync(disableTracking: false);
                 var reviews = await unitOfWork.Reviews.GetAllAsync();
 
                 // Update the ratings for all items
@@ -31,6 +32,12 @@ public class DailyRatingCalculationService : BackgroundService
                 {
                     var itemsReviews = reviews.Where(r => r.ItemId == item.Id);
                     item.Rating = itemsReviews.Any() ? (int)itemsReviews.Average(r => r.Rating) : 0;
+                }
+
+                foreach (var client in clients)
+                {
+                    var itemsReviews = reviews.Where(r => r.ClientId == client.Id);
+                    client.Rating = itemsReviews.Any() ? (int)itemsReviews.Average(r => r.Rating) : 0;
                 }
 
                 unitOfWork.Save();
