@@ -1,7 +1,9 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -190,9 +192,10 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("listed")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy)
         {
-            var userId = "a193d7d4-6840-42f5-bba2-5da6e8ff6a24";//_userManager.GetUserId(User);
+            var userId = _userManager.GetUserId(User);
 
             if (userId == null) return StatusCode(500);
             
@@ -204,9 +207,10 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("unlisted")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy)
         {
-            var userId = "a193d7d4-6840-42f5-bba2-5da6e8ff6a24";//_userManager.GetUserId(User);
+            var userId = _userManager.GetUserId(User);
 
             if (userId == null) return StatusCode(500);
 

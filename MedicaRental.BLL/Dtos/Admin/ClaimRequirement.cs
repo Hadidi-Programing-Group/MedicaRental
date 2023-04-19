@@ -12,8 +12,5 @@ namespace MedicaRental.BLL.Dtos.Admin
         public const string ModeratorPolicy = "ModeratorPolicy";
         public const string ClientPolicy = "ClientPolicy";
 
-        public const string AdminClaim = "admin";
-        public const string ModeratorClaim = "moderator";
-        public const string ClientClaim = "client";
     }
 }
