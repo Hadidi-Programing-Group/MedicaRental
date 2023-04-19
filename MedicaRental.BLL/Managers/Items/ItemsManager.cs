@@ -347,7 +347,7 @@ public class ItemsManager : IItemsManager
     {
         try
         {
-            var orderByQuery = ItemHelper.GetOrderByQueryForSearch(orderBy, searchText);
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
             var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
