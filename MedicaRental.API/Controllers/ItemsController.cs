@@ -41,7 +41,7 @@ namespace MedicaRental.API.Controllers
             return Ok(items);
         }
 
-        [HttpGet("search/{searchText}")]
+        [HttpGet("search")]
         public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySearch(string searchText, int page, string? orderBy)
         {
             var items = await _itemsManager.GetItemsBySearchAsync(searchText, page, orderBy);
@@ -192,7 +192,7 @@ namespace MedicaRental.API.Controllers
         [HttpGet("listed")]
         public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy)
         {
-            var userId = "be51b46a-f83e-440e-8072-66684c602453";//_userManager.GetUserId(User);
+            var userId = "a193d7d4-6840-42f5-bba2-5da6e8ff6a24";//_userManager.GetUserId(User);
 
             if (userId == null) return StatusCode(500);
             
@@ -206,7 +206,7 @@ namespace MedicaRental.API.Controllers
         [HttpGet("unlisted")]
         public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy)
         {
-            var userId = "be51b46a-f83e-440e-8072-66684c602453";//_userManager.GetUserId(User);
+            var userId = "a193d7d4-6840-42f5-bba2-5da6e8ff6a24";//_userManager.GetUserId(User);
 
             if (userId == null) return StatusCode(500);
 
