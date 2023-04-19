@@ -454,7 +454,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.ListedDtoSelector,
                     predicate: i => userId == i.SellerId && i.IsListed,
                     include: ItemHelper.ListedDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -479,7 +479,7 @@ public class ItemsManager : IItemsManager
                     selector: ItemHelper.ListedDtoSelector,
                     predicate: i => userId == i.SellerId && !i.IsListed,
                     include: ItemHelper.ListedDtoInclude,
-                    skip: page > 1 ? page * SharedHelper.Take : null,
+                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
