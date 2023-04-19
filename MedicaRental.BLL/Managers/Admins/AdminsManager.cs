@@ -1,6 +1,9 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Dtos.Admin;
+using MedicaRental.BLL.Dtos.Report;
 using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Models;
+using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -19,16 +22,21 @@ public class AdminsManager : IAdminsManager
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AdminsManager(UserManager<AppUser> userManager, IConfiguration configuration)
+  
+
+    public AdminsManager(UserManager<AppUser> userManager, IConfiguration configuration, IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _configuration = configuration;
+        _unitOfWork = unitOfWork;
+
     }
 
     public async Task<UserRoleUpdateStatusDto> UpdateUserRoleAsync(
-        UserRoleUpdateDto userRoleUpdateDto
-    )
+            UserRoleUpdateDto userRoleUpdateDto
+        )
     {
         // Check if user exists
         var user = await _userManager.FindByIdAsync(userRoleUpdateDto.UserId);
@@ -86,5 +94,77 @@ public class AdminsManager : IAdminsManager
             UpdateMessage: $"User role updated to {userRoleUpdateDto.NewRole} successfully",
             StatusCode: HttpStatusCode.OK
         );
+
+
     }
+
+    public async Task<ReportUpdateStatusDto> UpdateReportStatus(ReportUpdateDto reportUpdateDto)
+    {
+        var report = await _unitOfWork.Reports.FindAsync(
+            predicate: (p) => p.Id == reportUpdateDto.ReportId
+            );
+
+        // Check if report exists 
+        if (report == null)
+            return new ReportUpdateStatusDto(
+                    IsUpdated: false,
+                    UpdateMessage: $"User with id {reportUpdateDto.ReportId} does not exist",
+                    StatusCode: HttpStatusCode.NotFound
+                );
+
+        // Check if IsSolved is bool 
+        if (!bool.TryParse(reportUpdateDto.IsSolved.ToString(), out var isSolvedBool))
+        {
+            return new ReportUpdateStatusDto(
+                IsUpdated: false,
+                UpdateMessage: "Invalid value for IsSolved parameter",
+                StatusCode: HttpStatusCode.BadRequest
+            );
+        }
+
+        // Check if IsSolved already has that value
+        if (report.IsSolved == reportUpdateDto.IsSolved)
+        {
+            return new ReportUpdateStatusDto(
+                IsUpdated: false,
+                UpdateMessage: $"Report with id {reportUpdateDto.ReportId} already has the status {report.IsSolved}",
+                StatusCode: HttpStatusCode.OK
+            );
+        }
+
+        try
+        {
+            report.IsSolved = reportUpdateDto.IsSolved;
+
+            _unitOfWork.Reports.Update(report);
+            _unitOfWork.Save();
+
+            return new ReportUpdateStatusDto(
+                IsUpdated: true,
+                UpdateMessage: $"Report with id {reportUpdateDto.ReportId} has been updated to {reportUpdateDto.IsSolved}",
+                StatusCode: HttpStatusCode.OK
+            );
+
+
+        }
+        catch
+        {
+
+            return new ReportUpdateStatusDto(
+                IsUpdated: false,
+                UpdateMessage: $"Report with id {reportUpdateDto.ReportId} wasn't updated due to a server error ",
+                StatusCode: HttpStatusCode.InternalServerError
+            );
+
+        }
+        
+
+
+
+    }
+
+
+
+
+
 }

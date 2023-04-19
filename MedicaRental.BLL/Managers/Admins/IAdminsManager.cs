@@ -12,4 +12,6 @@ namespace MedicaRental.BLL.Managers;
 public interface IAdminsManager
 {
     Task<UserRoleUpdateStatusDto> UpdateUserRoleAsync(UserRoleUpdateDto userRoleUpdateDto);
+
+    Task<ReportUpdateStatusDto> UpdateReportStatus(ReportUpdateDto updateReportDto);
 }
