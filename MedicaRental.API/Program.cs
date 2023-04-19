@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -90,22 +91,22 @@ builder.Services
 #region Authorization Services
 
 var _adminPolicy = new AuthorizationPolicyBuilder()
-    .RequireClaim(ClaimRequirement.AdminClaim)
+    .RequireClaim(ClaimTypes.Role, UserRoles.Admin.ToString())
     .Build();
 
 var _moderatorPolicy = new AuthorizationPolicyBuilder()
-    .RequireClaim(ClaimRequirement.ModeratorClaim)
+    .RequireClaim(ClaimTypes.Role, UserRoles.Moderator.ToString())
     .Build();
 
 var _clientPolicy = new AuthorizationPolicyBuilder()
-    .RequireClaim(ClaimRequirement.ClientClaim)
+    .RequireClaim(ClaimTypes.Role, UserRoles.Client.ToString())
     .Build();
 
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(ClaimRequirement.AdminPolicy, _adminPolicy);
-    options.AddPolicy(ClaimRequirement.ModeratorClaim, _moderatorPolicy);
+    options.AddPolicy(ClaimRequirement.ModeratorPolicy, _moderatorPolicy);
     options.AddPolicy(ClaimRequirement.ClientPolicy, _clientPolicy);
 });
 
