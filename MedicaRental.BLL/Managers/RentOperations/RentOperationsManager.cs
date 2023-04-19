@@ -20,7 +20,7 @@ namespace MedicaRental.BLL.Managers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PageDto<RentOperationDto>?> GetOnRentItemsAsync(string userId, int page, string? orderBy)
+        public async Task<PageDto<RentOperationDto>?> GetOnRentItemsAsync(string userId, int page, string? orderBy, string? searchText)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace MedicaRental.BLL.Managers
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Renter,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now,
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now && (searchText == null || ro.Item!.Name.Contains(searchText)),
                         include: RentOperationHelper.RentOperationDtoInclude_Renter,
                         skip: page > 1? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
@@ -37,14 +37,14 @@ namespace MedicaRental.BLL.Managers
 
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now && (searchText == null || ro.Item!.Name.Contains(searchText))
                     );
 
                 return new(data, count);
             }
             catch (Exception) { return null; }
         }
-        public async Task<PageDto<RentOperationDto>?> GetOnRentItemsHistoryAsync(string userId, int page, string? orderBy)
+        public async Task<PageDto<RentOperationDto>?> GetOnRentItemsHistoryAsync(string userId, int page, string? orderBy, string? searchText)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace MedicaRental.BLL.Managers
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Renter,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now,
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now && (searchText == null || ro.Item!.Name.Contains(searchText)),
                         include: RentOperationHelper.RentOperationDtoInclude_Renter,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
@@ -62,13 +62,13 @@ namespace MedicaRental.BLL.Managers
 
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now && (searchText == null || ro.Item!.Name.Contains(searchText))
                     );
                 return new(data, count);
             }
             catch (Exception) { return null; }
         }
-        public async Task<PageDto<RentOperationDto>?> GetRentedItemsAsync(string userId, int page, string? orderBy)
+        public async Task<PageDto<RentOperationDto>?> GetRentedItemsAsync(string userId, int page, string? orderBy, string? searchText)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace MedicaRental.BLL.Managers
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Owner,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now,
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now && (searchText == null || ro.Item!.Name.Contains(searchText)),
                         include: RentOperationHelper.RentOperationDtoInclude_Owner,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
@@ -85,14 +85,14 @@ namespace MedicaRental.BLL.Managers
 
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now && (searchText == null || ro.Item!.Name.Contains(searchText))
                     );
 
                 return new(data, count);
             }
             catch (Exception) { return null; }
         }
-        public async Task<PageDto<RentOperationDto>?> GetRentedItemsHistoryAsync(string userId, int page, string? orderBy)
+        public async Task<PageDto<RentOperationDto>?> GetRentedItemsHistoryAsync(string userId, int page, string? orderBy, string? searchText)
         {
             try
             {
@@ -101,14 +101,14 @@ namespace MedicaRental.BLL.Managers
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Owner,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now,
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now && (searchText == null || ro.Item!.Name.Contains(searchText)),
                         include: RentOperationHelper.RentOperationDtoInclude_Owner,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
                     );
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now && (searchText == null || ro.Item!.Name.Contains(searchText))
                     );
 
                 return new(data, count);

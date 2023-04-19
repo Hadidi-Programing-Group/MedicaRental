@@ -22,8 +22,8 @@ public interface IItemsManager
 
     public Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy);
 
-    public Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy);
-    public Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy);
+    public Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy, string? searchText);
+    public Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy, string? searchText);
 
     public Task<HomeItemDto?> FindItemAsync(Guid id);
     public Task<SellerItemDto?> FindItemForSellerAsync(Guid id);

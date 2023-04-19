@@ -443,7 +443,7 @@ public class ItemsManager : IItemsManager
         catch (Exception) { return null; }
     }
 
-    public async Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy)
+    public async Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy, string? searchText)
     {
         try
         {
@@ -452,7 +452,7 @@ public class ItemsManager : IItemsManager
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.ListedDtoSelector,
-                    predicate: i => userId == i.SellerId && i.IsListed,
+                    predicate: i => userId == i.SellerId && i.IsListed && (searchText == null || i.Name.Contains(searchText)),
                     include: ItemHelper.ListedDtoInclude,
                     skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
@@ -460,7 +460,7 @@ public class ItemsManager : IItemsManager
 
             var count = await _unitOfWork.Items.GetCountAsync
                 (
-                    predicate: i => userId == i.SellerId && i.IsListed
+                    predicate: i => userId == i.SellerId && i.IsListed && (searchText == null || i.Name.Contains(searchText))
                 );
 
             return new(data, count);
@@ -468,7 +468,7 @@ public class ItemsManager : IItemsManager
         catch (Exception) { return null; }
     }
     
-    public async Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy)
+    public async Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy, string? searchText)
     {
         try
         {
@@ -477,7 +477,7 @@ public class ItemsManager : IItemsManager
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.ListedDtoSelector,
-                    predicate: i => userId == i.SellerId && !i.IsListed,
+                    predicate: i => userId == i.SellerId && !i.IsListed && (searchText == null || i.Name.Contains(searchText)),
                     include: ItemHelper.ListedDtoInclude,
                     skip: page > 1 ? (page-1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
@@ -485,7 +485,7 @@ public class ItemsManager : IItemsManager
 
             var count = await _unitOfWork.Items.GetCountAsync
                 (
-                    predicate: i => userId == i.SellerId && !i.IsListed
+                    predicate: i => userId == i.SellerId && !i.IsListed && (searchText == null || i.Name.Contains(searchText))
                 );
 
             return new(data, count);

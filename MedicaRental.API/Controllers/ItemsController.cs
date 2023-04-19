@@ -193,13 +193,13 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet("listed")]
         [Authorize(Policy = ClaimRequirement.ClientPolicy)]
-        public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy)
+        public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
 
             if (userId == null) return StatusCode(500);
             
-            var items = await _itemsManager.GetListedItemsAsync(userId, page, orderBy);
+            var items = await _itemsManager.GetListedItemsAsync(userId, page, orderBy, searchText);
 
             if (items is null) return BadRequest();
 
@@ -208,13 +208,13 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet("unlisted")]
         [Authorize(Policy = ClaimRequirement.ClientPolicy)]
-        public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy)
+        public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
 
             if (userId == null) return StatusCode(500);
 
-            var items = await _itemsManager.GetUnListedItemsAsync(userId, page, orderBy);
+            var items = await _itemsManager.GetUnListedItemsAsync(userId, page, orderBy, searchText);
 
             if (items is null) return BadRequest();
 
