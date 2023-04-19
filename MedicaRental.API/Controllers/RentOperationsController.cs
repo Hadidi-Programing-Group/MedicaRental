@@ -1,6 +1,8 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Managers;
+using MedicaRental.DAL.Context;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaRental.API.Controllers
@@ -10,16 +12,20 @@ namespace MedicaRental.API.Controllers
     public class RentOperationsController : ControllerBase
     {
         private readonly IRentOperationsManager _rentOperationsManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public RentOperationsController(IRentOperationsManager rentOperationsManager)
+        public RentOperationsController(IRentOperationsManager rentOperationsManager, UserManager<AppUser> userManager)
         {
             _rentOperationsManager = rentOperationsManager;
+            _userManager = userManager;
         }
 
         [HttpGet("onrent/{userId}")]
-        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItems(string userId, int page, string? orderBy)
+        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItems(int page, string? orderBy, string? searchText)
         {
-            var operations = await _rentOperationsManager.GetOnRentItemsAsync(userId, page, orderBy);
+            var userId = _userManager.GetUserId(User);
+            
+            var operations = await _rentOperationsManager.GetOnRentItemsAsync(userId, page, orderBy, searchText);
 
             if (operations is null) return BadRequest();
 
@@ -27,9 +33,11 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("onrent/history/{userId}")]
-        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItemsHistory(string userId, int page, string? orderBy)
+        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItemsHistory(int page, string? orderBy, string? searchText)
         {
-            var operations = await _rentOperationsManager.GetOnRentItemsHistoryAsync(userId, page, orderBy);
+            var userId = _userManager.GetUserId(User);
+           
+            var operations = await _rentOperationsManager.GetOnRentItemsHistoryAsync(userId, page, orderBy, searchText);
 
             if (operations is null) return BadRequest();
 
@@ -37,9 +45,11 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("rented/{userId}")]
-        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItems(string userId, int page, string? orderBy)
+        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItems(int page, string? orderBy, string? searchText)
         {
-            var operations = await _rentOperationsManager.GetRentedItemsAsync(userId, page, orderBy);
+            var userId = _userManager.GetUserId(User);
+
+            var operations = await _rentOperationsManager.GetRentedItemsAsync(userId, page, orderBy, searchText);
 
             if (operations is null) return BadRequest();
 
@@ -47,9 +57,11 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("rented/history/{userId}")]
-        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItemsHistory(string userId, int page, string? orderBy)
+        public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItemsHistory(int page, string? orderBy, string? searchText)
         {
-            var operations = await _rentOperationsManager.GetRentedItemsHistoryAsync(userId, page, orderBy);
+            var userId = _userManager.GetUserId(User);
+
+            var operations = await _rentOperationsManager.GetRentedItemsHistoryAsync(userId, page, orderBy, searchText);
 
             if (operations is null) return BadRequest();
 

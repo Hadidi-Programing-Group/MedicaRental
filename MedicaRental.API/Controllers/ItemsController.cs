@@ -190,13 +190,13 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("listed")]
-        public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy)
+        public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy, string? searchText)
         {
-            var userId = "a193d7d4-6840-42f5-bba2-5da6e8ff6a24";//_userManager.GetUserId(User);
+            var userId = "365cbdd8-bc4d-411a-99fc-e3569544eb9a";//_userManager.GetUserId(User);
 
             if (userId == null) return StatusCode(500);
             
-            var items = await _itemsManager.GetListedItemsAsync(userId, page, orderBy);
+            var items = await _itemsManager.GetListedItemsAsync(userId, page, orderBy, searchText);
 
             if (items is null) return BadRequest();
 
@@ -204,13 +204,13 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("unlisted")]
-        public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy)
+        public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy, string? searchText)
         {
-            var userId = "a193d7d4-6840-42f5-bba2-5da6e8ff6a24";//_userManager.GetUserId(User);
+            var userId = "365cbdd8-bc4d-411a-99fc-e3569544eb9a";//_userManager.GetUserId(User);
 
             if (userId == null) return StatusCode(500);
 
-            var items = await _itemsManager.GetUnListedItemsAsync(userId, page, orderBy);
+            var items = await _itemsManager.GetUnListedItemsAsync(userId, page, orderBy, searchText);
 
             if (items is null) return BadRequest();
 
