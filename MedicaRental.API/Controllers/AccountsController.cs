@@ -29,13 +29,6 @@ namespace MedicaRental.API.Controllers
             _accountsManager = accountsManager;
         }
 
-        [HttpGet]
-        [Authorize]
-        public IActionResult Get()
-        {
-            return Ok("Auth Works");
-        }
-
         [HttpPost]
         [Route("/Login")]
         public async Task<ActionResult<LoginStatusWithTokenDto>> LoginAsync(LoginInfoDto loginInfoDto)
