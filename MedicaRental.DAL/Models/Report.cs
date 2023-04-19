@@ -15,9 +15,7 @@ namespace MedicaRental.DAL.Models
 
         public bool IsSolved { get; set; } = false;
 
-        //[ReadOnly(true)]
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; init; }
 
         public DateTime? SolveDate { get; set; }
 

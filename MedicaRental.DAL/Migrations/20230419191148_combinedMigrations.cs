@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class addedRatingToDb : Migration
+    public partial class combinedMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -386,7 +386,11 @@ namespace MedicaRental.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Statement = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsSolved = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SolveDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     ReportedId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ReporteeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
