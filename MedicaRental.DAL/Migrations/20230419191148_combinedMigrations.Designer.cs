@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230418181839_addedRatingToDb")]
-    partial class addedRatingToDb
+    [Migration("20230419191148_combinedMigrations")]
+    partial class combinedMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -333,16 +333,26 @@ namespace MedicaRental.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<bool>("IsSolved")
+                        .HasColumnType("bit");
 
                     b.Property<Guid?>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("MessageId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReportedId")
                         .IsRequired()
@@ -354,6 +364,9 @@ namespace MedicaRental.DAL.Migrations
 
                     b.Property<Guid?>("ReviewId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("SolveDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Statement")
                         .IsRequired()
