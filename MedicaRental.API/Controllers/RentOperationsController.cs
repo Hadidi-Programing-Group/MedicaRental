@@ -1,6 +1,8 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,7 @@ namespace MedicaRental.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = ClaimRequirement.ClientPolicy)]
     public class RentOperationsController : ControllerBase
     {
         private readonly IRentOperationsManager _rentOperationsManager;
