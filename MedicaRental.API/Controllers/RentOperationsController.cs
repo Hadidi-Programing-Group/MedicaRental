@@ -23,7 +23,7 @@ namespace MedicaRental.API.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet("onrent/{userId}")]
+        [HttpGet("onrent")]
         public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItems(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
@@ -35,7 +35,7 @@ namespace MedicaRental.API.Controllers
             return Ok(operations);
         }
 
-        [HttpGet("onrent/history/{userId}")]
+        [HttpGet("onrent/history")]
         public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItemsHistory(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
@@ -47,7 +47,7 @@ namespace MedicaRental.API.Controllers
             return Ok(operations);
         }
 
-        [HttpGet("rented/{userId}")]
+        [HttpGet("rented")]
         public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItems(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
@@ -59,7 +59,7 @@ namespace MedicaRental.API.Controllers
             return Ok(operations);
         }
 
-        [HttpGet("rented/history/{userId}")]
+        [HttpGet("rented/history")]
         public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItemsHistory(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);

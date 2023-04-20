@@ -53,10 +53,10 @@ namespace MedicaRental.BLL.Helpers
 
 
         public static Func<IQueryable<RentOperation>, IIncludableQueryable<RentOperation, object>> RentOperationDtoInclude_Renter = source => source
-        .Include(ro => ro.Seller).Include(ro => ro.Item).Include(ro => ro.Review!);
+        .Include(ro => ro.Seller).ThenInclude(s => s!.User).Include(ro => ro.Item).Include(ro => ro.Review!);
 
         public static Func<IQueryable<RentOperation>, IIncludableQueryable<RentOperation, object>> RentOperationDtoInclude_Owner = source => source
-        .Include(ro => ro.Client).Include(ro => ro.Item).Include(ro => ro.Review!);
+        .Include(ro => ro.Client).ThenInclude(s => s!.User).Include(ro => ro.Item).Include(ro => ro.Review!);
 
         public static Func<IQueryable<RentOperation>, IOrderedQueryable<RentOperation>>? GetOrderByQuery(string? orderBy)
         {

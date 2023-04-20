@@ -134,6 +134,7 @@ builder.Services.AddScoped<IReportsManager, ReportsManager>();
 builder.Services.AddScoped<IReviewsManager, ReviewsManager>();
 builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
+builder.Services.AddScoped<IRentOperationsManager, RentOperationsManager>();
 #endregion
 
 #region CORS Services
