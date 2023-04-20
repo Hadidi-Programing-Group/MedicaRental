@@ -86,7 +86,7 @@ public class ItemsManager : IItemsManager
         if (item.IsListed)
             return new StatusDto("Can't delete a listed item.", HttpStatusCode.BadRequest);
 
-        var hasRenters = ((IItemsRepo)_unitOfWork).HasRenters(item);
+        var hasRenters = ((IItemsRepo)(_unitOfWork.Items)).HasRenters(item);
 
         if (hasRenters)
             return new StatusDto("Can't delete an item that has active renters.", HttpStatusCode.BadRequest);
@@ -540,6 +540,6 @@ public class ItemsManager : IItemsManager
             }
         }
 
-        return new("Item unlisted successfully", HttpStatusCode.NoContent);
+        return new("Item relisted successfully", HttpStatusCode.NoContent);
     }
 }
