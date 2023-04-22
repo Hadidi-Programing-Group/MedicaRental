@@ -39,6 +39,11 @@ BEGIN
 	Set @s = LOWER(@s) 
 	Set @t = LOWER(@t)
 	
+    IF(CHARINDEX(@t,@s) > 0)
+	BEGIN
+		Return 0
+	END
+
     DECLARE @distance int = 0 
           , @v0 nvarchar(4000)
           , @start int = 1    
