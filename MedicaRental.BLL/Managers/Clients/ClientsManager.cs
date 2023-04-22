@@ -3,6 +3,7 @@ using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -69,6 +70,33 @@ public class ClientsManager : IClientsManager
         }
     }
 
+    public async Task<UserApprovalInfoDto?> GetClientApprovalInfoAsync(string userId)
+    {
+        return await _unitOfWork.Clients.FindAsync(
+            predicate: c => c.Id == userId,
+            selector: c => new UserApprovalInfoDto(
+                c.Ssn,
+                c.NationalIdImage,
+                c.UnionCardImage
+                ));
+    }
+
+    public async Task<UserProfileInfoDto?> GetClientInfoAsync(string userId)
+    {
+        return await _unitOfWork.Clients.FindAsync(
+            predicate: c => c.Id == userId,
+            include: source => source.Include(c => c.User),
+            selector: c => new UserProfileInfoDto(
+                c.Name,
+                c.User.FirstName,
+                c.User.LastName,
+                c.User.PhoneNumber,
+                c.Address,
+                c.User.Email,
+                c.IsGrantedRent
+                ));
+    }
+
     public async Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto clientRegisterInfoDto)
     {
         var baseUserRegisterStatus = await _accountsManager.RegisterNewUserAsync(clientRegisterInfoDto.BaseUserRegisterInfo);
@@ -119,5 +147,31 @@ public class ClientsManager : IClientsManager
             isCreated: true,
             RegisterMessage: "Account Created Successfully"
         );
+    }
+
+    public async Task<StatusDto> UpdateClientInfoAsync(string userId, UpdateProfileInfoDto updateProfileInfoDto)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return new StatusDto(StatusMessage: "User couldn't be found", StatusCode: System.Net.HttpStatusCode.NotFound);
+
+        user.PhoneNumber = updateProfileInfoDto.PhoneNumber;
+        user.FirstName = updateProfileInfoDto.FirstName;
+        user.LastName = updateProfileInfoDto.LastName;
+        user.Email = updateProfileInfoDto.Email;
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return new StatusDto(result.Errors.FirstOrDefault()?.Description ?? "User couldn't be updated", System.Net.HttpStatusCode.BadRequest);
+
+        var client = await _unitOfWork.Clients.FindAsync(c => c.Id == userId);
+        if (client is null)
+            return new StatusDto(StatusMessage: "User couldn't be found", StatusCode: System.Net.HttpStatusCode.NotFound);
+
+        client.Address = updateProfileInfoDto.Address;
+
+        var update = _unitOfWork.Clients.Update(client);
+        _unitOfWork.Save();
+
+        return new StatusDto("User has been updated successully", System.Net.HttpStatusCode.OK);
     }
 }
