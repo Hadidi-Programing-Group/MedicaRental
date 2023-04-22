@@ -22,9 +22,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PageDto<HomeItemDto>>> GetAllItems(int page, string? orderBy, string? searchText, [FromQuery] Dictionary<string, IEnumerable<Guid>>? filters)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetAllItems(int page, string? orderBy, string? searchText, [FromQuery] IEnumerable<Guid> categories, [FromQuery] IEnumerable<Guid> subCategories, [FromQuery] IEnumerable<Guid> brands)
         {
-            var items = await _itemsManager.GetAllItemsAsync(page, orderBy, searchText, filters);
+            var items = await _itemsManager.GetAllItemsAsync(page, orderBy, searchText, categories, subCategories, brands);
 
             if (items is null) return BadRequest();
 
@@ -132,7 +132,7 @@ namespace MedicaRental.API.Controllers
             return Ok(items);
         }
         #endregion
-      
+
         #region Single Item
         [HttpGet("{id}")]
         public async Task<ActionResult<HomeItemDto>> FindItem(Guid id)
@@ -143,7 +143,7 @@ namespace MedicaRental.API.Controllers
 
             return Ok(item);
         }
-        
+
         [HttpGet("forseller/{id}")]
         public async Task<ActionResult<SellerItemDto>> FindItemForSeller(Guid id)
         {
@@ -153,7 +153,7 @@ namespace MedicaRental.API.Controllers
 
             return Ok(item);
         }
-        
+
         [HttpGet("forrenter/{id}")]
         public async Task<ActionResult<RenterItemDto>> FindItemForRenter(Guid id)
         {
@@ -164,44 +164,44 @@ namespace MedicaRental.API.Controllers
             return Ok(item);
         }
         #endregion
-       
+
         #region CUD
         [HttpPost("one")]
         public async Task<ActionResult<StatusDto>> AddItem(AddItemDto item)
         {
             return await _itemsManager.AddItemAsync(item);
         }
-        
+
         [HttpPost("many")]
         public async Task<ActionResult<StatusDto>> AddItems(IEnumerable<AddItemDto> items)
         {
             return await _itemsManager.AddItemsAsync(items);
         }
-        
+
         [HttpPut("one")]
         public async Task<ActionResult<StatusDto>> UpdateItem(UpdateItemDto item)
         {
             return await _itemsManager.UpdateItem(item);
         }
-        
+
         [HttpPut("many")]
         public async Task<ActionResult<StatusDto>> UpdateItems(IEnumerable<UpdateItemDto> items)
         {
             return await _itemsManager.UpdateItems(items);
         }
-        
+
         [HttpDelete("one")]
         public async Task<ActionResult<StatusDto>> DeleteItem(Guid id)
         {
             return await _itemsManager.DeleteItem(id);
         }
-        
+
         [HttpDelete("many")]
         public async Task<ActionResult<StatusDto>> DeleteItems(IEnumerable<Guid> ids)
         {
             return await _itemsManager.DeleteItems(ids);
         }
-        
+
         [HttpPut("unlist/{itemId}")]
         public async Task<ActionResult<StatusDto>> UnListItem(Guid itemId)
         {
