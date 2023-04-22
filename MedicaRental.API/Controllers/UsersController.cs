@@ -71,6 +71,21 @@ namespace MedicaRental.API.Controllers
             return userApprovalInfo;
         }
 
+        [HttpPut]
+        [Route("UpdateApprovalInfo")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        public async Task<ActionResult<StatusDto>> UpdateApprovalInfo(UpdateApprovalInfoDto updateProfileInfoDto)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (userId is null) return Unauthorized();
+
+            StatusDto statusDto = await _clientsManager.UpdateApprovalInfoAsync(userId, updateProfileInfoDto);
+
+
+            return statusDto;
+        }
+
         [HttpPost]
         [Route("BlockUser")]
         public async Task<ActionResult<StatusDto>> BlockUserAsync(BlockUserInfoDto blockUserInfo)

@@ -149,6 +149,22 @@ public class ClientsManager : IClientsManager
         );
     }
 
+    public async Task<StatusDto> UpdateApprovalInfoAsync(string userId, UpdateApprovalInfoDto updateApprovalInfoDto)
+    {
+        var client = await _unitOfWork.Clients.FindAsync(c => c.Id == userId);
+        if (client is null)
+            return new StatusDto(StatusMessage: "User couldn't be found", StatusCode: System.Net.HttpStatusCode.NotFound);
+
+        client.Ssn = updateApprovalInfoDto.NationalId;
+        client.NationalIdImage = Convert.FromBase64String(updateApprovalInfoDto.NationalImage);
+        client.UnionCardImage = Convert.FromBase64String(updateApprovalInfoDto.UnionImage);
+
+        var update = _unitOfWork.Clients.Update(client);
+        _unitOfWork.Save();
+
+        return new StatusDto("User has been updated successully", System.Net.HttpStatusCode.OK);
+    }
+
     public async Task<StatusDto> UpdateClientInfoAsync(string userId, UpdateProfileInfoDto updateProfileInfoDto)
     {
         var user = await _userManager.FindByIdAsync(userId);
