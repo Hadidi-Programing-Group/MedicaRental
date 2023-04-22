@@ -81,15 +81,15 @@ namespace MedicaRental.BLL.Helpers
 
             return orderBy switch
             {
-                null => new(q => q.OrderByDescending(ro => ro.Item)),
-                SharedHelper.HighToLow => new(q => q.OrderByDescending(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(ro => ro.Price)),
-                SharedHelper.LowToHigh => new(q => q.OrderByDescending(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(ro => ro.Price)),
-                SharedHelper.RateDesc => new(q => q.OrderByDescending(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(ro => ro.Review == null ? 0 : ro.Review.Rating)),
-                SharedHelper.RateAsc => new(q => q.OrderByDescending(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(ro => ro.Review == null ? 0 : ro.Review.Rating)),
-                RentDateDesc => new(q => q.OrderByDescending(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(ro => ro.RentDate)),
-                RentDateAsc => new(q => q.OrderByDescending(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(ro => ro.RentDate)),
-                ReturnDateDesc => new(q => q.OrderByDescending(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(ro => ro.ReturnDate)),
-                ReturnDateAsc => new(q => q.OrderByDescending(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(ro => ro.ReturnDate)),
+                null => new(q => q.OrderBy(ro => ro.Item)),
+                SharedHelper.HighToLow => new(q => q.OrderBy(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(ro => ro.Price)),
+                SharedHelper.LowToHigh => new(q => q.OrderBy(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(ro => ro.Price)),
+                SharedHelper.RateDesc => new(q => q.OrderBy(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(ro => ro.Review == null ? 0 : ro.Review.Rating)),
+                SharedHelper.RateAsc => new(q => q.OrderBy(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(ro => ro.Review == null ? 0 : ro.Review.Rating)),
+                RentDateDesc => new(q => q.OrderBy(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(ro => ro.RentDate)),
+                RentDateAsc => new(q => q.OrderBy(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(ro => ro.RentDate)),
+                ReturnDateDesc => new(q => q.OrderBy(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(ro => ro.ReturnDate)),
+                ReturnDateAsc => new(q => q.OrderBy(ro => MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(ro => ro.ReturnDate)),
                 _ => throw new ArgumentException()
             };
 
