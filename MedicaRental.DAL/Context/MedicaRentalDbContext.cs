@@ -30,6 +30,9 @@ namespace MedicaRental.DAL.Context
         {
             base.OnModelCreating(builder);
 
+            builder.HasDbFunction(typeof(MedicaRentalDbContext).GetMethod(nameof(LevDist), new[] { typeof(string), typeof(string), typeof(int?)})!)
+            .HasName("LevenshteinDistance");
+
             builder.ApplyConfiguration(new ItemEntityTypeConfiguration());
             builder.ApplyConfiguration(new ClientEntityTypeConfiguration());
             builder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
@@ -39,6 +42,8 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new ReportEntityTypeConfiguration());
             builder.ApplyConfiguration(new RentOperationEntityTypeConfiguration());
         }
+
+        public static int LevDist (string s1, string? s2, int? maxDistance) => throw new NotSupportedException();
 
         public override void RemoveRange(IEnumerable<object> entities)
         {
