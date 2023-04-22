@@ -1,10 +1,9 @@
 ﻿using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MedicaRental.DAL.Repositories;
 
@@ -19,7 +18,7 @@ public class ItemsRepo : EntityRepo<Item>, IItemsRepo
 
     public bool HasRenters(Item item)
     {
-        return item.ItemRenters.Any(r => r.ReturnDate > DateTime.Now);   
+        return item.ItemRenters.Any(r => r.ReturnDate > DateTime.Now);
     }
 
     public bool HasRenters(IEnumerable<Item> items)
