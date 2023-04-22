@@ -47,7 +47,7 @@ namespace MedicaRental.API.Controllers
             if (!clientRegisterStatus.isCreated)
                 return BadRequest(clientRegisterStatus.RegisterMessage);
 
-            return Ok(clientRegisterStatus.RegisterMessage);
+            return Ok(/*clientRegisterStatus.RegisterMessage*/);
         }
     }
 }

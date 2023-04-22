@@ -36,6 +36,6 @@ public class ItemEntityTypeConfiguration : IEntityTypeConfiguration<Item>
 
         builder.Property(i => i.IsDeleted).HasDefaultValue(false);
 
-        builder.HasQueryFilter(i => !i.IsDeleted /*&& i.IsListed*/);
+        builder.HasQueryFilter(i => !i.IsDeleted);
     }
 }
