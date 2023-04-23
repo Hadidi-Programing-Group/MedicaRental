@@ -3,6 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicaRental.DAL.Models
 {
+    public enum MessageStatus
+    {
+        Sent, Received, Seen
+    }
+
     public class Message : ISoftDeletable
     {
         public Guid Id { get; set; }
@@ -12,6 +17,8 @@ namespace MedicaRental.DAL.Models
         public DateTime Timestamp { get; set; }
         
         public bool IsDeleted { get; set; }
+
+        public MessageStatus MesssageStatus { get; set; }
 
         [ForeignKey("Sender")]
         public string SenderId { get; set; } = string.Empty;
