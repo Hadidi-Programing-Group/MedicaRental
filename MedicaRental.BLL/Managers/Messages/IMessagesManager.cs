@@ -11,7 +11,7 @@ public interface IMessagesManager
 {
     public Task<IEnumerable<ChatDto>> GetUserChats(string userId, int upTo);
 
-    public Task<IEnumerable<MessageDto>> GetChat(string firstUserId, string secondUserId, DateTime dateOpened);
+    public Task<IEnumerable<MessageDto>> GetChat(string firstUserId, string secondUserId, int upTo, DateTime dateOpened);
     
     /// <summary>
     /// 

@@ -34,14 +34,14 @@ public class MessagesManager : IMessagesManager
         return new("Message couldn't be deleted", HttpStatusCode.BadRequest);
     }
 
-    public async Task<IEnumerable<MessageDto>> GetChat(string firstUserId, string secondUserId, DateTime dateOpened)
+    public async Task<IEnumerable<MessageDto>> GetChat(string firstUserId, string secondUserId, int upTo, DateTime dateOpened)
     {
         var succeeded = await UpdateSeenStatus(firstUserId, secondUserId, dateOpened);
 
         if (succeeded) _unitOfWork.Save();
         else throw new Exception("WTF");
 
-        return await ((IMessagesRepo)_unitOfWork.Messages).GetChat<MessageDto>(firstUserId, secondUserId, m => new(m.Id, m.Content, m.SenderId, m.Timestamp, m.MesssageStatus));
+        return await ((IMessagesRepo)_unitOfWork.Messages).GetChat<MessageDto>(firstUserId, secondUserId, upTo, m => new(m.Id, m.Content, m.SenderId, m.Timestamp, m.MesssageStatus));
     }
 
     public async Task<IEnumerable<ChatDto>> GetUserChats(string userId, int upTo)
