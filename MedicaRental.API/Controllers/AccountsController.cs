@@ -21,7 +21,7 @@ namespace MedicaRental.API.Controllers
     {
         private readonly IClientsManager _clientsManager;
         private readonly IAccountsManager _accountsManager;
-        private readonly IAuthManger authManger;
+        private readonly IAuthManger _authManger;
 
         public AccountsController(
             IClientsManager clientsManager,
@@ -31,7 +31,7 @@ namespace MedicaRental.API.Controllers
         {
             _clientsManager = clientsManager;
             _accountsManager = accountsManager;
-            this.authManger = authManger;
+            this._authManger = authManger;
         }
 
         [HttpPost]
@@ -62,6 +62,8 @@ namespace MedicaRental.API.Controllers
                     loginStatus.RefreshTokenExpiration
                 );
 
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+
             return StatusCode((int)loginStatus.StatusCode, loginStatus);
         }
 
@@ -72,23 +74,28 @@ namespace MedicaRental.API.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = expires.ToLocalTime()
-                //Secure = true,
+                Expires = expires.ToLocalTime(),
+                Secure = true,
                 //IsEssential = true,
-                //SameSite = SameSiteMode.None
+                SameSite = SameSiteMode.None,
             };
 
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
         }
 
-        [HttpGet("RenewTokens")]
+        [HttpGet("/RenewTokens")]
         public async Task<IActionResult> RenewTokens()
         {
             var refreshToken = Request.Cookies["refreshToken"];
+            if (refreshToken is null)
+                return Unauthorized();
 
-            var result = await authManger.RenewTokens(refreshToken);
+            var result = await _authManger.RenewTokens(refreshToken);
 
             if (!result.IsAuthenticated)
+                return BadRequest(result);
+
+            if (result.RefreshToken is null)
                 return BadRequest(result);
 
             // Add new refreshToken to the cookies
@@ -97,7 +104,7 @@ namespace MedicaRental.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("revokeToken")]
+        [HttpPost("/revokeToken")]
         public async Task<IActionResult> RevokeToken([FromBody] RevokeRefreshTokenDto model)
         {
             // Recive the token from body OR cookies
@@ -107,7 +114,7 @@ namespace MedicaRental.API.Controllers
             if (string.IsNullOrEmpty(token))
                 return BadRequest("Token is required!");
 
-            var result = await authManger.RevokeTokenAsync(token);
+            var result = await _authManger.RevokeTokenAsync(token);
 
             if (!result)
                 return BadRequest("Token is invalid!");
