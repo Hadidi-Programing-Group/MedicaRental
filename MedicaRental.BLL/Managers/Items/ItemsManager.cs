@@ -291,7 +291,9 @@ public class ItemsManager : IItemsManager
 
             var count = await _unitOfWork.Items.GetCountAsync
                 (
-                    i => i.IsListed && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                    i => i.IsListed && ((categories.Count() == 0 && subCategories.Count() == 0 && brands.Count() == 0)
+                    || categories.Contains(i.CategoryId) || subCategories.Contains(i.SubCategoryId) || brands.Contains(i.BrandId)) &&
+                    (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
                 );
 
             return new(data, count);
@@ -429,7 +431,7 @@ public class ItemsManager : IItemsManager
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
-                    predicate: i => i.IsListed,
+                    predicate: i => i.IsListed && categoryIds.Contains(i.CategoryId),
                     include: ItemHelper.HomeDtoInclude,
                     skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
                     take: SharedHelper.Take

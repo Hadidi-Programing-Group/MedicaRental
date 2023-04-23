@@ -23,5 +23,6 @@ public class ClientEntityTypeConfiguration : IEntityTypeConfiguration<Client>
 
         builder.Property(c => c.NationalIdImage).HasColumnType("image").IsRequired(true);
         builder.Property(c => c.UnionCardImage).HasColumnType("image").IsRequired(true);
+        builder.Property(c => c.ProfileImage).HasColumnType("image").IsRequired(false);
     }
 }

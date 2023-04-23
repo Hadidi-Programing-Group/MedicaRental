@@ -39,6 +39,11 @@ BEGIN
 	Set @s = LOWER(@s) 
 	Set @t = LOWER(@t)
 	
+    IF(CHARINDEX(@t,@s) > 0)
+	BEGIN
+		Return 0
+	END
+
     DECLARE @distance int = 0 
           , @v0 nvarchar(4000)
           , @start int = 1    
@@ -179,6 +184,28 @@ END
                 UnionCardImage = Base64StringImage
             });
         }
+
+        // Seed Client 3
+        ClientRegisterStatusDto client03;
+        if (userManager.FindByEmailAsync("client03@client.com").Result == null)
+        {
+            client02 = await _clientsManager.RegisterNewUserAsync(new ClientRegisterInfoDto
+            {
+                BaseUserRegisterInfo = new BaseUserRegisterInfoDto
+                {
+                    FirstName = "client03",
+                    LastName = "client03",
+                    PhoneNumber = "01289194183",
+                    Email = "client03@client.com",
+                    Password = "Pa$$w0rd",
+                    UserRole = UserRoles.Client
+                },
+                SSN = "29104242703511",
+                Address = "Address",
+                NationalIdImage = Base64StringImage,
+                UnionCardImage = Base64StringImage
+            });
+        }
         #endregion
 
         #region SeedCategory
@@ -252,6 +279,7 @@ END
         #region SeedItems
         var client1 = await userManager.FindByEmailAsync("client01@client.com");
         var client2 = await userManager.FindByEmailAsync("client02@client.com");
+        var client3 = await userManager.FindByEmailAsync("client03@client.com");
 
         var itemList = (await _unitOfWork.Items.GetAllAsync()).ToList();
 
@@ -895,6 +923,21 @@ END
                     SenderId = client1.Id,
                     Timestamp = DateTime.Now,
                 },
+                new()
+                {
+                    Content = "Hi3",
+                    ReceiverId = client2.Id,
+                    SenderId = client3.Id,
+                    Timestamp = DateTime.Now,
+                },
+                new()
+                {
+                    Content = "Hi4",
+                    ReceiverId = client3.Id,
+                    SenderId = client2.Id,
+                    Timestamp = DateTime.Now,
+                },
+
             };
             await _unitOfWork.Messages.AddRangeAsync(messagesList);
             _unitOfWork.Save();

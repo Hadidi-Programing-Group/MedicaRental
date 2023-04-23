@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230419191148_combinedMigrations")]
-    partial class combinedMigrations
+    [Migration("20230423014721_AddedProfileImage")]
+    partial class AddedProfileImage
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -154,6 +154,9 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("image");
 
+                    b.Property<byte[]>("ProfileImage")
+                        .HasColumnType("image");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
@@ -260,6 +263,9 @@ namespace MedicaRental.DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<int>("MesssageStatus")
+                        .HasColumnType("int");
+
                     b.Property<string>("ReceiverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -275,7 +281,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("ReceiverId");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("SenderId", "ReceiverId");
 
                     b.ToTable("Messages");
                 });
