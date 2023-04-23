@@ -115,5 +115,25 @@ namespace MedicaRental.BLL.Managers
             }
             catch (Exception) { return null; }
         }
+
+        public async Task<ItemHasBeenRentedToUserDto> GetRentingStatus(string userId, Guid ItemId)
+        {
+            var RentOps = await _unitOfWork.RentOperations.FindAllAsync
+                (
+                   predicate: ro => ro.ClientId == userId && ro.ItemId == ItemId
+                );
+            if(RentOps is null)
+            {
+                return new ItemHasBeenRentedToUserDto(isRented:false);
+            }
+
+            foreach(var rentOp in RentOps)
+            {
+                if(rentOp.ReviewId is null)
+                    return new ItemHasBeenRentedToUserDto(isRented: true);
+            }
+
+            return new ItemHasBeenRentedToUserDto(isRented: false);
+        }
     }
 }
