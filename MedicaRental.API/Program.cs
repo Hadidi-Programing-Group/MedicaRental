@@ -153,7 +153,7 @@ builder.Services.AddScoped<IAuthManger, AuthManger>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
+        builder => builder.WithOrigins("http://localhost:55858")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
