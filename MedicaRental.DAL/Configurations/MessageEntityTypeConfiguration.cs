@@ -14,6 +14,9 @@ public class MessageEntityTypeConfiguration : IEntityTypeConfiguration<Message>
     public void Configure(EntityTypeBuilder<Message> builder)
     {
         builder.HasKey(m => m.Id);
+
+        builder.HasIndex(c => new { c.SenderId, c.ReceiverId });
+
         builder.HasOne(m => m.Sender)
         .WithMany(c => c.SentMessages)
         .HasForeignKey(m => m.SenderId)
