@@ -2,9 +2,7 @@
 using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
-using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +22,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PageDto<HomeItemDto>>> GetAllItems(int page, string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetAllItems(int page, string? orderBy, string? searchText, [FromQuery] IEnumerable<Guid> categories, [FromQuery] IEnumerable<Guid> subCategories, [FromQuery] IEnumerable<Guid> brands)
         {
-            var items = await _itemsManager.GetAllItemsAsync(page, orderBy);
+            var items = await _itemsManager.GetAllItemsAsync(page, orderBy, searchText, categories, subCategories, brands);
 
             if (items is null) return BadRequest();
 
@@ -34,25 +32,46 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("seller/{sellerId}")]
-        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySeller(string sellerId, int page, string? orderBy)
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySeller(string sellerId, int page, string? orderBy, string? searchText)
         {
-            var items = await _itemsManager.GetItemsBySellerAsync(sellerId, page, orderBy);
+            var items = await _itemsManager.GetItemsBySellerAsync(sellerId, page, orderBy, searchText);
 
             if (items is null) return BadRequest();
 
             return Ok(items);
         }
 
-        [HttpGet("search")]
-        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySearch(string searchText, int page, string? orderBy)
+        [HttpGet("listed")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy, string? searchText)
         {
-            var items = await _itemsManager.GetItemsBySearchAsync(searchText, page, orderBy);
+            var userId = _userManager.GetUserId(User);
+
+            if (userId == null) return StatusCode(500);
+
+            var items = await _itemsManager.GetListedItemsAsync(userId, page, orderBy, searchText);
 
             if (items is null) return BadRequest();
 
             return Ok(items);
         }
 
+        [HttpGet("unlisted")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy, string? searchText)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (userId == null) return StatusCode(500);
+
+            var items = await _itemsManager.GetUnListedItemsAsync(userId, page, orderBy, searchText);
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
+        }
+
+        #region To be removed
         [HttpGet("category/{categoryId}")]
         public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsByCategory(Guid categoryId, int page, string? orderBy)
         {
@@ -112,7 +131,9 @@ namespace MedicaRental.API.Controllers
 
             return Ok(items);
         }
+        #endregion
 
+        #region Single Item
         [HttpGet("{id}")]
         public async Task<ActionResult<HomeItemDto>> FindItem(Guid id)
         {
@@ -122,7 +143,7 @@ namespace MedicaRental.API.Controllers
 
             return Ok(item);
         }
-        
+
         [HttpGet("forseller/{id}")]
         public async Task<ActionResult<SellerItemDto>> FindItemForSeller(Guid id)
         {
@@ -132,7 +153,7 @@ namespace MedicaRental.API.Controllers
 
             return Ok(item);
         }
-        
+
         [HttpGet("forrenter/{id}")]
         public async Task<ActionResult<RenterItemDto>> FindItemForRenter(Guid id)
         {
@@ -142,43 +163,45 @@ namespace MedicaRental.API.Controllers
 
             return Ok(item);
         }
-        
+        #endregion
+
+        #region CUD
         [HttpPost("one")]
         public async Task<ActionResult<StatusDto>> AddItem(AddItemDto item)
         {
             return await _itemsManager.AddItemAsync(item);
         }
-        
+
         [HttpPost("many")]
         public async Task<ActionResult<StatusDto>> AddItems(IEnumerable<AddItemDto> items)
         {
             return await _itemsManager.AddItemsAsync(items);
         }
-        
+
         [HttpPut("one")]
         public async Task<ActionResult<StatusDto>> UpdateItem(UpdateItemDto item)
         {
             return await _itemsManager.UpdateItem(item);
         }
-        
+
         [HttpPut("many")]
         public async Task<ActionResult<StatusDto>> UpdateItems(IEnumerable<UpdateItemDto> items)
         {
             return await _itemsManager.UpdateItems(items);
         }
-        
+
         [HttpDelete("one")]
         public async Task<ActionResult<StatusDto>> DeleteItem(Guid id)
         {
             return await _itemsManager.DeleteItem(id);
         }
-        
+
         [HttpDelete("many")]
         public async Task<ActionResult<StatusDto>> DeleteItems(IEnumerable<Guid> ids)
         {
             return await _itemsManager.DeleteItems(ids);
         }
-        
+
         [HttpPut("unlist/{itemId}")]
         public async Task<ActionResult<StatusDto>> UnListItem(Guid itemId)
         {
@@ -190,35 +213,6 @@ namespace MedicaRental.API.Controllers
         {
             return await _itemsManager.ReListItem(itemId);
         }
-
-        [HttpGet("listed")]
-        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
-        public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy, string? searchText)
-        {
-            var userId = _userManager.GetUserId(User);
-
-            if (userId == null) return StatusCode(500);
-            
-            var items = await _itemsManager.GetListedItemsAsync(userId, page, orderBy, searchText);
-
-            if (items is null) return BadRequest();
-
-            return Ok(items);
-        }
-
-        [HttpGet("unlisted")]
-        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
-        public async Task<ActionResult<PageDto<ListItemDto>>?> GetUnListedItems(int page, string? orderBy, string? searchText)
-        {
-            var userId = _userManager.GetUserId(User);
-
-            if (userId == null) return StatusCode(500);
-
-            var items = await _itemsManager.GetUnListedItemsAsync(userId, page, orderBy, searchText);
-
-            if (items is null) return BadRequest();
-
-            return Ok(items);
-        }
+        #endregion
     }
 }

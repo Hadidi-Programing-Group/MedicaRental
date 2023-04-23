@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class combinedMigrations : Migration
+    public partial class AddedProfileImage : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -193,6 +193,7 @@ namespace MedicaRental.DAL.Migrations
                     IsGrantedRent = table.Column<bool>(type: "bit", nullable: false),
                     NationalIdImage = table.Column<byte[]>(type: "image", nullable: false),
                     UnionCardImage = table.Column<byte[]>(type: "image", nullable: false),
+                    ProfileImage = table.Column<byte[]>(type: "image", nullable: true),
                     Rating = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -234,6 +235,7 @@ namespace MedicaRental.DAL.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    MesssageStatus = table.Column<int>(type: "int", nullable: false),
                     SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -501,9 +503,9 @@ namespace MedicaRental.DAL.Migrations
                 column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_SenderId",
+                name: "IX_Messages_SenderId_ReceiverId",
                 table: "Messages",
-                column: "SenderId");
+                columns: new[] { "SenderId", "ReceiverId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_RentOperations_ClientId",

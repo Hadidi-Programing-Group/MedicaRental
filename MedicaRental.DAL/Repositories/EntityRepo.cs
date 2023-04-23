@@ -51,8 +51,7 @@ namespace MedicaRental.DAL.Repositories
             if (entity is null)
                 return false;
 
-            Delete(entity);
-            return true;
+            return Delete(entity);
         }
 
         public async Task<bool> DeleteManyById<TypeId>(IEnumerable<TypeId> ids)

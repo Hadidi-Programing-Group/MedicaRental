@@ -4,6 +4,7 @@ using MedicaRental.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    partial class MedicaRentalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230423072756_AddRefreshTokenTable")]
+    partial class AddRefreshTokenTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,9 +154,6 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("image");
 
-                    b.Property<byte[]>("ProfileImage")
-                        .HasColumnType("image");
-
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
@@ -261,9 +260,6 @@ namespace MedicaRental.DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("MesssageStatus")
-                        .HasColumnType("int");
-
                     b.Property<string>("ReceiverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -279,7 +275,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("ReceiverId");
 
-                    b.HasIndex("SenderId", "ReceiverId");
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
                 });

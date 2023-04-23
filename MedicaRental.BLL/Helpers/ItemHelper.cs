@@ -1,19 +1,9 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.DAL.Models;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
-using System.Xml.Linq;
-using MedicaRental.DAL.UnitOfWork;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
+using MedicaRental.DAL.Context;
 
 namespace MedicaRental.BLL.Helpers
 {
@@ -45,10 +35,10 @@ namespace MedicaRental.BLL.Helpers
             i.Stock,
             i.Rating,
             i.Price,
-            new(i.Brand!.Id,i.Brand.Name,i.Brand.CountryOfOrigin),
+            new(i.Brand!.Id, i.Brand.Name, i.Brand.CountryOfOrigin),
             new(i.Category!.Id, i.Category.Name),
             new(i.SubCategory!.Id, i.SubCategory.Name),
-            i.Reviews.Select( r => new ReviewBaseDto(r.Id, r.Rating, r.ClientReview, r.Client!.Name)),
+            i.Reviews.Select(r => new ReviewBaseDto(r.Id, r.Rating, r.ClientReview, r.Client!.Name)),
             Convert.ToBase64String(i.Image!)
          );
 
@@ -97,40 +87,34 @@ namespace MedicaRental.BLL.Helpers
         .Include(i => i.Category).Include(i => i.SubCategory).Include(i => i.Reviews);
 
 
-        public static Func<IQueryable<Item>, IOrderedQueryable<Item>>? GetOrderByQuery(string? orderBy)
+        public static Func<IQueryable<Item>, IOrderedQueryable<Item>>? GetOrderByQuery(string? orderBy, string? searchText)
         {
-            Func<IQueryable<Item>, IOrderedQueryable<Item>>? orderQuery = orderBy switch
+            if (searchText is null)
+                return orderBy switch
+                {
+                    null => null,
+                    SharedHelper.HighToLow => new(q => q.OrderByDescending(i => i.Price)),
+                    SharedHelper.LowToHigh => new(q => q.OrderBy(i => i.Price)),
+                    SharedHelper.RateDesc => new(q => q.OrderByDescending(i => i.Rating)),
+                    SharedHelper.RateAsc => new(q => q.OrderBy(i => i.Rating)),
+                    DateCreatedDesc => new(q => q.OrderByDescending(i => i.CreationDate)),
+                    DateCreatedAsc => new(q => q.OrderBy(i => i.CreationDate)),
+                    _ => throw new ArgumentException()
+                };
+
+            return orderBy switch
             {
-                null => null,
-                SharedHelper.HighToLow => new(q => q.OrderByDescending(i => i.Price)),
-                SharedHelper.LowToHigh => new(q => q.OrderBy(i => i.Price)),
-                SharedHelper.RateDesc => new(q => q.OrderByDescending(i => i.Rating)),
-                SharedHelper.RateAsc => new(q => q.OrderBy(i => i.Rating)),
-                DateCreatedDesc => new(q => q.OrderByDescending(i => i.CreationDate)),
-                DateCreatedAsc => new(q => q.OrderBy(i => i.CreationDate)),
+                null => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance))),
+                SharedHelper.HighToLow => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.Price)),
+                SharedHelper.LowToHigh => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i => i.Price)),
+                SharedHelper.RateDesc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.Rating)),
+                SharedHelper.RateAsc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i => i.Rating)),
+                DateCreatedDesc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.CreationDate)),
+                DateCreatedAsc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i => i.CreationDate)),
                 _ => throw new ArgumentException()
             };
-
-            return orderQuery;
         }
 
-        public static Func<IQueryable<Item>, IOrderedQueryable<Item>>? GetOrderByQueryForSearch(string? orderBy, string searchText)
-        {
-            Func<IQueryable<Item>, IOrderedQueryable<Item>>? orderQuery = orderBy switch
-            {
-                null => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText))),
-                SharedHelper.HighToLow => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenByDescending(i => i.Price)),
-                SharedHelper.LowToHigh => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenBy(i => i.Price)),
-                SharedHelper.RateDesc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenByDescending(i => i.Rating)),
-                SharedHelper.RateAsc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenBy(i => i.Rating)),
-                DateCreatedDesc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenByDescending(i => i.CreationDate)),
-                DateCreatedAsc => new(q => q.OrderByDescending(i => SharedHelper.LevDistance(i.Name, searchText)).ThenBy(i => i.CreationDate)),
-                _ => throw new ArgumentException()
-            };
-
-            return orderQuery;
-        }
-    
         public static Item MapAddDto(AddItemDto item)
         {
             return new()

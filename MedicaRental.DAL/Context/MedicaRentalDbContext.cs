@@ -26,9 +26,13 @@ namespace MedicaRental.DAL.Context
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.HasDbFunction(typeof(MedicaRentalDbContext).GetMethod(nameof(LevDist), new[] { typeof(string), typeof(string), typeof(int?)})!)
+            .HasName("LevenshteinDistance");
 
             builder.ApplyConfiguration(new ItemEntityTypeConfiguration());
             builder.ApplyConfiguration(new ClientEntityTypeConfiguration());
@@ -40,67 +44,7 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new RentOperationEntityTypeConfiguration());
         }
 
-        public override void RemoveRange(IEnumerable<object> entities)
-        {
-            foreach (var entity in entities)
-            {
-                if (entity is ISoftDeletable deletable)
-                {
-                    deletable.IsDeleted = true;
-                    Entry(deletable).State = EntityState.Modified;
-                }
-                else
-                {
-                    Entry(entity).State = EntityState.Deleted;
-                }
-            }
-        }
-
-        public override void RemoveRange(params object[] entities)
-        {
-            foreach (var entity in entities)
-            {
-                if (entity is ISoftDeletable deletable)
-                {
-                    deletable.IsDeleted = true;
-                    Entry(deletable).State = EntityState.Modified;
-                }
-                else
-                {
-                    Entry(entity).State = EntityState.Deleted;
-                }
-            }
-        }
-        
-        public override EntityEntry Remove(object entity)
-        {
-            if (entity is ISoftDeletable deletable)
-            {
-                deletable.IsDeleted = true;
-                Entry(deletable).State = EntityState.Modified;
-
-                return Entry(entity);
-            }
-            else
-            {
-                return base.Remove(entity);
-            }
-        }
-
-        public override EntityEntry<TEntity> Remove<TEntity>(TEntity entity)
-        {
-            if (entity is ISoftDeletable deletable)
-            {
-                deletable.IsDeleted = true;
-                Entry(deletable).State = EntityState.Modified;
-
-                return Entry(entity);
-            }
-            else
-            {
-                return base.Remove(entity);
-            }
-        }
+        public static int LevDist (string s1, string? s2, int? maxDistance) => throw new NotSupportedException();
 
         public async Task UpdateDailyRatings()
         {
@@ -117,6 +61,26 @@ namespace MedicaRental.DAL.Context
             var averageRating = await  Reviews.Where(r => r.ItemId == id).AverageAsync(r => r.Rating);
 
             return  (int)averageRating;
+        }
+
+        public override int SaveChanges()
+        {
+            HandleSoftDelete();
+            return base.SaveChanges();
+        }
+
+        private void HandleSoftDelete()
+        {
+            var entities = ChangeTracker.Entries()
+                                .Where(e => e.State == EntityState.Deleted);
+            foreach (var entity in entities)
+            {
+                if (entity.Entity is ISoftDeletable softDeletable)
+                {
+                    entity.State = EntityState.Modified;
+                    softDeletable.IsDeleted = true;
+                }
+            }
         }
     }
 }

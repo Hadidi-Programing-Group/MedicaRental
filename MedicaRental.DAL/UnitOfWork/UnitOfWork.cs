@@ -24,6 +24,9 @@ public class UnitOfWork : IUnitOfWork
     private IEntityRepo<Review>? _reviews;
     private IEntityRepo<Brand>? _brands;
     private IEntityRepo<RentOperation>? _rentOperations;
+
+    private IEntityRepo<RefreshToken>? _refreshToken;
+
     #endregion
 
     public UnitOfWork(MedicaRentalDbContext context)
@@ -46,6 +49,8 @@ public class UnitOfWork : IUnitOfWork
     public IEntityRepo<Review> Reviews => _reviews ??= new ReviewsRepo(_context);
     public IEntityRepo<Brand> Brands => _brands ??= new BrandsRepo(_context);
     public IEntityRepo<RentOperation> RentOperations => _rentOperations ??= new RentOperationsRepo(_context);
+    public IEntityRepo<RefreshToken> RefreshToken => _refreshToken ??= new RefreshTokenRepo(_context);
+
     #endregion
 
     private bool disposed = false;

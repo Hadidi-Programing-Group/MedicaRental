@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.BLL.Dtos.Message
+namespace MedicaRental.DAL.Repositories;
+
+public interface IRefreshTokenRepo
 {
-    internal class Tmp
-    {
-    }
 }

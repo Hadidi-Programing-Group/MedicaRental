@@ -1,35 +1,25 @@
 ﻿using MedicaRental.DAL.UnitOfWork;
 using MedicaRental.BLL.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using MedicaRental.DAL.Models;
-using static System.Net.Mime.MediaTypeNames;
-using System.Collections;
-using System.Diagnostics.Metrics;
-using System.Diagnostics;
-using System.Xml.Linq;
 using System.Net;
 using MedicaRental.BLL.Helpers;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using MedicaRental.DAL.Repositories;
+using MedicaRental.DAL.Context;
 
 namespace MedicaRental.BLL.Managers;
 
 public class ItemsManager : IItemsManager
 {
     private readonly IUnitOfWork _unitOfWork;
+    public delegate bool Sda(string name, string text);
 
     public ItemsManager(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
 
-
+    #region CUD
     public async Task<StatusDto> AddItemAsync(AddItemDto item)
     {
         Item _item = ItemHelper.MapAddDto(item);
@@ -86,7 +76,7 @@ public class ItemsManager : IItemsManager
         if (item.IsListed)
             return new StatusDto("Can't delete a listed item.", HttpStatusCode.BadRequest);
 
-        var hasRenters = ((IItemsRepo)_unitOfWork).HasRenters(item);
+        var hasRenters = ((IItemsRepo)(_unitOfWork.Items)).HasRenters(item);
 
         if (hasRenters)
             return new StatusDto("Can't delete an item that has active renters.", HttpStatusCode.BadRequest);
@@ -187,6 +177,58 @@ public class ItemsManager : IItemsManager
         }
     }
 
+    public async Task<StatusDto> UnListItem(Guid id)
+    {
+        var item = await _unitOfWork.Items.FindAsync(
+            predicate: i => i.Id == id,
+            disableTracking: false);
+
+        if (item == null)
+            return new("Item not found", HttpStatusCode.NotFound);
+
+        if (item.IsListed)
+        {
+            try
+            {
+                item.IsListed = false;
+                _unitOfWork.Save();
+            }
+            catch (Exception ex)
+            {
+                return new($"Item couldn't be updated.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        return new("Item unlisted successfully", HttpStatusCode.NoContent);
+    }
+
+    public async Task<StatusDto> ReListItem(Guid id)
+    {
+        var item = await _unitOfWork.Items.FindAsync(
+            predicate: i => i.Id == id,
+            disableTracking: false);
+
+        if (item == null)
+            return new("Item not found", HttpStatusCode.NotFound);
+
+        if (!item.IsListed)
+        {
+            try
+            {
+                item.IsListed = true;
+                _unitOfWork.Save();
+            }
+            catch (Exception ex)
+            {
+                return new($"Item couldn't be updated.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        return new("Item relisted successfully", HttpStatusCode.NoContent);
+    }
+    #endregion
+
+    #region Single Item
     public async Task<HomeItemDto?> FindItemAsync(Guid id)
     {
         try
@@ -228,19 +270,126 @@ public class ItemsManager : IItemsManager
         }
         catch (Exception) { return null; }
     }
+    #endregion
 
-    public async Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy)
+    public async Task<PageDto<HomeItemDto>?> GetAllItemsAsync(int page, string? orderBy, string? searchText, IEnumerable<Guid> categories, IEnumerable<Guid> subCategories, IEnumerable<Guid> brands)
     {
-        Console.WriteLine(page);
         try
         {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, searchText);
+            var data = await _unitOfWork.Items.FindAllAsync
+                (
+                    predicate: i => i.IsListed && ((categories.Count() == 0 && subCategories.Count() == 0 && brands.Count() == 0)
+                    || categories.Contains(i.CategoryId) || subCategories.Contains(i.SubCategoryId) || brands.Contains(i.BrandId)) &&
+                    (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
+                    take: SharedHelper.Take
+                );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    i => i.IsListed && ((categories.Count() == 0 && subCategories.Count() == 0 && brands.Count() == 0)
+                    || categories.Contains(i.CategoryId) || subCategories.Contains(i.SubCategoryId) || brands.Contains(i.BrandId)) &&
+                    (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                );
+
+            return new(data, count);
+
+        }
+        catch (Exception) { return null; }
+    }
+
+    public async Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy, string? searchText)
+    {
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, searchText);
+            var data = await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.ListedDtoSelector,
+                    predicate: i => i.IsListed && userId == i.SellerId && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                    include: ItemHelper.ListedDtoInclude,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
+                    take: SharedHelper.Take
+                );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => i.IsListed && userId == i.SellerId && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                );
+
+            return new(data, count);
+        }
+        catch (Exception) { return null; }
+    }
+
+    public async Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy, string? searchText)
+    {
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, searchText);
+            var data = await _unitOfWork.Items.FindAllAsync
+            (
+                orderBy: orderByQuery,
+                selector: ItemHelper.ListedDtoSelector,
+                predicate: i => !i.IsListed && userId == i.SellerId && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                include: ItemHelper.ListedDtoInclude,
+                skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
+                take: SharedHelper.Take
+            );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => !i.IsListed && userId == i.SellerId && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                );
+            return new(data, count);
+
+        }
+        catch (Exception) { return null; }
+    }
+
+    public async Task<PageDto<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, int page, string? orderBy, string? searchText)
+    {
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, searchText);
+            var data = await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => i.IsListed && sellerId == i.SellerId && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                    include: ItemHelper.HomeDtoInclude,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
+                    take: SharedHelper.Take
+                );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    predicate: i => i.IsListed && sellerId == i.SellerId && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                );
+
+            return new(data, count);
+        }
+        catch (Exception) { return null; }
+    }
+
+    #region May be removed
+    public async Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy)
+    {
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, null);
+
             var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.RenterDtoSelector,
                     include: ItemHelper.RenterDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -250,18 +399,17 @@ public class ItemsManager : IItemsManager
         }
         catch (Exception) { return null; }
     }
-
     public async Task<PageDto<SellerItemDto>?> GetAllItemsForSellerAsync(int page, string? orderBy)
     {
         try
         {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, null);
             var data = await _unitOfWork.Items.GetAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.SellerDtoSelector,
                     include: ItemHelper.SellerDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -271,40 +419,21 @@ public class ItemsManager : IItemsManager
         }
         catch (Exception) { return null; }
     }
-    
-    public async Task<PageDto<HomeItemDto>?> GetAllItemsAsync(int page, string? orderBy)
-    {
-        try
-        {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            var data = await _unitOfWork.Items.FindAllAsync
-                (
-                    orderBy: orderByQuery,
-                    selector: ItemHelper.HomeDtoSelector,
-                    include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
-                    take: SharedHelper.Take
-                );
+    #endregion
 
-            var count = await _unitOfWork.Items.GetCountAsync();
-
-            return new(data, count);
-        }
-        catch (Exception) { return null; }
-    }
-
+    #region to be removed
     public async Task<PageDto<HomeItemDto>?> GetItemsByCategoriesAsync(IEnumerable<Guid> categoryIds, int page, string? orderBy)
     {
         try
         {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, null);
             var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
-                    predicate: i => categoryIds.Contains(i.CategoryId) && i.IsListed,
+                    predicate: i => i.IsListed && categoryIds.Contains(i.CategoryId),
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -322,14 +451,14 @@ public class ItemsManager : IItemsManager
     {
         try
         {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, null);
             var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => categoryId == i.CategoryId && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -343,71 +472,21 @@ public class ItemsManager : IItemsManager
         catch (Exception) { return null; }
     }
 
-    public async Task<PageDto<HomeItemDto>?> GetItemsBySearchAsync(string searchText, int page, string? orderBy)
-    {
-        try
-        {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            var data = await _unitOfWork.Items.FindAllAsync
-                (
-                    orderBy: orderByQuery,
-                    selector: ItemHelper.HomeDtoSelector,
-                    predicate: i => i.Name.Contains(searchText) && i.IsListed,
-                    include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
-                    take: SharedHelper.Take
-                );
-
-            var count = await _unitOfWork.Items.GetCountAsync
-                (
-                    predicate: i => i.Name.Contains(searchText)
-                );
-
-            return new(data, count);
-        }
-        catch (Exception) { return null; }
-    }
-
-    public async Task<PageDto<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, int page, string? orderBy)
-    {
-        try
-        {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            var data = await _unitOfWork.Items.FindAllAsync
-                (
-                    orderBy: orderByQuery,
-                    selector: ItemHelper.HomeDtoSelector,
-                    predicate: i => sellerId == i.SellerId && i.IsListed,
-                    include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
-                    take: SharedHelper.Take
-                );
-
-            var count = await _unitOfWork.Items.GetCountAsync
-                (
-                    predicate: i => sellerId == i.SellerId
-                );
-
-            return new(data, count);
-        }
-        catch (Exception) { return null; }
-    }
-
     public async Task<PageDto<HomeItemDto>?> GetItemsBySubCategoriesAsync(IEnumerable<Guid> subcategoryIds, int page, string? orderBy)
     {
         try
         {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, null);
             var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => subcategoryIds.Contains(i.SubCategoryId) && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
-            
+
             var count = await _unitOfWork.Items.GetCountAsync
                 (
                     predicate: i => subcategoryIds.Contains(i.SubCategoryId)
@@ -422,14 +501,14 @@ public class ItemsManager : IItemsManager
     {
         try
         {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, null);
             var data = await _unitOfWork.Items.FindAllAsync
                 (
                     orderBy: orderByQuery,
                     selector: ItemHelper.HomeDtoSelector,
                     predicate: i => subcategoryId == i.SubCategoryId && i.IsListed,
                     include: ItemHelper.HomeDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
                     take: SharedHelper.Take
                 );
 
@@ -442,104 +521,5 @@ public class ItemsManager : IItemsManager
         }
         catch (Exception) { return null; }
     }
-
-    public async Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy, string? searchText)
-    {
-        try
-        {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            var data = await _unitOfWork.Items.FindAllAsync
-                (
-                    orderBy: orderByQuery,
-                    selector: ItemHelper.ListedDtoSelector,
-                    predicate: i => userId == i.SellerId && i.IsListed && (searchText == null || i.Name.Contains(searchText)),
-                    include: ItemHelper.ListedDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
-                    take: SharedHelper.Take
-                );
-
-            var count = await _unitOfWork.Items.GetCountAsync
-                (
-                    predicate: i => userId == i.SellerId && i.IsListed && (searchText == null || i.Name.Contains(searchText))
-                );
-
-            return new(data, count);
-        }
-        catch (Exception) { return null; }
-    }
-    
-    public async Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy, string? searchText)
-    {
-        try
-        {
-            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy);
-            var data = await _unitOfWork.Items.FindAllAsync
-                (
-                    orderBy: orderByQuery,
-                    selector: ItemHelper.ListedDtoSelector,
-                    predicate: i => userId == i.SellerId && !i.IsListed && (searchText == null || i.Name.Contains(searchText)),
-                    include: ItemHelper.ListedDtoInclude,
-                    skip: page > 1 ? (page-1) * SharedHelper.Take : null,
-                    take: SharedHelper.Take
-                );
-
-            var count = await _unitOfWork.Items.GetCountAsync
-                (
-                    predicate: i => userId == i.SellerId && !i.IsListed && (searchText == null || i.Name.Contains(searchText))
-                );
-
-            return new(data, count);
-        }
-        catch (Exception) { return null; }
-    }
-
-    public async Task<StatusDto> UnListItem(Guid id)
-    {
-        var item = await _unitOfWork.Items.FindAsync(
-            predicate: i => i.Id == id,
-            disableTracking: false);
-
-        if (item == null)
-            return new("Item not found", HttpStatusCode.NotFound);
-
-        if (item.IsListed)
-        {
-            try
-            {
-                item.IsListed = false;
-                _unitOfWork.Save();
-            }
-            catch (Exception ex)
-            {
-                return new($"Item couldn't be updated.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
-            }
-        }
-
-        return new("Item unlisted successfully", HttpStatusCode.NoContent);
-    }
-    
-    public async Task<StatusDto> ReListItem(Guid id)
-    {
-        var item = await _unitOfWork.Items.FindAsync(
-            predicate: i => i.Id == id,
-            disableTracking: false);
-
-        if (item == null)
-            return new("Item not found", HttpStatusCode.NotFound);
-
-        if (!item.IsListed)
-        {
-            try
-            {
-                item.IsListed = true;
-                _unitOfWork.Save();
-            }
-            catch (Exception ex)
-            {
-                return new($"Item couldn't be updated.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
-            }
-        }
-
-        return new("Item unlisted successfully", HttpStatusCode.NoContent);
-    }
+    #endregion
 }

@@ -15,7 +15,7 @@ namespace MedicaRental.DAL.Models
 
         public bool IsSolved { get; set; } = false;
 
-        public DateTime CreatedDate { get; init; }
+        public DateTime CreatedDate { get; init; } = DateTime.UtcNow;
 
         public DateTime? SolveDate { get; set; }
 
