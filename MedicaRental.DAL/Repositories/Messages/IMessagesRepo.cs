@@ -10,7 +10,7 @@ namespace MedicaRental.DAL.Repositories;
 
 public interface IMessagesRepo
 {
-    public Task<IEnumerable<TResult>> GetChat<TResult>(string firstUserId, string secondUserId, Expression<Func<Message, TResult>> selector);
+    public Task<IEnumerable<TResult>> GetChat<TResult>(string firstUserId, string secondUserId, int upTo, Expression<Func<Message, TResult>> selector);
 
     public Task<IEnumerable<TResult>> GetUserChats<TResult>(string userId, int upTo, Expression<Func<IGrouping<string, Message>, TResult>> selector);
 }

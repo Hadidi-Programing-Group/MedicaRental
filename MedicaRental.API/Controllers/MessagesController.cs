@@ -23,9 +23,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("chat")]
-        public async Task<ActionResult<IEnumerable<MessageDto>>> GetChat(string firstUserId, string secondUserId, DateTime dateOpened)
+        public async Task<ActionResult<IEnumerable<MessageDto>>> GetChat(string firstUserId, string secondUserId, int upTo, DateTime dateOpened)
         {
-            return Ok(await _messagesManager.GetChat(firstUserId, secondUserId, dateOpened));
+            return Ok(await _messagesManager.GetChat(firstUserId, secondUserId, upTo, dateOpened));
         }
 
         [HttpGet("delete")]

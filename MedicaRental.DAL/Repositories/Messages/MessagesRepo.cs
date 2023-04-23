@@ -19,10 +19,10 @@ public class MessagesRepo : EntityRepo<Message>, IMessagesRepo
         _context = context;
     }
 
-    public async Task<IEnumerable<TResult>> GetChat<TResult>(string firstUserId, string secondUserId, Expression<Func<Message, TResult>> selector)
+    public async Task<IEnumerable<TResult>> GetChat<TResult>(string firstUserId, string secondUserId, int upTo, Expression<Func<Message, TResult>> selector)
     {
         return await _context.Messages
-            .Where(m => (m.SenderId == firstUserId && m.ReceiverId == secondUserId) || (m.ReceiverId == firstUserId && m.SenderId == secondUserId))
+            .Where(m => ((m.SenderId == firstUserId && m.ReceiverId == secondUserId) || (m.ReceiverId == firstUserId && m.SenderId == secondUserId)) && m.Timestamp > DateTime.Now.AddDays(-upTo)) 
             .OrderByDescending(m => m.Timestamp)
             .Select(selector).ToListAsync();
     }
