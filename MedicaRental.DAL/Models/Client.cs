@@ -19,6 +19,8 @@ namespace MedicaRental.DAL.Models
         
         public byte[]? UnionCardImage { get; set; }
 
+        public byte[]? ProfileImage { get; set; }
+
         public ICollection<Message> SentMessages { get; set; } = new List<Message>();
         
         public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
