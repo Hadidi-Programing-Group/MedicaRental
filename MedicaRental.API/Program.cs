@@ -2,6 +2,7 @@ using MedicaRental.API.DataSeeding;
 using MedicaRental.API.Services;
 using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
+using MedicaRental.BLL.Managers.Authentication;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -64,6 +65,12 @@ builder.Services
     .AddEntityFrameworkStores<MedicaRentalDbContext>();
 #endregion
 
+
+#region RefreshToken 
+
+builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
+
+#endregion
 #region Authentication Services
 builder.Services
     .AddAuthentication(opt =>
@@ -83,7 +90,9 @@ builder.Services
             //ValidAudience = builder.Configuration["JWT:Audience"],
             ValidateIssuer = false,
             ValidateAudience = false,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+            ValidateLifetime = true, // Checks expiry date.
+            ClockSkew = TimeSpan.Zero // Matches time.
         };
     });
 #endregion
@@ -135,6 +144,9 @@ builder.Services.AddScoped<IReviewsManager, ReviewsManager>();
 builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
 builder.Services.AddScoped<IRentOperationsManager, RentOperationsManager>();
+
+builder.Services.AddScoped<IAuthManger, AuthManger>();
+
 #endregion
 
 #region CORS Services
