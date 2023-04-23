@@ -66,8 +66,8 @@ namespace MedicaRental.API.Controllers
         {
             DeleteSubCategoryStatusDto DeleteStatus = await subCategoriesManager.DeleteByIdAsync(id);
             if (DeleteStatus.isDeleted)
-                return BadRequest(DeleteStatus.StatusMessage);
-            return NoContent();
+                   return NoContent();
+            return BadRequest(DeleteStatus.StatusMessage);
         }
     }
 }

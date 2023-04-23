@@ -55,8 +55,8 @@ namespace MedicaRental.API.Controllers
         {
             DeleteReviewStatusDto DeleteStatus = await _reviewssManager.DeleteByIdAsync(id);
             if (DeleteStatus.isDeleted)
-                return BadRequest(DeleteStatus.StatusMessage);
-            return NoContent();
+                  return NoContent();
+            return BadRequest(DeleteStatus.StatusMessage);
         }
     }
 }
