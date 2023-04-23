@@ -141,7 +141,7 @@ builder.Services.AddScoped<IRentOperationsManager, RentOperationsManager>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
+        builder => builder.WithOrigins("http://localhost:55858")
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
