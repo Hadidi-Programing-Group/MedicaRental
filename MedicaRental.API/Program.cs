@@ -1,3 +1,4 @@
+using MedicaRental.API;
 using MedicaRental.API.DataSeeding;
 using MedicaRental.API.Services;
 using MedicaRental.BLL.Dtos.Admin;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
@@ -94,6 +96,25 @@ builder.Services
             ValidateLifetime = true, // Checks expiry date.
             ClockSkew = TimeSpan.Zero // Matches time.
         };
+        opt.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                // If the request is for our hub...
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/hub")))
+                {
+
+                    // Read the token out of the query string
+                    Console.WriteLine($"Access Token : {accessToken}");
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 #endregion
 
@@ -164,6 +185,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddHostedService<DailyRatingCalculationService>();
 
 
+builder.Services.AddSignalR().AddJsonProtocol(options => {
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+}); 
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -187,11 +212,28 @@ app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.Use(async (context, next) =>
+{
+
+    if (context.User.Identity.IsAuthenticated)
+    {
+        // Set the user identity on the SignalR hub context
+        var claimsIdentity = (ClaimsIdentity)context.User.Identity;
+        var claims = claimsIdentity.Claims;
+
+        var user = new ClaimsPrincipal(claimsIdentity);
+
+        context.Items["User"] = user;
+    }
+    await next();
+
+});
+
 app.UseAuthorization();
 
 app.MapControllers();
 #endregion
-
+app.MapHub<TestHub>("/hub");
 app.MapGet("/", () => "Hello World");
 app.MapGet("/Hi", () => "GitHub Acctions Works !!");
 app.Run();
