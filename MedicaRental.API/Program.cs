@@ -1,13 +1,16 @@
+using MedicaRental.API;
 using MedicaRental.API.DataSeeding;
 using MedicaRental.API.Services;
 using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
+using MedicaRental.BLL.Managers.Authentication;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
@@ -64,6 +67,12 @@ builder.Services
     .AddEntityFrameworkStores<MedicaRentalDbContext>();
 #endregion
 
+
+#region RefreshToken 
+
+builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
+
+#endregion
 #region Authentication Services
 builder.Services
     .AddAuthentication(opt =>
@@ -83,7 +92,28 @@ builder.Services
             //ValidAudience = builder.Configuration["JWT:Audience"],
             ValidateIssuer = false,
             ValidateAudience = false,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+            ValidateLifetime = true, // Checks expiry date.
+            ClockSkew = TimeSpan.Zero // Matches time.
+        };
+        opt.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                // If the request is for our hub...
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/hub")))
+                {
+
+                    // Read the token out of the query string
+                    Console.WriteLine($"Access Token : {accessToken}");
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 #endregion
@@ -135,21 +165,29 @@ builder.Services.AddScoped<IReviewsManager, ReviewsManager>();
 builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
 builder.Services.AddScoped<IRentOperationsManager, RentOperationsManager>();
+
+builder.Services.AddScoped<IAuthManger, AuthManger>();
+
 #endregion
 
 #region CORS Services
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
+        builder => builder.WithOrigins("http://localhost:56923")
                           .AllowAnyHeader()
-                          .AllowAnyMethod());
+                          .AllowAnyMethod()
+                          .AllowCredentials());
 });
 #endregion
 
 
 builder.Services.AddHostedService<DailyRatingCalculationService>();
 
+
+builder.Services.AddSignalR().AddJsonProtocol(options => {
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+}); 
 
 var app = builder.Build();
 
@@ -174,11 +212,28 @@ app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.Use(async (context, next) =>
+{
+
+    if (context.User.Identity.IsAuthenticated)
+    {
+        // Set the user identity on the SignalR hub context
+        var claimsIdentity = (ClaimsIdentity)context.User.Identity;
+        var claims = claimsIdentity.Claims;
+
+        var user = new ClaimsPrincipal(claimsIdentity);
+
+        context.Items["User"] = user;
+    }
+    await next();
+
+});
+
 app.UseAuthorization();
 
 app.MapControllers();
 #endregion
-
+app.MapHub<TestHub>("/hub");
 app.MapGet("/", () => "Hello World");
 app.MapGet("/Hi", () => "GitHub Acctions Works !!");
 app.Run();

@@ -70,5 +70,14 @@ namespace MedicaRental.API.Controllers
 
             return Ok(operations);
         }
+
+        [HttpGet]
+        [Route("isrented/{itemId}")]
+        public async Task<ActionResult<ItemHasBeenRentedToUserDto>> GetIsItemRentedStatus (Guid itemId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var IsReturned = await _rentOperationsManager.GetRentingStatus(userId, itemId);
+            return IsReturned;
+        }
     }
 }

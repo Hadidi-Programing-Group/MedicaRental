@@ -3,6 +3,7 @@ using MedicaRental.BLL.Managers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Permissions;
 
 namespace MedicaRental.API.Controllers
 {
@@ -17,6 +18,15 @@ namespace MedicaRental.API.Controllers
         public AdminsController(IAdminsManager adminManger)
         {
             _adminManger = adminManger;
+        }
+
+        [HttpGet]
+        [Route("CheckAdminAcess")]
+        //[Authorize(Policy = "Admin")]
+        [Authorize]
+        public IActionResult GetData()
+        {
+            return Ok("You have access to AdminController");
         }
 
         [HttpPost]
@@ -42,5 +52,8 @@ namespace MedicaRental.API.Controllers
             // StatuesCode, and the full DTO object. 
             return StatusCode((int)result.StatusCode, result);
         }
+
+
+
     }
 }
