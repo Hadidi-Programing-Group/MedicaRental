@@ -98,10 +98,10 @@ namespace MedicaRental.BLL.Managers.Authentication
 
                 // Revoke any refreshTokens that are still active 
                 // (Secures Account against Hack)
-                foreach (var refreshtoken in user.RefreshTokens)
-                {
-                    refreshtoken.RevokedOn = DateTime.UtcNow;
-                }
+                //foreach (var refreshtoken in user.RefreshTokens)
+                //{
+                    refreshToken.RevokedOn = DateTime.Now;
+                //}
 
                 await _userManager.UpdateAsync(user);
 
