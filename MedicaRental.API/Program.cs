@@ -162,6 +162,7 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddHostedService<DailyRatingCalculationService>();
+builder.Services.AddHostedService<DailyClearTokenService>();
 
 
 var app = builder.Build();

@@ -93,7 +93,7 @@ public class ReportsManager : IReportsManager
                 IsSolved: report.IsSolved,
                 CreatedDate: report.CreatedDate,
                 SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
-                (Guid)report.MessageId, Guid.Empty, Guid.Empty);
+                report.MessageId, Guid.Empty, Guid.Empty);
                 reportDtos.Add(reportDto);
 
             }
@@ -118,7 +118,7 @@ public class ReportsManager : IReportsManager
                 IsSolved: report.IsSolved,
                 CreatedDate: report.CreatedDate,
                 SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
-                Guid.Empty, Guid.Empty,(Guid)report.ItemId );
+                Guid.Empty, Guid.Empty,report.ItemId );
                 reportDtos.Add(reportDto);
 
             }
@@ -142,7 +142,7 @@ public class ReportsManager : IReportsManager
                 IsSolved: report.IsSolved,
                 CreatedDate: report.CreatedDate,
                 SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
-                 Guid.Empty,(Guid)report.ReviewId ,Guid.Empty);
+                 Guid.Empty,report.ReviewId ,Guid.Empty);
                 reportDtos.Add(reportDto);
 
             }
