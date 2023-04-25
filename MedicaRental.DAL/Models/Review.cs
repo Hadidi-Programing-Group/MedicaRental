@@ -26,5 +26,9 @@ namespace MedicaRental.DAL.Models
         [ForeignKey("Item")]
         public Guid ItemId { get; set; }
         public Item? Item { get; set; }
+
+        [ForeignKey("RentOperation")]
+        public Guid RentOperationId { get; set; }
+        public RentOperation? RentOperation { get; set; } 
     }
 }

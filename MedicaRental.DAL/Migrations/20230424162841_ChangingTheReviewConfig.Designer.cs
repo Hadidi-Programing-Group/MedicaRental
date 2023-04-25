@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230423014721_AddedProfileImage")]
-    partial class AddedProfileImage
+    [Migration("20230424162841_ChangingTheReviewConfig")]
+    partial class ChangingTheReviewConfig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -326,8 +326,6 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("ReviewId");
-
                     b.HasIndex("SellerId");
 
                     b.ToTable("RentOperations");
@@ -418,6 +416,9 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("RentOperationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("SellerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -427,6 +428,9 @@ namespace MedicaRental.DAL.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("RentOperationId")
+                        .IsUnique();
 
                     b.HasIndex("SellerId");
 
@@ -590,6 +594,42 @@ namespace MedicaRental.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Context.AppUser", b =>
+                {
+                    b.OwnsMany("MedicaRental.DAL.Models.RefreshToken", "RefreshTokens", b1 =>
+                        {
+                            b1.Property<string>("AppUserId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
+
+                            b1.Property<DateTime>("CreatedOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime>("ExpiresOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("RevokedOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("Token")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("AppUserId", "Id");
+
+                            b1.ToTable("RefreshToken");
+
+                            b1.WithOwner()
+                                .HasForeignKey("AppUserId");
+                        });
+
+                    b.Navigation("RefreshTokens");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
                 {
                     b.HasOne("MedicaRental.DAL.Context.AppUser", "User")
@@ -669,10 +709,6 @@ namespace MedicaRental.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MedicaRental.DAL.Models.Review", "Review")
-                        .WithMany()
-                        .HasForeignKey("ReviewId");
-
                     b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
                         .WithMany()
                         .HasForeignKey("SellerId")
@@ -682,8 +718,6 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Item");
-
-                    b.Navigation("Review");
 
                     b.Navigation("Seller");
                 });
@@ -739,6 +773,12 @@ namespace MedicaRental.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MedicaRental.DAL.Models.RentOperation", "RentOperation")
+                        .WithOne("Review")
+                        .HasForeignKey("MedicaRental.DAL.Models.Review", "RentOperationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("MedicaRental.DAL.Models.Client", "Seller")
                         .WithMany("Reviews")
                         .HasForeignKey("SellerId")
@@ -748,6 +788,8 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Item");
+
+                    b.Navigation("RentOperation");
 
                     b.Navigation("Seller");
                 });
@@ -846,6 +888,11 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("ItemRenters");
 
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.RentOperation", b =>
+                {
+                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>

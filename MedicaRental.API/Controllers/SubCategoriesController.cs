@@ -69,5 +69,7 @@ namespace MedicaRental.API.Controllers
                    return NoContent();
             return BadRequest(DeleteStatus.StatusMessage);
         }
+
+
     }
 }
