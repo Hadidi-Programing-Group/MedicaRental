@@ -23,6 +23,7 @@ namespace MedicaRental.DAL.Context
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<Report> Reports => Set<Report>();
         public DbSet<RentOperation> RentOperations => Set<RentOperation>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 

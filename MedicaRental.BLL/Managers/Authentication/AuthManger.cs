@@ -113,9 +113,27 @@ namespace MedicaRental.BLL.Managers.Authentication
 
             //refreshToken.RevokedOn = DateTime.UtcNow;
 
-            var newRefreshToken = GenerateRefreshToken();
-            user.RefreshTokens?.Add(newRefreshToken);
-            await _userManager.UpdateAsync(user);
+            var activeRefreshToken = await _unitOfWork.RefreshToken.FindAsync(
+            predicate: t => t.AppUserId == user.Id && t.RevokedOn == null
+            );
+            if (activeRefreshToken is not null)
+            {
+                authModel.RefreshToken = activeRefreshToken.Token;
+                authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+            }
+            else
+            {
+                var newRefreshToken = GenerateRefreshToken();
+                authModel.RefreshToken = newRefreshToken.Token;
+                authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+                //Save to Database
+                user.RefreshTokens?.Add(newRefreshToken);
+                await _userManager.UpdateAsync(user);
+            }
+
+            //var newRefreshToken = GenerateRefreshToken();
+            //user.RefreshTokens?.Add(newRefreshToken);
+            //await _userManager.UpdateAsync(user);
 
             var jwtSecurityToken = await CreateJwtToken(user);
 
@@ -128,36 +146,32 @@ namespace MedicaRental.BLL.Managers.Authentication
             // This Access Token ExpiryDate will tell us when to call this action.
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
 
-            authModel.RefreshToken = newRefreshToken.Token;
-            authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
 
             return authModel;
         }
 
+
         public async Task<bool> RevokeTokenAsync(string token)
-        {
-            var user = await _userManager.Users.SingleOrDefaultAsync(
-                u => u.RefreshTokens.Any(t => t.Token == token)
-            );
+          {
 
-            if (user == null)
+            var refreshToken = await _unitOfWork.RefreshToken.FindAsync(
+                predicate: t => t.Token == token,
+                include: source => source
+                                    .Include(token => token.AppUser)
+                                    .ThenInclude(u => u.RefreshTokens),
+                disableTracking: false);
+
+            if (refreshToken?.IsActive != true)
                 return false;
 
-            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
 
-            if (!refreshToken.IsActive)
-                return false;
-
-
-            foreach (var refreshtoken in user.RefreshTokens)
+            foreach (var refreshtoken in refreshToken.AppUser.RefreshTokens)
             {
                 refreshtoken.RevokedOn = DateTime.UtcNow;
             }
 
-            await _userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(refreshToken.AppUser);
 
-            //refreshToken.RevokedOn = DateTime.UtcNow;
-            //await _userManager.UpdateAsync(user);
 
             return true;
         }

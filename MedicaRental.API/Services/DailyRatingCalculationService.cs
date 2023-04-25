@@ -23,25 +23,30 @@ public class DailyRatingCalculationService : BackgroundService
             {
                 // Get the DbContext from the service scope
                 var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
-
-                var items = await unitOfWork.Items.GetAllAsync(disableTracking: false);
-                var clients = await unitOfWork.Clients.GetAllAsync(disableTracking: false);
-                var reviews = await unitOfWork.Reviews.GetAllAsync();
-
-                // Update the ratings for all items
-                foreach (var item in items)
+                if (unitOfWork is not null)
                 {
-                    var itemsReviews = reviews.Where(r => r.ItemId == item.Id);
-                    item.Rating = itemsReviews.Any() ? (int)itemsReviews.Average(r => r.Rating) : 0;
+
+                    var items = await unitOfWork.Items.GetAllAsync(disableTracking: false);
+                    var clients = await unitOfWork.Clients.GetAllAsync(disableTracking: false);
+                    var reviews = await unitOfWork.Reviews.GetAllAsync();
+
+
+                    // Update the ratings for all items
+                    foreach (var item in items)
+                    {
+                        var itemsReviews = reviews.Where(r => r.ItemId == item.Id);
+                        item.Rating = itemsReviews.Any() ? (int)itemsReviews.Average(r => r.Rating) : 0;
+                    }
+
+                    foreach (var client in clients)
+                    {
+                        var itemsReviews = reviews.Where(r => r.ClientId == client.Id);
+                        client.Rating = itemsReviews.Any() ? (int)itemsReviews.Average(r => r.Rating) : 0;
+                    }
+
+                    unitOfWork.Save();
                 }
 
-                foreach (var client in clients)
-                {
-                    var itemsReviews = reviews.Where(r => r.ClientId == client.Id);
-                    client.Rating = itemsReviews.Any() ? (int)itemsReviews.Average(r => r.Rating) : 0;
-                }
-
-                unitOfWork.Save();
 
                 // Save changes to the database
             }
