@@ -37,6 +37,19 @@ namespace MedicaRental.API.Controllers
             return Ok(clients);
         }
 
+        [HttpGet]
+        [Route("GetAllClientsApprovalInfo")]
+        //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        public async Task<ActionResult<List<UserApprovalInfoDto>>> GetAllClientsApprovalInfo()
+        {
+            var approvalInfoList = await _clientsManager.GetAllClientsApprovalInfoAsync();
+
+            if (!approvalInfoList.Any()) return NotFound();
+
+            return Ok(approvalInfoList);
+        }
+
+
 
         [HttpGet]
         [Route("clientsNeedingApproval")]
@@ -52,16 +65,18 @@ namespace MedicaRental.API.Controllers
             return Ok(clients);
         }
 
+       
+
         [HttpGet]
-        [Route("GetAllClientsApprovalInfo")]
+        [Route("GetClientApprovalInfoWithId/{userId}")]
         //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
-        public async Task<ActionResult<List<UserApprovalInfoDto>>> GetAllClientsApprovalInfo()
+        public async Task<ActionResult<UserApprovalInfoWithIdDto>> GetClientApprovalInfoWithId(string userId)
         {
-            var approvalInfoList = await _clientsManager.GetAllClientsApprovalInfoAsync();
+            var approvalInfo = await _clientsManager.GetClientApprovalInfoWithIdAsync(userId);
 
-            if (!approvalInfoList.Any()) return NotFound();
+            if (approvalInfo is null) return NotFound();
 
-            return Ok(approvalInfoList);
+            return approvalInfo;
         }
 
 

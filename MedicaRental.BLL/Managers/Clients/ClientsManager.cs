@@ -30,51 +30,15 @@ public class ClientsManager : IClientsManager
         _userManager = userManager;
     }
 
-    public async Task<StatusDto> ApproveUserAsync(string email)
-    {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user is null)
-            return new StatusDto(
-                StatusMessage: $"User {email} coudn't be found",
-                StatusCode: System.Net.HttpStatusCode.NotFound
-                );
-        var client = await _unitOfWork.Clients.FindAsync(c => c.Id == user.Id);
-        if (client is null)
-            return new StatusDto(
-                StatusMessage: $"User {email} is not a client and can't be approved to rent",
-                StatusCode: System.Net.HttpStatusCode.NotFound
-                );
 
-        client.IsGrantedRent = true;
-        var isUpdated = _unitOfWork.Clients.Update(client);
-        if (!isUpdated)
-            return new StatusDto(
-                StatusMessage: $"User {email} coudn't be updated",
-                StatusCode: System.Net.HttpStatusCode.BadRequest
-                );
+    #region Raouf-Added-Methods
 
-        try
-        {
-            _unitOfWork.Save();
-            return new StatusDto(
-                StatusMessage: $"User {email} is approved to rent",
-                StatusCode: System.Net.HttpStatusCode.OK
-                );
-        }
-        catch
-        {
-            return new StatusDto(
-                StatusMessage: $"User {email} coudn't be updated",
-                StatusCode: System.Net.HttpStatusCode.BadRequest
-                );
-        }
-    }
-
-    public async Task<UserApprovalInfoDto?> GetClientApprovalInfoAsync(string userId)
+    public async Task<UserApprovalInfoWithIdDto?> GetClientApprovalInfoWithIdAsync(string userId)
     {
         return await _unitOfWork.Clients.FindAsync(
             predicate: c => c.Id == userId,
-            selector: c => new UserApprovalInfoDto(
+            selector: c => new UserApprovalInfoWithIdDto(
+                c.Id,
                 c.Ssn,
                 c.NationalIdImage,
                 c.UnionCardImage
@@ -133,6 +97,59 @@ public class ClientsManager : IClientsManager
         return clientList;
     }
 
+
+    #endregion
+
+    public async Task<StatusDto> ApproveUserAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null)
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be found",
+                StatusCode: System.Net.HttpStatusCode.NotFound
+                );
+        var client = await _unitOfWork.Clients.FindAsync(c => c.Id == user.Id);
+        if (client is null)
+            return new StatusDto(
+                StatusMessage: $"User {email} is not a client and can't be approved to rent",
+                StatusCode: System.Net.HttpStatusCode.NotFound
+                );
+
+        client.IsGrantedRent = true;
+        var isUpdated = _unitOfWork.Clients.Update(client);
+        if (!isUpdated)
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be updated",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
+                );
+
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto(
+                StatusMessage: $"User {email} is approved to rent",
+                StatusCode: System.Net.HttpStatusCode.OK
+                );
+        }
+        catch
+        {
+            return new StatusDto(
+                StatusMessage: $"User {email} coudn't be updated",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
+                );
+        }
+    }
+
+    public async Task<UserApprovalInfoDto?> GetClientApprovalInfoAsync(string userId)
+    {
+        return await _unitOfWork.Clients.FindAsync(
+            predicate: c => c.Id == userId,
+            selector: c => new UserApprovalInfoDto(
+                c.Ssn,
+                c.NationalIdImage,
+                c.UnionCardImage
+                ));
+    }
     public async Task<UserProfileInfoDto?> GetClientInfoAsync(string userId)
     {
         return await _unitOfWork.Clients.FindAsync(
@@ -242,4 +259,6 @@ public class ClientsManager : IClientsManager
 
         return new StatusDto("User has been updated successully", System.Net.HttpStatusCode.OK);
     }
+
+   
 }

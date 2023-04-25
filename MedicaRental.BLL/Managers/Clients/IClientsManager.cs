@@ -21,4 +21,5 @@ public interface IClientsManager
     Task<List<UserProfileInfoDto>> GetAllClientsAsync();
 
     Task<IEnumerable<UserProfileInfoWithIdDto>> GetClientsNeedingApprovalAsync();
+    Task<UserApprovalInfoWithIdDto?> GetClientApprovalInfoWithIdAsync(string userId);
 }
