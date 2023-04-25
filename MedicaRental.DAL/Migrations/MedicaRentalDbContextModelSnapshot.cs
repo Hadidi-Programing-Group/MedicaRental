@@ -114,7 +114,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand", (string)null);
+                    b.ToTable("Brand");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Category", b =>
@@ -133,7 +133,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
@@ -171,7 +171,7 @@ namespace MedicaRental.DAL.Migrations
                     b.HasIndex("Ssn")
                         .IsUnique();
 
-                    b.ToTable("Clients", (string)null);
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Item", b =>
@@ -243,7 +243,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("SubCategoryId");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Message", b =>
@@ -281,7 +281,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("SenderId", "ReceiverId");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.RefreshToken", b =>
@@ -355,7 +355,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("RentOperations", (string)null);
+                    b.ToTable("RentOperations");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Report", b =>
@@ -415,7 +415,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("ReviewId");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Review", b =>
@@ -464,7 +464,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>
@@ -488,7 +488,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("SubCategories", (string)null);
+                    b.ToTable("SubCategories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -623,44 +623,6 @@ namespace MedicaRental.DAL.Migrations
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
-
-
-            modelBuilder.Entity("MedicaRental.DAL.Context.AppUser", b =>
-                {
-                    b.OwnsMany("MedicaRental.DAL.Context.AppUser.RefreshTokens#MedicaRental.DAL.Models.RefreshToken", "RefreshTokens", b1 =>
-                        {
-                            b1.Property<string>("AppUserId")
-                                .HasColumnType("nvarchar(450)");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
-
-                            b1.Property<DateTime>("CreatedOn")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime>("ExpiresOn")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime?>("RevokedOn")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("Token")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("AppUserId", "Id");
-
-                            b1.ToTable("RefreshToken", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("AppUserId");
-                        });
-
-                    b.Navigation("RefreshTokens");
-                });
-
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
                 {
