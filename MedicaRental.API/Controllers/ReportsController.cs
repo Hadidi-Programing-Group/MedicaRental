@@ -1,6 +1,8 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Report;
 using MedicaRental.BLL.Managers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +20,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllChatsReports")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<List<ReportDto>>> GetAllChatsReports()
         {
             List<ReportDto> reports = (await _ReportsManager.GetChatReportsAsync()).ToList();
@@ -29,6 +32,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllReviewReports")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<List<ReportDto>>> GetAllReviewsReports()
         {
             List<ReportDto> reports = (await _ReportsManager.GetReviewReportsAsync()).ToList();
@@ -41,6 +45,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllItemsReports")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<List<ReportDto>>> GetAllItemsReports()
         {
             List<ReportDto> reports = (await _ReportsManager.GetItemReportsAsync()).ToList();
@@ -63,7 +68,6 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("InsertReport")]
-
         public async Task<ActionResult> InsertReport(InsertReportDtos insertReportDtos)
         {
             InsertReportStatusDto insertReportStatusDto = await _ReportsManager.InsertNewReport(insertReportDtos);
