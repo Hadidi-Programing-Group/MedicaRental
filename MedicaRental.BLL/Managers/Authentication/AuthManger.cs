@@ -22,7 +22,7 @@ namespace MedicaRental.BLL.Managers.Authentication
     public class AuthManger : IAuthManger
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         //private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
@@ -34,7 +34,7 @@ namespace MedicaRental.BLL.Managers.Authentication
         )
         {
             _userManager = userManager;
-            this.unitOfWork = unitOfWork;
+            this._unitOfWork = unitOfWork;
             //_roleManager = roleManager;
             _jwt = jwt.Value;
         }
@@ -47,18 +47,18 @@ namespace MedicaRental.BLL.Managers.Authentication
             var ClaimsList = await _userManager.GetClaimsAsync(user);
 
             var symmetricSecurityKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_jwt.Secret)
+                Encoding.UTF8.GetBytes(_jwt?.Secret ?? string.Empty)
             );
             var signingCredentials = new SigningCredentials(
                 symmetricSecurityKey,
                 SecurityAlgorithms.HmacSha256
             );
 
-            var expiry = DateTime.UtcNow.AddMinutes(_jwt.DurationInMinutes);
+            var expiry = DateTime.UtcNow.AddMinutes(_jwt?.DurationInMinutes ?? 1);
 
             var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _jwt.Issuer,
-                audience: _jwt.Audience,
+                issuer: _jwt?.Issuer,
+                audience: _jwt?.Audience,
                 claims: ClaimsList,
                 expires: expiry,
                 signingCredentials: signingCredentials
@@ -88,9 +88,9 @@ namespace MedicaRental.BLL.Managers.Authentication
                 Could have gotten the data from dbcontext but we already have it
                 In memory,so we use that for less trips.
              */
-            var refreshToken = user.RefreshTokens.SingleOrDefault(t => t.Token == token);
+            var refreshToken = user.RefreshTokens?.SingleOrDefault(t => t.Token == token);
 
-            if (!refreshToken.IsActive)
+            if (refreshToken?.IsActive != true)
             {
                 // Inactive due to , expired or revoked.
 
@@ -114,7 +114,7 @@ namespace MedicaRental.BLL.Managers.Authentication
             //refreshToken.RevokedOn = DateTime.UtcNow;
 
             var newRefreshToken = GenerateRefreshToken();
-            user.RefreshTokens.Add(newRefreshToken);
+            user.RefreshTokens?.Add(newRefreshToken);
             await _userManager.UpdateAsync(user);
 
             var jwtSecurityToken = await CreateJwtToken(user);
@@ -171,7 +171,7 @@ namespace MedicaRental.BLL.Managers.Authentication
         {
             var randomNumber = new byte[32];
 
-            using var generator = new RNGCryptoServiceProvider();
+            using var generator = RandomNumberGenerator.Create();
 
             generator.GetBytes(randomNumber);
 
