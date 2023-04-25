@@ -106,6 +106,17 @@ public class ReviewsManager : IReviewsManager
                 StatusMessage: "There is no Item with such id!");
         }
 
+        var RentOps = await unitOfWork.RentOperations.FindAllAsync(
+            predicate: R => R.ClientId==insertReview.ClientId&&R.ItemId==insertReview.ItemId&&R.ReviewId==null);
+        var RentOp = RentOps.LastOrDefault();
+        if (RentOp is null || RentOps is null)
+        {
+            return new InsertReviewStatusDto(
+                isCreated: false,
+                Id: null,
+                StatusMessage: "There is no rent operation with such id!");
+        }
+
 
         Review review = new()
         {
@@ -114,12 +125,16 @@ public class ReviewsManager : IReviewsManager
             ClientReview = insertReview?.ClientReview ?? string.Empty,
             ClientId = insertReview!.ClientId!,
             SellerId = insertReview!.SellerId!,
-            ItemId = insertReview.ItemId
+            ItemId = insertReview.ItemId,
+            RentOperationId = RentOp.Id          
         };
 
         await unitOfWork.Reviews.AddAsync(review);
         try
         {
+            unitOfWork.Save();
+            RentOp.ReviewId = review.Id;
+            unitOfWork.RentOperations.Update(RentOp);
             unitOfWork.Save();
             return new InsertReviewStatusDto(
                 isCreated: true,

@@ -1060,6 +1060,7 @@ END
                     ClientId = rentoperationsList[0].ClientId,
                     SellerId = rentoperationsList[0].SellerId,
                     ItemId = rentoperationsList[0].ItemId,
+                    RentOperationId = rentoperationsList[0].Id,
                     Rating = 4,
                 },
                 new()
@@ -1068,6 +1069,7 @@ END
                     ClientId = rentoperationsList[1].ClientId,
                     SellerId = rentoperationsList[1].SellerId,
                     ItemId = rentoperationsList[1].ItemId,
+                    RentOperationId = rentoperationsList[1].Id,
                     Rating = 4,
                 },
                 new()
@@ -1076,6 +1078,7 @@ END
                     ClientId = rentoperationsList[2].ClientId,
                     SellerId = rentoperationsList[2].SellerId,
                     ItemId = rentoperationsList[2].ItemId,
+                    RentOperationId = rentoperationsList[2].Id,
                     Rating = 4,
                 },
                 new()
@@ -1084,6 +1087,7 @@ END
                     ClientId = rentoperationsList[3].ClientId,
                     SellerId = rentoperationsList[3].SellerId,
                     ItemId = rentoperationsList[3].ItemId,
+                    RentOperationId = rentoperationsList[3].Id,
                     Rating = 4,
                 },
                 new()
@@ -1092,6 +1096,7 @@ END
                     ClientId = rentoperationsList[4].ClientId,
                     SellerId = rentoperationsList[4].SellerId,
                     ItemId = rentoperationsList[4].ItemId,
+                    RentOperationId = rentoperationsList[4].Id,
                     Rating = 4,
                 },
                 new()
@@ -1100,6 +1105,7 @@ END
                     ClientId = rentoperationsList[5].ClientId,
                     SellerId = rentoperationsList[5].SellerId,
                     ItemId = rentoperationsList[5].ItemId,
+                    RentOperationId = rentoperationsList[5].Id,
                     Rating = 4,
                 },
                 new()
@@ -1108,6 +1114,7 @@ END
                     ClientId = rentoperationsList[6].ClientId,
                     SellerId = rentoperationsList[6].SellerId,
                     ItemId = rentoperationsList[6].ItemId,
+                    RentOperationId = rentoperationsList[6].Id,
                     Rating = 4,
                 },
 

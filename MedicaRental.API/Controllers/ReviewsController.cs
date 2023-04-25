@@ -1,9 +1,12 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Dtos.Report;
+using MedicaRental.BLL.Dtos.Review;
 using MedicaRental.BLL.Dtos.SubCategory;
 using MedicaRental.BLL.Managers;
+using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaRental.API.Controllers
@@ -13,9 +16,13 @@ namespace MedicaRental.API.Controllers
     public class ReviewsController : ControllerBase
     {
         private readonly IReviewsManager _reviewssManager;
-        public ReviewsController(IReviewsManager reviewsManager)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IItemsManager itemsManager;
+        public ReviewsController(IReviewsManager reviewsManager,IItemsManager _itemsManager, UserManager<AppUser> userManager)
         {
             _reviewssManager = reviewsManager;
+            _userManager = userManager;
+            itemsManager = _itemsManager;
         }
 
         [HttpGet]
@@ -38,9 +45,22 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> InsertReview(InsertReviewDto reviewDto)
+        public async Task<ActionResult> InsertReview(InsertReviewForClientDto reviewDto)
         {
-            InsertReviewStatusDto InsertStatus = await _reviewssManager.InsertReview(reviewDto);
+            var userId = _userManager.GetUserId(User);
+            HomeItemDto? item = await itemsManager.FindItemAsync(reviewDto.ItemId);
+            if(item is null) return NotFound();
+
+            InsertReviewDto NewReview = new(
+                Id:Guid.Empty,
+                Rating: reviewDto.Rating,
+                IsDeleted: reviewDto.IsDeleted,
+                ClientReview: reviewDto.ClientReview,
+                ClientId: userId,
+                SellerId: item.SellerId,
+                ItemId: reviewDto.ItemId);
+
+            InsertReviewStatusDto InsertStatus = await _reviewssManager.InsertReview(NewReview);
             if (!InsertStatus.isCreated)
                 return BadRequest(InsertStatus.StatusMessage);
             return CreatedAtAction(
