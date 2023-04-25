@@ -14,9 +14,9 @@ namespace MedicaRental.BLL.Managers;
 public interface IReportsManager
 {
     
-    Task<IEnumerable<ReportDtos>> GetChatReportsAsync();
-    Task<IEnumerable<ReportDtos>> GetReviewReportsAsync();
-    Task<IEnumerable<ReportDtos>> GetItemReportsAsync();
+    Task<IEnumerable<ReportDto>> GetChatReportsAsync();
+    Task<IEnumerable<ReportDto>> GetReviewReportsAsync();
+    Task<IEnumerable<ReportDto>> GetItemReportsAsync();
     Task<ReportDtos?> GetByIdAsync(Guid? id);
     Task<DeleteReportStatusDto> DeleteByIdAsync(Guid id);
     Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport);

@@ -33,7 +33,7 @@ namespace MedicaRental.DAL.Models
 
         public ICollection<RentOperation> RentOperations { get; set; } = new List<RentOperation>();
 
-        public AppUser? User { get; set; }
+        public AppUser User { get; set; } = new();
 
         [Range(0, 5)]
         public int Rating { get; set; } = 0;

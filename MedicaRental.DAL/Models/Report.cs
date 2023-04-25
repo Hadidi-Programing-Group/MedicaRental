@@ -24,11 +24,11 @@ namespace MedicaRental.DAL.Models
 
         [ForeignKey("Reported")]
         public string ReportedId { get; set; } = string.Empty;
-        public Client? Reported { get; set; }
+        public Client Reported { get; set; } = new();
 
         [ForeignKey("Reportee")]
         public string ReporteeId { get; set; } = string.Empty;
-        public Client? Reportee { get; set; }
+        public Client Reportee { get; set; } = new();
 
         [ForeignKey("Message")]
         public Guid? MessageId { get; set; }

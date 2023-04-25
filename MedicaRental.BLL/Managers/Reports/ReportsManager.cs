@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MedicaRental.BLL.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicaRental.BLL.Managers;
 
@@ -77,77 +78,42 @@ public class ReportsManager : IReportsManager
 
     }
 
-    public async Task<IEnumerable<ReportDtos>> GetChatReportsAsync()
+    public async Task<IEnumerable<ReportDto>> GetChatReportsAsync()
     {
-        var reports = await _unitOfWork.Reports.FindAllAsync( 
-            predicate: report=>report.MessageId != null
+        var reports = await _unitOfWork.Reports.FindAllAsync(
+            include: ReportHelper.ReportListInclude,
+            selector: ReportHelper.ReportListSeletor,
+            predicate: report => report.MessageId != null,
+            orderBy: r => r.OrderBy(r => r.IsSolved)
+            ) ;
+
+        return reports;
+
+    }
+
+    public async Task<IEnumerable<ReportDto>> GetItemReportsAsync()
+    {
+
+        var reports = await _unitOfWork.Reports.FindAllAsync(
+            include: ReportHelper.ReportListInclude,
+            selector: ReportHelper.ReportListSeletor,
+            predicate: report => report.ItemId != null,
+            orderBy: r => r.OrderBy(r => r.IsSolved)
             );
-        var reportDtos = new List<ReportDtos>(); 
 
-        if (reports != null)
-        {
-            foreach( var report in reports)
-            {
-                var reportDto = new ReportDtos(report.Id, Name: report.Name,
-                Statement: report.Statement,
-                IsSolved: report.IsSolved,
-                CreatedDate: report.CreatedDate,
-                SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
-                report.MessageId, Guid.Empty, Guid.Empty);
-                reportDtos.Add(reportDto);
-
-            }
-        }
-        return reportDtos;
-
+        return reports;
     }
 
-    public async Task<IEnumerable<ReportDtos>> GetItemReportsAsync()
+    public async Task<IEnumerable<ReportDto>> GetReviewReportsAsync()
     {
         var reports = await _unitOfWork.Reports.FindAllAsync(
-             predicate: report => report.ItemId != null
-             );
-        var reportDtos = new List<ReportDtos>();
+            include: ReportHelper.ReportListInclude,
+            selector: ReportHelper.ReportListSeletor,
+            predicate: report => report.ReviewId != null,
+            orderBy: r => r.OrderBy(r => r.IsSolved)
+            );
 
-        if (reports != null)
-        {
-            foreach (var report in reports)
-            {
-                var reportDto = new ReportDtos(report.Id, Name: report.Name,
-                Statement: report.Statement,
-                IsSolved: report.IsSolved,
-                CreatedDate: report.CreatedDate,
-                SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
-                Guid.Empty, Guid.Empty,report.ItemId );
-                reportDtos.Add(reportDto);
-
-            }
-        }
-        return reportDtos;
-    }
-
-    public async Task<IEnumerable<ReportDtos>> GetReviewReportsAsync()
-    {
-        var reports = await _unitOfWork.Reports.FindAllAsync(
-             predicate: report => report.ReviewId != null
-             );
-        var reportDtos = new List<ReportDtos>();
-
-        if (reports != null)
-        {
-            foreach (var report in reports)
-            {
-                var reportDto = new ReportDtos(report.Id, Name: report.Name,
-                Statement: report.Statement,
-                IsSolved: report.IsSolved,
-                CreatedDate: report.CreatedDate,
-                SolveDate: report.SolveDate, report.ReportedId, report.ReporteeId,
-                 Guid.Empty,report.ReviewId ,Guid.Empty);
-                reportDtos.Add(reportDto);
-
-            }
-        }
-        return reportDtos;
+        return reports;
     }
 
         public async Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport)
