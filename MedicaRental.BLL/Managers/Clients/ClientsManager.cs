@@ -81,6 +81,58 @@ public class ClientsManager : IClientsManager
                 ));
     }
 
+
+
+    public async Task<IEnumerable<UserProfileInfoWithIdDto>> GetClientsNeedingApprovalAsync()
+    {
+        var clients = await _unitOfWork.Clients.FindAllAsync(
+            selector: c => new UserProfileInfoWithIdDto(
+                c.Id,
+                c.Name,
+                c.User.FirstName,
+                c.User.LastName,
+                c.User.PhoneNumber,
+                c.Address,
+                c.User.Email,
+                c.IsGrantedRent
+            ),
+            predicate: c => !c.IsGrantedRent,
+            include: source => source.Include(c => c.User)
+        );
+
+        return clients;
+    }
+    public async Task<List<UserApprovalInfoDto>> GetAllClientsApprovalInfoAsync()
+    {
+        var clients = await _unitOfWork.Clients.GetAllAsync();
+
+        var approvalInfoList = clients.Select(c => new UserApprovalInfoDto(
+            c.Ssn,
+            c.NationalIdImage,
+            c.UnionCardImage
+        )).ToList();
+
+        return approvalInfoList;
+    }
+
+    public async Task<List<UserProfileInfoDto>> GetAllClientsAsync()
+    {
+        var clients = await _unitOfWork.Clients.GetAllAsync(
+            include: source => source.Include(c => c.User));
+
+        var clientList = clients.Select(c => new UserProfileInfoDto(
+            c.Name,
+            c.User.FirstName,
+            c.User.LastName,
+            c.User.PhoneNumber,
+            c.Address,
+            c.User.Email,
+            c.IsGrantedRent
+        )).ToList();
+
+        return clientList;
+    }
+
     public async Task<UserProfileInfoDto?> GetClientInfoAsync(string userId)
     {
         return await _unitOfWork.Clients.FindAsync(
