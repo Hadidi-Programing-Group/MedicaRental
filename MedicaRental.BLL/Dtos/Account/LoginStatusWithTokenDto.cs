@@ -19,13 +19,14 @@ public class LoginStatusWithTokenDto
     public bool IsAuthenticated { get; set; }
     public string? Token { get; set; }
     public DateTime? Expiry { get; set; }
+    public string? UserRole { get; set; }  
 
     [JsonIgnore]
     public string? RefreshToken { get; set; }
 
     public DateTime RefreshTokenExpiration { get; set; }
 
-    public LoginStatusWithTokenDto(string statusMessage, HttpStatusCode statusCode, bool isAuthenticated, string? token, DateTime? expiry, string? refreshToken, DateTime refreshTokenExpiration)
+    public LoginStatusWithTokenDto(string statusMessage, HttpStatusCode statusCode, bool isAuthenticated, string? token, DateTime? expiry, string? refreshToken, DateTime refreshTokenExpiration, string? userRole)
     {
         StatusMessage = statusMessage;
         StatusCode = statusCode;
@@ -34,5 +35,6 @@ public class LoginStatusWithTokenDto
         Expiry = expiry;
         RefreshToken = refreshToken;
         RefreshTokenExpiration = refreshTokenExpiration;
+        UserRole = userRole;
     }
 }
