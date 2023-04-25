@@ -391,7 +391,7 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ReporteeId")
+                    b.Property<string>("ReporterId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -413,7 +413,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.HasIndex("ReportedId");
 
-                    b.HasIndex("ReporteeId");
+                    b.HasIndex("ReporterId");
 
                     b.HasIndex("ReviewId");
 
@@ -433,6 +433,9 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<string>("ClientReview")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -742,9 +745,9 @@ namespace MedicaRental.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MedicaRental.DAL.Models.Client", "Reportee")
+                    b.HasOne("MedicaRental.DAL.Models.Client", "Reporter")
                         .WithMany("Reports")
-                        .HasForeignKey("ReporteeId")
+                        .HasForeignKey("ReporterId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -758,7 +761,7 @@ namespace MedicaRental.DAL.Migrations
 
                     b.Navigation("Reported");
 
-                    b.Navigation("Reportee");
+                    b.Navigation("Reporter");
 
                     b.Navigation("Review");
                 });

@@ -58,10 +58,10 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("{Id}")]
-        public async Task<ActionResult<ReportDtos>> GetById(Guid Id)
+        public async Task<ActionResult<DetailedReportDto>> GetById(Guid Id)
         {
-            ReportDtos? report = await _ReportsManager.GetByIdAsync(Id);
-            if (report == null)
+            DetailedReportDto? report = await _ReportsManager.GetByIdAsync(Id);
+            if (report is null)
                 return NotFound();
             return report;
         }

@@ -46,36 +46,72 @@ public class ReportsManager : IReportsManager
     }
 
 
-    public async Task<ReportDtos?> GetByIdAsync(Guid? id)
+    public async Task<DetailedReportDto?> GetByIdAsync(Guid? id)
     {
 
         var report = await _unitOfWork.Reports.FindAsync(
-            predicate: (p) => p.Id == id
+            predicate: (p) => p.Id == id,
+            include: source => source.Include(r => r.Reported).ThenInclude(re => re.User)
+                                     .Include(r => r.Reporter).ThenInclude(re => re.User)
             );
-        if (report != null)
-        {
-            return new ReportDtos(
-                Id : report.Id,
-                Name : report.Name,
-                Statement : report.Statement,
-                IsSolved : report.IsSolved,
-                CreatedDate : report.CreatedDate,
-                SolveDate : report.SolveDate,
-                ReportedId : report.ReportedId,
-                ReporteeId : report.ReporteeId,
-                MessageId : report.MessageId,
-                ReviewId : report.ReviewId,
-                ItemId : report.ItemId
-                );
- 
-           
-        }
-        else
-        {
+
+        if (report is null)
             return null;
+
+        var detailedReportDto = new DetailedReportDto()
+        {
+            Id = report.Id,
+            Name = report.Name,
+            Statement = report.Statement,
+            IsSolved = report.IsSolved,
+            CreatedDate = report.CreatedDate,
+            SolveDate = report.SolveDate,
+            ReportedId = report.ReportedId,
+            ReporterId = report.ReporterId,
+            ReportedName = report.Reported.Name,
+            ReporterName = report.Reported.Name,
+        };
+
+        if (report.MessageId is not null)
+        {
+            var message = await _unitOfWork.Messages.FindAsync(
+                predicate: m => m.Id == report.MessageId
+                );
+
+            if (message is null) return null;
+
+            detailedReportDto.ContentId = message.Id;
+            detailedReportDto.Content = message.Content;
+            detailedReportDto.ContentTimeStamp = message.Timestamp;
         }
 
 
+        else if (report.ItemId is not null)
+        {
+            var item = await _unitOfWork.Items.FindAsync(
+                predicate: m => m.Id == report.ItemId
+                );
+
+            if (item is null) return null;
+
+            detailedReportDto.ContentId = item.Id;
+            detailedReportDto.Content = item.Name;
+            detailedReportDto.ContentTimeStamp = item.CreationDate;
+        }
+
+        else if (report.ReviewId is not null)
+        {
+            var review = await _unitOfWork.Reviews.FindAsync(
+                predicate: m => m.Id == report.ReviewId
+                );
+
+            if (review is null) return null;
+
+            detailedReportDto.ContentId = review.Id;
+            detailedReportDto.Content = review.ClientReview;
+            detailedReportDto.ContentTimeStamp = review.CreateDate;
+        }
+        return detailedReportDto;
     }
 
     public async Task<IEnumerable<ReportDto>> GetChatReportsAsync()
@@ -130,7 +166,7 @@ public class ReportsManager : IReportsManager
                 Statement = insertReport.Statement,
                 ReportedId = insertReport.ReportedId,
                 
-                ReporteeId = insertReport.ReporteeId,
+                ReporterId = insertReport.ReporteeId,
                
                 MessageId = insertReport.MessageId,
                 ReviewId = insertReport.ReviewId,

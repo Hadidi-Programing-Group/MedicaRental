@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230425125105_AddTokenToDbSet")]
-    partial class AddTokenToDbSet
+    [Migration("20230425184326_CreationDateForReview")]
+    partial class CreationDateForReview
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -435,6 +435,9 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<string>("ClientReview")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()

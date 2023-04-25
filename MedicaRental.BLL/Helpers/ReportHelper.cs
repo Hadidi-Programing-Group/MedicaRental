@@ -15,7 +15,7 @@ public static class ReportHelper
                 r.CreatedDate,
                 r.SolveDate,
                 r.Reported.Name,
-                r.Reportee.Name
+                r.Reporter.Name
                 );
-    public static Func<IQueryable<Report>, IIncludableQueryable<Report, object>> ReportListInclude = source => source.Include(s => s.Reported).ThenInclude(c => c.User).Include(s => s.Reportee).ThenInclude(c => c.User);
+    public static Func<IQueryable<Report>, IIncludableQueryable<Report, object>> ReportListInclude = source => source.Include(s => s.Reported).ThenInclude(c => c.User).Include(s => s.Reporter).ThenInclude(c => c.User);
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class AddedProfileImage : Migration
+    public partial class CreationDateForReview : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -208,6 +208,28 @@ namespace MedicaRental.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpiresOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RevokedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SubCategories",
                 columns: table => new
                 {
@@ -314,6 +336,7 @@ namespace MedicaRental.DAL.Migrations
                     Rating = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     ClientReview = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -508,6 +531,11 @@ namespace MedicaRental.DAL.Migrations
                 columns: new[] { "SenderId", "ReceiverId" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_AppUserId",
+                table: "RefreshTokens",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RentOperations_ClientId",
                 table: "RentOperations",
                 column: "ClientId");
@@ -589,6 +617,9 @@ namespace MedicaRental.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "RentOperations");

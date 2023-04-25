@@ -17,7 +17,7 @@ public interface IReportsManager
     Task<IEnumerable<ReportDto>> GetChatReportsAsync();
     Task<IEnumerable<ReportDto>> GetReviewReportsAsync();
     Task<IEnumerable<ReportDto>> GetItemReportsAsync();
-    Task<ReportDtos?> GetByIdAsync(Guid? id);
+    Task<DetailedReportDto?> GetByIdAsync(Guid? id);
     Task<DeleteReportStatusDto> DeleteByIdAsync(Guid id);
     Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport);
 
