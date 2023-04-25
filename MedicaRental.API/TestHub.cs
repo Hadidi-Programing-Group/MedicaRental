@@ -5,26 +5,53 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MedicaRental.API
 {
-    public class TestHub :Hub
+    public class TestHub : Hub
     {
         private readonly UserManager<AppUser> _userManager;
-        private Dictionary<string,string> users = new Dictionary<string,string>();
+        
+        private static Dictionary<string,string> users = new Dictionary<string,string>();
+        
         public TestHub(UserManager<AppUser> userManager)
         {
             _userManager = userManager;
         }
-        public async Task InitialConnection()
+
+        public override Task OnConnectedAsync()
+        {
+
+            users.TryAdd(Context.UserIdentifier, Context.ConnectionId);
+            
+            return base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            if(users.TryGetValue(Context.UserIdentifier, out var user))
+            {
+                users.Remove(Context.UserIdentifier);
+            }
+
+            return base.OnDisconnectedAsync(exception);
+        }
+
+        public void InitialConnection()
         {
             users.Add(Context.UserIdentifier, Context.ConnectionId);
         }
 
 
-        public async Task PostComment( string comment)
+        public async Task PostComment(string comment, string user)
         {
             var cont = Context;
-           // string user = _userManager.GetUserId(Context.User);
-          //  await Console.Out.WriteLineAsync(comment);
-            await Clients.Client(Context.ConnectionId).SendAsync("ReciveComment", $"{Context.User.Identity.IsAuthenticated} : {comment}");
+            foreach (var item in users)
+            {
+                await Console.Out.WriteLineAsync($"{item.Key} : {item.Value}");
+            }
+
+            // string user = _userManager.GetUserId(Context.User);
+            //  await Console.Out.WriteLineAsync(comment);
+            if(users.TryGetValue(user, out string? conId))
+            await Clients.Client(conId).SendAsync("ReceiveComment", $"{Context.User.Identity.IsAuthenticated} : {comment}");
         }
     }
 }

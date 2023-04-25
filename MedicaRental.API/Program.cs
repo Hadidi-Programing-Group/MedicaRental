@@ -67,12 +67,10 @@ builder.Services
     .AddEntityFrameworkStores<MedicaRentalDbContext>();
 #endregion
 
-
 #region RefreshToken 
-
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
-
 #endregion
+
 #region Authentication Services
 builder.Services
     .AddAuthentication(opt =>
@@ -139,14 +137,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(ClaimRequirement.ModeratorPolicy, _moderatorPolicy);
     options.AddPolicy(ClaimRequirement.ClientPolicy, _clientPolicy);
 });
-
-//builder.Services
-//    .AddAuthorization(options =>
-//    {
-//        //options.AddPolicy("", policy => policy
-//        //    .RequireClaim(ClaimTypes.Role, "", "", ....));
-
-//    });
 #endregion
 
 #region Unit Of Work
@@ -184,10 +174,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHostedService<DailyRatingCalculationService>();
 
-
+#region SignalR
 builder.Services.AddSignalR().AddJsonProtocol(options => {
     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
-}); 
+});
+#endregion
 
 var app = builder.Build();
 
@@ -212,6 +203,7 @@ app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
 app.Use(async (context, next) =>
 {
 
@@ -233,7 +225,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 #endregion
+
 app.MapHub<TestHub>("/hub");
+
 app.MapGet("/", () => "Hello World");
 app.MapGet("/Hi", () => "GitHub Acctions Works !!");
 app.Run();
