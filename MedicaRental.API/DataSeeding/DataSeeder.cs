@@ -1167,7 +1167,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = messagesList[0].SenderId,
-                    ReporteeId = messagesList[0].ReceiverId == client1.Id? client2.Id : client1.Id,
+                    ReporteeId = messagesList[0].SenderId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1179,7 +1179,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = messagesList[8].SenderId,
-                    ReporteeId = messagesList[8].ReceiverId == client1.Id? client2.Id : client1.Id,
+                    ReporteeId = messagesList[8].SenderId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
