@@ -1,5 +1,6 @@
 ﻿using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -19,9 +20,12 @@ namespace MedicaRental.API
         public override Task OnConnectedAsync()
         {
             //set all messages sent to him as received and setup notifications
+
             if (Context.UserIdentifier is not null)
             {
                 _userIds.TryAdd(Context.UserIdentifier, Context.ConnectionId);
+
+                //_messagesManager.UpdateMessageStatusToReceived(Context.UserIdentifier, DateTime.Now);
             }
 
             return base.OnConnectedAsync();
@@ -45,9 +49,16 @@ namespace MedicaRental.API
         {
             if (_userIds.TryGetValue(receiverId, out string? conId))
             {
+                await Console.Out.WriteLineAsync("inside");
                 await Clients.Client(conId).SendAsync("ReceiveMessage", message, Context.UserIdentifier);
                 await _messagesManager.AddMessage(Context.UserIdentifier!, receiverId, message, timeStamp);
             }
         }
     }
 }
+/*
+onConnection{
+send notification
+}
+test chat
+ */

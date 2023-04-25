@@ -19,9 +19,13 @@ public interface IMessagesManager
     /// <param name="firstUserId">The one who opened the chat</param>
     /// <param name="secondUserId">the other user</param>
     /// <returns></returns>
-    public Task<bool> UpdateSeenStatus(string firstUserId, string secondUserId, DateTime dateOpened);
+    public Task<bool> UpdateMessageStatusToSeen(string firstUserId, string secondUserId, DateTime dateOpened);
     
     public Task<StatusDto> DeleteMessage(string userId, Guid messageId);
 
     public Task<bool> AddMessage(string fromId, string toId, string message, DateTime timeStamp);
+
+    public Task<bool> UpdateMessageStatusToReceived(string userId, DateTime dateOpened);
+
+    public Task<bool> GetNotificationCount(string userId, DateTime dateOpened);
 }

@@ -50,7 +50,7 @@ public class MessagesManager : IMessagesManager
 
     public async Task<IEnumerable<MessageDto>> GetChat(string firstUserId, string secondUserId, int upTo, DateTime dateOpened)
     {
-        var succeeded = await UpdateSeenStatus(firstUserId, secondUserId, dateOpened);
+        var succeeded = await UpdateMessageStatusToSeen(firstUserId, secondUserId, dateOpened);
 
         if (succeeded) _unitOfWork.Save();
         else throw new Exception("WTF");
@@ -79,7 +79,7 @@ public class MessagesManager : IMessagesManager
 
     }
 
-    public async Task<bool> UpdateSeenStatus(string firstUserId, string secondUserId, DateTime dateOpened)
+    public async Task<bool> UpdateMessageStatusToSeen(string firstUserId, string secondUserId, DateTime dateOpened)
     {
         var messages = await _unitOfWork.Messages.FindAllAsync
                             (
@@ -93,5 +93,26 @@ public class MessagesManager : IMessagesManager
         }
 
         return _unitOfWork.Messages.UpdateRange(messages);
+    }
+
+    public async Task<bool> UpdateMessageStatusToReceived(string userId, DateTime dateOpened)
+    {
+        var messages = await _unitOfWork.Messages.FindAllAsync
+                            (
+                                predicate: m => m.ReceiverId == userId,
+                                disableTracking: false
+                            );
+
+        foreach (var msg in messages)
+        {
+            msg.MesssageStatus = MessageStatus.Received;
+        }
+
+        return _unitOfWork.Messages.UpdateRange(messages);
+    }
+
+    public Task<bool> GetNotificationCount(string userId, DateTime dateOpened)
+    {
+        throw new NotImplementedException();
     }
 }
