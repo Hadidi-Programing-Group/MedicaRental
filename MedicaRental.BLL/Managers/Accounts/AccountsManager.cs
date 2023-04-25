@@ -78,7 +78,8 @@ public class AccountsManager : IAccountsManager
                 null,
                 null,
                 null,
-                DateTime.UtcNow
+                DateTime.UtcNow,
+                null
             );
 
         var isBlocked = await _userManager.IsLockedOutAsync(user);
@@ -90,7 +91,8 @@ public class AccountsManager : IAccountsManager
                 null,
                 null,
                 null,
-                DateTime.UtcNow
+                DateTime.UtcNow,
+                null
             );
         #endregion
 
@@ -139,7 +141,7 @@ public class AccountsManager : IAccountsManager
         #endregion
 
 
-
+        var claims = await _userManager.GetClaimsAsync(user);
 
 
         return new LoginStatusWithTokenDto(
@@ -149,8 +151,9 @@ public class AccountsManager : IAccountsManager
             authModel.TokenString,
             authModel.ExpiresOn,
             authModel.RefreshToken,
-            authModel.RefreshTokenExpiration
-        );
+            authModel.RefreshTokenExpiration,
+            claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? UserRoles.Client.ToString()
+        ) ;
 
         //return authModel;
     }

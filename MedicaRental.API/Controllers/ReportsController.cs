@@ -1,6 +1,8 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Report;
 using MedicaRental.BLL.Managers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,9 +20,10 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllChatsReports")]
-        public async Task<ActionResult<List<ReportDtos>>> GetAllChatsReports()
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        public async Task<ActionResult<PageDto<ReportDto>?>> GetAllChatsReports(int page)
         {
-            List<ReportDtos> reports = (await _ReportsManager.GetChatReportsAsync()).ToList();
+            var reports = (await _ReportsManager.GetChatReportsAsync(page));
             if (reports == null)
                 return NotFound();
 
@@ -29,9 +32,10 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllReviewReports")]
-        public async Task<ActionResult<List<ReportDtos>>> GetAllReviewsReports()
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        public async Task<ActionResult<PageDto<ReportDto>?>> GetAllReviewsReports(int page)
         {
-            List<ReportDtos> reports = (await _ReportsManager.GetReviewReportsAsync()).ToList();
+            var reports = (await _ReportsManager.GetReviewReportsAsync(page));
             if (reports == null)
                 return NotFound();
 
@@ -41,9 +45,10 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllItemsReports")]
-        public async Task<ActionResult<List<ReportDtos>>> GetAllItemsReports()
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        public async Task<ActionResult<PageDto<ReportDto>?>> GetAllItemsReports(int page)
         {
-            List<ReportDtos> reports = (await _ReportsManager.GetItemReportsAsync()).ToList();
+            var reports = (await _ReportsManager.GetItemReportsAsync(page));
             if (reports == null)
                 return NotFound();
 
@@ -53,17 +58,16 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("{Id}")]
-        public async Task<ActionResult<ReportDtos>> GetById(Guid Id)
+        public async Task<ActionResult<DetailedReportDto>> GetById(Guid Id)
         {
-            ReportDtos? report = await _ReportsManager.GetByIdAsync(Id);
-            if (report == null)
+            DetailedReportDto? report = await _ReportsManager.GetByIdAsync(Id);
+            if (report is null)
                 return NotFound();
             return report;
         }
 
         [HttpPost]
         [Route("InsertReport")]
-
         public async Task<ActionResult> InsertReport(InsertReportDtos insertReportDtos)
         {
             InsertReportStatusDto insertReportStatusDto = await _ReportsManager.InsertNewReport(insertReportDtos);

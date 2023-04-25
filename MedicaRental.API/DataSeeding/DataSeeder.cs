@@ -1149,7 +1149,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = itemList[0].SellerId,
-                    ReporteeId = itemList[0].SellerId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = itemList[0].SellerId == client1.Id? client2.Id : client1.Id,
                     Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1162,7 +1162,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = itemList[5].SellerId,
-                    ReporteeId = itemList[5].SellerId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = itemList[5].SellerId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1174,7 +1174,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = messagesList[0].SenderId,
-                    ReporteeId = messagesList[0].ReceiverId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = messagesList[0].SenderId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1186,7 +1186,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = messagesList[8].SenderId,
-                    ReporteeId = messagesList[8].ReceiverId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = messagesList[8].SenderId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1198,7 +1198,7 @@ END
                     ReviewId = reviewsList[0].Id,
                     Statement = "report report report report report",
                     ReportedId = reviewsList[0].ClientId,
-                    ReporteeId = reviewsList[0].ClientId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = reviewsList[0].ClientId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1210,7 +1210,7 @@ END
                     ReviewId = reviewsList[5].Id,
                     Statement = "report report report report report",
                     ReportedId = reviewsList[5].ClientId,
-                    ReporteeId = reviewsList[5].ClientId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = reviewsList[5].ClientId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
