@@ -21,6 +21,20 @@ public class MessagesManager : IMessagesManager
         _unitOfWork = unitOfWork;
     }
 
+    public async Task<bool> AddMessage(string fromId, string toId, string message, DateTime timeStamp)
+    {
+        var msg = new Message
+        {
+            Content = message,
+            MesssageStatus = MessageStatus.Sent,
+            SenderId = fromId,
+            ReceiverId = toId,
+            Timestamp = timeStamp
+        };
+
+        return await _unitOfWork.Messages.AddAsync(msg);
+    }
+
     public async Task<StatusDto> DeleteMessage(string userId, Guid messageId)
     {
         var succeeded = await _unitOfWork.Messages.DeleteOneById(messageId);
@@ -53,12 +67,13 @@ public class MessagesManager : IMessagesManager
                 g =>
                     new ChatDto
                     (
+                        g.First().ReceiverId == userId ? g.First().SenderId : g.First().ReceiverId,
                         g.First().ReceiverId == userId ? g.First().Sender!.User!.FirstName : g.First()!.Receiver!.User!.FirstName,
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Content,
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp,
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
                         g.Count(m => m.MesssageStatus != MessageStatus.Seen && m.ReceiverId == userId),
-                        g.First().ReceiverId == userId ? g.First().Sender!.ProfileImage : g.First()!.Receiver!.ProfileImage
+                        g.First().ReceiverId == userId ? Convert.ToBase64String(g.First().Sender!.ProfileImage?? new byte[0]) : Convert.ToBase64String(g.First()!.Receiver!.ProfileImage?? new byte[0])
                     )
            );
 
