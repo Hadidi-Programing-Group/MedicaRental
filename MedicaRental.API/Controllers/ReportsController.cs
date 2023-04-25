@@ -21,9 +21,9 @@ namespace MedicaRental.API.Controllers
         [HttpGet]
         [Route("AllChatsReports")]
         [Authorize(Policy = ClaimRequirement.AdminPolicy)]
-        public async Task<ActionResult<List<ReportDto>>> GetAllChatsReports()
+        public async Task<ActionResult<PageDto<ReportDto>?>> GetAllChatsReports(int page)
         {
-            List<ReportDto> reports = (await _ReportsManager.GetChatReportsAsync()).ToList();
+            var reports = (await _ReportsManager.GetChatReportsAsync(page));
             if (reports == null)
                 return NotFound();
 
@@ -33,9 +33,9 @@ namespace MedicaRental.API.Controllers
         [HttpGet]
         [Route("AllReviewReports")]
         [Authorize(Policy = ClaimRequirement.AdminPolicy)]
-        public async Task<ActionResult<List<ReportDto>>> GetAllReviewsReports()
+        public async Task<ActionResult<PageDto<ReportDto>?>> GetAllReviewsReports(int page)
         {
-            List<ReportDto> reports = (await _ReportsManager.GetReviewReportsAsync()).ToList();
+            var reports = (await _ReportsManager.GetReviewReportsAsync(page));
             if (reports == null)
                 return NotFound();
 
@@ -46,9 +46,9 @@ namespace MedicaRental.API.Controllers
         [HttpGet]
         [Route("AllItemsReports")]
         [Authorize(Policy = ClaimRequirement.AdminPolicy)]
-        public async Task<ActionResult<List<ReportDto>>> GetAllItemsReports()
+        public async Task<ActionResult<PageDto<ReportDto>?>> GetAllItemsReports(int page)
         {
-            List<ReportDto> reports = (await _ReportsManager.GetItemReportsAsync()).ToList();
+            var reports = (await _ReportsManager.GetItemReportsAsync(page));
             if (reports == null)
                 return NotFound();
 

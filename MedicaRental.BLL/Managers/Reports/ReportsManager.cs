@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MedicaRental.BLL.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace MedicaRental.BLL.Managers;
 
@@ -23,7 +24,7 @@ public class ReportsManager : IReportsManager
 
     public async Task<DeleteReportStatusDto> DeleteByIdAsync(Guid id)
     {
-     
+
 
         await _unitOfWork.Reports.DeleteOneById(id);
         try
@@ -117,68 +118,106 @@ public class ReportsManager : IReportsManager
         return detailedReportDto;
     }
 
-    public async Task<IEnumerable<ReportDto>> GetChatReportsAsync()
+    public async Task<PageDto<ReportDto>?> GetChatReportsAsync(int page)
     {
-        var reports = await _unitOfWork.Reports.FindAllAsync(
-            include: ReportHelper.ReportListInclude,
-            selector: ReportHelper.ReportListSeletor,
-            predicate: report => report.MessageId != null,
-            orderBy: r => r.OrderBy(r => r.IsSolved)
-            ) ;
+        try
+        {
 
-        return reports;
+            var reports = await _unitOfWork.Reports.FindAllAsync(
+                include: ReportHelper.ReportListInclude,
+                selector: ReportHelper.ReportListSeletor,
+                predicate: report => report.MessageId != null,
+                orderBy: r => r.OrderBy(r => r.IsSolved),
+                skip: SharedHelper.Take * (page - 1),
+                take: SharedHelper.Take
+                );
+
+            var count = await _unitOfWork.Reports.GetCountAsync(
+                predicate: report => report.MessageId != null);
+
+            return new(reports, count);
+        }
+        catch
+        {
+            return null;
+        }
 
     }
 
-    public async Task<IEnumerable<ReportDto>> GetItemReportsAsync()
+    public async Task<PageDto<ReportDto>?> GetItemReportsAsync(int page)
     {
+        try
+        {
 
-        var reports = await _unitOfWork.Reports.FindAllAsync(
+            var reports = await _unitOfWork.Reports.FindAllAsync(
             include: ReportHelper.ReportListInclude,
             selector: ReportHelper.ReportListSeletor,
             predicate: report => report.ItemId != null,
-            orderBy: r => r.OrderBy(r => r.IsSolved)
+            orderBy: r => r.OrderBy(r => r.IsSolved),
+            skip: SharedHelper.Take * (page - 1),
+            take: SharedHelper.Take
             );
 
-        return reports;
+            var count = await _unitOfWork.Reports.GetCountAsync(
+                 predicate: report => report.ItemId != null);
+
+            return new(reports, count);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
-    public async Task<IEnumerable<ReportDto>> GetReviewReportsAsync()
+    public async Task<PageDto<ReportDto>?> GetReviewReportsAsync(int page)
     {
-        var reports = await _unitOfWork.Reports.FindAllAsync(
+        try
+        {
+            var reports = await _unitOfWork.Reports.FindAllAsync(
             include: ReportHelper.ReportListInclude,
             selector: ReportHelper.ReportListSeletor,
             predicate: report => report.ReviewId != null,
-            orderBy: r => r.OrderBy(r => r.IsSolved)
+            orderBy: r => r.OrderBy(r => r.IsSolved),
+            skip: SharedHelper.Take * (page - 1),
+            take: SharedHelper.Take
             );
 
-        return reports;
+
+            var count = await _unitOfWork.Reports.GetCountAsync(
+                 predicate: report => report.ReviewId != null);
+
+            return new(reports, count);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
-        public async Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport)
+    public async Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport)
+    {
+        if (insertReport == null)
         {
-            if (insertReport == null)
-            {
-                return new InsertReportStatusDto(false, null, "InsertReportDtos object is null.");
-            }
+            return new InsertReportStatusDto(false, null, "InsertReportDtos object is null.");
+        }
 
-            
-            var report = new Report
-            {
-                Name = insertReport.Name,
-                Statement = insertReport.Statement,
-                ReportedId = insertReport.ReportedId,
-                
-                ReporterId = insertReport.ReporteeId,
-               
-                MessageId = insertReport.MessageId,
-                ReviewId = insertReport.ReviewId,
-                ItemId = insertReport.ItemId
-            };
 
-            
+        var report = new Report
+        {
+            Name = insertReport.Name,
+            Statement = insertReport.Statement,
+            ReportedId = insertReport.ReportedId,
 
-            await _unitOfWork.Reports.AddAsync(report);
+            ReporterId = insertReport.ReporteeId,
+
+            MessageId = insertReport.MessageId,
+            ReviewId = insertReport.ReviewId,
+            ItemId = insertReport.ItemId
+        };
+
+
+
+        await _unitOfWork.Reports.AddAsync(report);
         try
         {
             _unitOfWork.Save();
@@ -188,11 +227,11 @@ public class ReportsManager : IReportsManager
         {
             return new InsertReportStatusDto(false, null, "Report not Inserted.");
         }
-          
 
-           
-            return new InsertReportStatusDto(true, report.Id, "Report inserted successfully.");
-        }
 
- 
+
+        return new InsertReportStatusDto(true, report.Id, "Report inserted successfully.");
+    }
+
+
 }
