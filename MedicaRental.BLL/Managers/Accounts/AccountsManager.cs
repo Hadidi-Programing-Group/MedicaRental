@@ -109,21 +109,30 @@ public class AccountsManager : IAccountsManager
 
         #region RefreshToken Check/Create
 
-        if (user.RefreshTokens.Any(t => t.IsActive))
-        {
-            var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
-            authModel.RefreshToken = activeRefreshToken.Token;
-            authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
-        }
-        else
-        {
-            var refreshToken = authManger.GenerateRefreshToken();
-            authModel.RefreshToken = refreshToken.Token;
-            authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
-            //Save to Database
-            user.RefreshTokens.Add(refreshToken);
-            await _userManager.UpdateAsync(user);
-        }
+        //if (user.RefreshTokens.Any(t => t.IsActive))
+        //{
+        //    var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+        //    authModel.RefreshToken = activeRefreshToken.Token;
+        //    authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+        //}
+        //else
+        //{
+        //    var refreshToken = authManger.GenerateRefreshToken();
+        //    authModel.RefreshToken = refreshToken.Token;
+        //    authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+        //    //Save to Database
+        //    user.RefreshTokens.Add(refreshToken);
+        //    await _userManager.UpdateAsync(user);
+        //}
+
+
+        var refreshToken = authManger.GenerateRefreshToken();
+        authModel.RefreshToken = refreshToken.Token;
+        authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+        //Save to Database
+        user.RefreshTokens.Add(refreshToken);
+        await _userManager.UpdateAsync(user);
+
         #endregion
 
 

@@ -93,23 +93,25 @@ namespace MedicaRental.BLL.Managers.Authentication
             if (!refreshToken.IsActive)
             {
                 // Inactive due to , expired or revoked.
-                // Inactive due to, expired or revoked.
-                authModel.Message = "Inactive token, Re-login";
 
                 // Revoke any refreshTokens that are still active 
                 // (Secures Account against Hack)
-                foreach (var refreshtoken in user.RefreshTokens)
-                {
-                    refreshtoken.RevokedOn = DateTime.UtcNow;
-                }
+                //foreach (var refreshtoken in user.RefreshTokens)
+                //{
+                //    refreshtoken.RevokedOn = DateTime.UtcNow;
+                //}
 
-                await _userManager.UpdateAsync(user);
+                //await _userManager.UpdateAsync(user);
+
+                authModel.Message = "Inactive token, Re-login";
 
                 return authModel;
+
             }
 
             // Revoked oldRefreshToken
-            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            //refreshToken.RevokedOn = DateTime.UtcNow;
 
             var newRefreshToken = GenerateRefreshToken();
             user.RefreshTokens.Add(newRefreshToken);
@@ -146,9 +148,16 @@ namespace MedicaRental.BLL.Managers.Authentication
             if (!refreshToken.IsActive)
                 return false;
 
-            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            foreach (var refreshtoken in user.RefreshTokens)
+            {
+                refreshtoken.RevokedOn = DateTime.UtcNow;
+            }
 
             await _userManager.UpdateAsync(user);
+
+            //refreshToken.RevokedOn = DateTime.UtcNow;
+            //await _userManager.UpdateAsync(user);
 
             return true;
         }
