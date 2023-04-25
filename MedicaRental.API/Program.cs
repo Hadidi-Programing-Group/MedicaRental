@@ -164,7 +164,7 @@ builder.Services.AddScoped<IAuthManger, AuthManger>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:56923")
+        builder => builder.WithOrigins("http://localhost:4200")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
@@ -226,7 +226,7 @@ app.UseAuthorization();
 app.MapControllers();
 #endregion
 
-app.MapHub<TestHub>("/hub");
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapGet("/", () => "Hello World");
 app.MapGet("/Hi", () => "GitHub Acctions Works !!");
