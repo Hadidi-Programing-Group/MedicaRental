@@ -76,6 +76,8 @@ namespace MedicaRental.BLL.Managers.Authentication
                 u => u.RefreshTokens.Any(t => t.Token == token)
             );
 
+        
+
             if (user == null)
             {
                 authModel.Message = "Invalid token";
@@ -88,25 +90,15 @@ namespace MedicaRental.BLL.Managers.Authentication
                 Could have gotten the data from dbcontext but we already have it
                 In memory,so we use that for less trips.
              */
-            var refreshToken = user.RefreshTokens?.SingleOrDefault(t => t.Token == token);
+            var CurrentTokenObj = await _unitOfWork.RefreshToken.FindAsync(
+       predicate: t => t.Token == token
+       );
 
-            if (refreshToken?.IsActive != true)
+            if (CurrentTokenObj?.IsActive != true)
             {
-                // Inactive due to , expired or revoked.
-
-                // Revoke any refreshTokens that are still active 
-                // (Secures Account against Hack)
-                //foreach (var refreshtoken in user.RefreshTokens)
-                //{
-                //    refreshtoken.RevokedOn = DateTime.UtcNow;
-                //}
-
-                //await _userManager.UpdateAsync(user);
-
                 authModel.Message = "Inactive token, Re-login";
 
                 return authModel;
-
             }
 
             // Revoked oldRefreshToken
