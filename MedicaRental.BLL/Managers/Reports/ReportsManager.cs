@@ -83,6 +83,7 @@ public class ReportsManager : IReportsManager
             detailedReportDto.ContentId = message.Id;
             detailedReportDto.Content = message.Content;
             detailedReportDto.ContentTimeStamp = message.Timestamp;
+            detailedReportDto.ReportCategory = ReportCategory.Chats.ToString();
         }
 
 
@@ -97,6 +98,7 @@ public class ReportsManager : IReportsManager
             detailedReportDto.ContentId = item.Id;
             detailedReportDto.Content = item.Name;
             detailedReportDto.ContentTimeStamp = item.CreationDate;
+            detailedReportDto.ReportCategory = ReportCategory.Items.ToString();
         }
 
         else if (report.ReviewId is not null)
@@ -110,6 +112,7 @@ public class ReportsManager : IReportsManager
             detailedReportDto.ContentId = review.Id;
             detailedReportDto.Content = review.ClientReview;
             detailedReportDto.ContentTimeStamp = review.CreateDate;
+            detailedReportDto.ReportCategory = ReportCategory.Reviews.ToString();
         }
         return detailedReportDto;
     }

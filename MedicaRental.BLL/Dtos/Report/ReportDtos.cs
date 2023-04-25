@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-
+public enum ReportCategory
+{
+    Items,
+    Reviews,
+    Chats
+}
 
 public record DetailedReportDto
 {
@@ -24,6 +29,7 @@ public record DetailedReportDto
     public Guid ContentId { get; set; }
     public string Content { get; set; } = string.Empty;
     public DateTime ContentTimeStamp { get; set; }
+    public string ReportCategory { get; set; } = string.Empty;
 }
 
 public record ReportDto(Guid Id, string Name, bool IsSolved, DateTime CreatedDate, DateTime? SolveDate, string ReportedName, string ReporterName);
