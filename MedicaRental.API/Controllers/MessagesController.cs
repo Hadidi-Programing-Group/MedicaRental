@@ -1,6 +1,8 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Message;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -36,10 +38,24 @@ namespace MedicaRental.API.Controllers
             return Ok(chat);
         }
 
-        [HttpGet("delete")]
+        [HttpDelete]
         public async Task<StatusDto> DeleteMessage(string userId, Guid messageId)
         {
             return await _messagesManager.DeleteMessage(userId, messageId);
+        }
+
+        [HttpGet("notificationCount")]
+        public async Task<int> GetNotificationCount()
+        {
+            var userId = _userManager.GetUserId(User);
+            return await _messagesManager.GetNotificationCount(userId);
+        }
+
+        [HttpGet("notifications")]
+        public async Task<IEnumerable<MessageNotificationDto>> GetLastNUnseenChats(int number)
+        {
+            var userId = _userManager.GetUserId(User);
+            return await _messagesManager.GetLastNUnseenChats(userId, number);
         }
     }
 }

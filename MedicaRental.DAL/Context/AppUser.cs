@@ -25,7 +25,7 @@ namespace MedicaRental.DAL.Context
         public string Name { get => $"{FirstName} {LastName}"; }
 
 
-        public List<RefreshToken>? RefreshTokens { get; set; }
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();    
 
     }
 }

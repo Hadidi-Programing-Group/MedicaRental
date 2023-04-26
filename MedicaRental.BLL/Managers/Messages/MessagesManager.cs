@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Message;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.Repositories;
 using MedicaRental.DAL.UnitOfWork;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +23,7 @@ public class MessagesManager : IMessagesManager
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<bool> AddMessage(string fromId, string toId, string message, DateTime timeStamp)
+    public async Task<Guid> AddMessage(string fromId, string toId, string message, DateTime timeStamp)
     {
         var msg = new Message
         {
@@ -31,8 +33,11 @@ public class MessagesManager : IMessagesManager
             ReceiverId = toId,
             Timestamp = timeStamp
         };
+        await _unitOfWork.Messages.AddAsync(msg);
+        
+        _unitOfWork.Save();
 
-        return await _unitOfWork.Messages.AddAsync(msg);
+        return msg.Id;
     }
 
     public async Task<StatusDto> DeleteMessage(string userId, Guid messageId)
@@ -60,7 +65,7 @@ public class MessagesManager : IMessagesManager
 
     public async Task<IEnumerable<ChatDto>> GetUserChats(string userId, int upTo)
     {
-        return await ((IMessagesRepo)_unitOfWork.Messages).GetUserChats
+        var chats = await ((IMessagesRepo)_unitOfWork.Messages).GetUserChats
             (
                 userId,
                 upTo,
@@ -73,10 +78,11 @@ public class MessagesManager : IMessagesManager
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp,
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
                         g.Count(m => m.MesssageStatus != MessageStatus.Seen && m.ReceiverId == userId),
-                        g.First().ReceiverId == userId ? Convert.ToBase64String(g.First().Sender!.ProfileImage?? new byte[0]) : Convert.ToBase64String(g.First()!.Receiver!.ProfileImage?? new byte[0])
+                        g.First().ReceiverId == userId ? Convert.ToBase64String(g.First().Sender!.ProfileImage ?? new byte[0]) : Convert.ToBase64String(g.First()!.Receiver!.ProfileImage ?? new byte[0])
                     )
            );
 
+        return chats.OrderByDescending(chat => chat.MessageDate);
     }
 
     public async Task<bool> UpdateMessageStatusToSeen(string firstUserId, string secondUserId, DateTime dateOpened)
@@ -92,7 +98,11 @@ public class MessagesManager : IMessagesManager
             msg.MesssageStatus = MessageStatus.Seen;
         }
 
-        return _unitOfWork.Messages.UpdateRange(messages);
+        var res = _unitOfWork.Messages.UpdateRange(messages);
+        
+        if(res) _unitOfWork.Save();
+
+        return res;
     }
 
     public async Task<bool> UpdateMessageStatusToReceived(string userId, DateTime dateOpened)
@@ -108,11 +118,36 @@ public class MessagesManager : IMessagesManager
             msg.MesssageStatus = MessageStatus.Received;
         }
 
-        return _unitOfWork.Messages.UpdateRange(messages);
+        var res = _unitOfWork.Messages.UpdateRange(messages);
+        
+        if (res)
+            _unitOfWork.Save();
+
+        return res;
     }
 
-    public Task<bool> GetNotificationCount(string userId, DateTime dateOpened)
+    public async Task<int> GetNotificationCount(string userId)
     {
-        throw new NotImplementedException();
+        return await _unitOfWork.Messages.GetCountAsync(
+            predicate: m => m.ReceiverId == userId && m.MesssageStatus != MessageStatus.Seen);
+    }
+
+    public async Task<IEnumerable<MessageNotificationDto>> GetLastNUnseenChats(string userId, int number)
+    {
+        return await ((IMessagesRepo)_unitOfWork.Messages).GetLastNUnseenChats<MessageNotificationDto>(userId, number, m => 
+        new(m.Sender!.User!.Name, Convert.ToBase64String(m.Sender.ProfileImage ?? new byte[0]), m.Content, m.Timestamp));
+    }
+
+    public async Task<bool> UpdateMessageStatus(Guid messageId)
+    {
+        var msg = await _unitOfWork.Messages.FindAsync(predicate: m => m.Id == messageId, disableTracking: false);
+
+        if (msg is null)
+            return false;
+        
+        msg.MesssageStatus = MessageStatus.Seen;
+        _unitOfWork.Messages.Update(msg);
+        _unitOfWork.Save();
+        return true;
     }
 }

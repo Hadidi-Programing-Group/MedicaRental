@@ -1,12 +1,16 @@
-﻿using MedicaRental.BLL.Managers;
+﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
+using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedicaRental.API
 {
+    [Authorize]
     public class ChatHub : Hub
     {
         private static Dictionary<string, string> _userIds = new Dictionary<string, string>();
@@ -33,7 +37,7 @@ namespace MedicaRental.API
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            if(Context.UserIdentifier is null) 
+            if (Context.UserIdentifier is null)
                 throw new NullReferenceException(nameof(Context.UserIdentifier));
 
             if (_userIds.TryGetValue(Context.UserIdentifier, out var user))
@@ -44,21 +48,26 @@ namespace MedicaRental.API
             return base.OnDisconnectedAsync(exception);
         }
 
+        public async Task SetMessageSeen(Guid messageId, string senderId)
+        {   
+            await _messagesManager.UpdateMessageStatus(messageId);
+            
+            if (_userIds.TryGetValue(senderId, out string? conId))
+            {
+                await Clients.Client(conId).SendAsync("MessageSeen", messageId);
+            }
+        }
 
-        public async Task SendMessage(string message, string receiverId, DateTime timeStamp)
+        public async Task<Guid> SendMessage(string message, string receiverId, DateTime timeStamp)
         {
+            var messageId = await _messagesManager.AddMessage(Context.UserIdentifier!, receiverId, message, timeStamp);
+            
             if (_userIds.TryGetValue(receiverId, out string? conId))
             {
-                await Console.Out.WriteLineAsync("inside");
-                await Clients.Client(conId).SendAsync("ReceiveMessage", message, Context.UserIdentifier);
-                await _messagesManager.AddMessage(Context.UserIdentifier!, receiverId, message, timeStamp);
+                await Clients.Client(conId).SendAsync("ReceiveMessage", messageId, message, Context!.UserIdentifier!, timeStamp, MessageStatus.Sent);
             }
+
+            return messageId;
         }
     }
 }
-/*
-onConnection{
-send notification
-}
-test chat
- */

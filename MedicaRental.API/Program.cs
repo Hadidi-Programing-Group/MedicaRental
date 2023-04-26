@@ -102,8 +102,7 @@ builder.Services
 
                 // If the request is for our hub...
                 var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken) &&
-                    (path.StartsWithSegments("/hub")))
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
                 {
 
                     // Read the token out of the query string
@@ -173,6 +172,7 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddHostedService<DailyRatingCalculationService>();
+builder.Services.AddHostedService<DailyClearTokenService>();
 
 #region SignalR
 builder.Services.AddSignalR().AddJsonProtocol(options => {
@@ -206,7 +206,6 @@ app.UseAuthentication();
 
 app.Use(async (context, next) =>
 {
-
     if (context.User.Identity.IsAuthenticated)
     {
         // Set the user identity on the SignalR hub context

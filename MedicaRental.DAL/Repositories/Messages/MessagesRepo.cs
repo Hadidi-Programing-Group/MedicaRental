@@ -23,8 +23,20 @@ public class MessagesRepo : EntityRepo<Message>, IMessagesRepo
     {
         return await _context.Messages
             .Where(m => ((m.SenderId == firstUserId && m.ReceiverId == secondUserId) || (m.ReceiverId == firstUserId && m.SenderId == secondUserId)) && m.Timestamp > DateTime.Now.AddDays(-upTo)) 
-            .OrderByDescending(m => m.Timestamp)
+            .OrderBy(m => m.Timestamp)
             .Select(selector).ToListAsync();
+    }
+
+    public async Task<IEnumerable<TResult>> GetLastNUnseenChats<TResult>(string userId, int number, Expression<Func<Message, TResult>> selector)
+    {
+        return await _context.Messages
+         .Where(m => m.ReceiverId == userId)
+         .Where(m => m.MesssageStatus == MessageStatus.Sent)
+         .OrderByDescending(m => m.Timestamp)
+         .Include(m => m.Sender)
+         .ThenInclude(u => u!.User)
+         .Take(number)
+         .Select(selector).ToListAsync();
     }
 
     public async Task<IEnumerable<TResult>> GetUserChats<TResult>(string userId, int upTo, Expression<Func<IGrouping<string, Message>, TResult>> selector)

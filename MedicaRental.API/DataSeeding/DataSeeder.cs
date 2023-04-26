@@ -1060,6 +1060,7 @@ END
                     ClientId = rentoperationsList[0].ClientId,
                     SellerId = rentoperationsList[0].SellerId,
                     ItemId = rentoperationsList[0].ItemId,
+                    RentOperationId = rentoperationsList[0].Id,
                     Rating = 4,
                 },
                 new()
@@ -1068,6 +1069,7 @@ END
                     ClientId = rentoperationsList[1].ClientId,
                     SellerId = rentoperationsList[1].SellerId,
                     ItemId = rentoperationsList[1].ItemId,
+                    RentOperationId = rentoperationsList[1].Id,
                     Rating = 4,
                 },
                 new()
@@ -1076,6 +1078,7 @@ END
                     ClientId = rentoperationsList[2].ClientId,
                     SellerId = rentoperationsList[2].SellerId,
                     ItemId = rentoperationsList[2].ItemId,
+                    RentOperationId = rentoperationsList[2].Id,
                     Rating = 4,
                 },
                 new()
@@ -1084,6 +1087,7 @@ END
                     ClientId = rentoperationsList[3].ClientId,
                     SellerId = rentoperationsList[3].SellerId,
                     ItemId = rentoperationsList[3].ItemId,
+                    RentOperationId = rentoperationsList[3].Id,
                     Rating = 4,
                 },
                 new()
@@ -1092,6 +1096,7 @@ END
                     ClientId = rentoperationsList[4].ClientId,
                     SellerId = rentoperationsList[4].SellerId,
                     ItemId = rentoperationsList[4].ItemId,
+                    RentOperationId = rentoperationsList[4].Id,
                     Rating = 4,
                 },
                 new()
@@ -1100,6 +1105,7 @@ END
                     ClientId = rentoperationsList[5].ClientId,
                     SellerId = rentoperationsList[5].SellerId,
                     ItemId = rentoperationsList[5].ItemId,
+                    RentOperationId = rentoperationsList[5].Id,
                     Rating = 4,
                 },
                 new()
@@ -1108,6 +1114,7 @@ END
                     ClientId = rentoperationsList[6].ClientId,
                     SellerId = rentoperationsList[6].SellerId,
                     ItemId = rentoperationsList[6].ItemId,
+                    RentOperationId = rentoperationsList[6].Id,
                     Rating = 4,
                 },
 
@@ -1142,7 +1149,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = itemList[0].SellerId,
-                    ReporteeId = itemList[0].SellerId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = itemList[0].SellerId == client1.Id? client2.Id : client1.Id,
                     Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1155,7 +1162,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = itemList[5].SellerId,
-                    ReporteeId = itemList[5].SellerId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = itemList[5].SellerId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1167,7 +1174,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = messagesList[0].SenderId,
-                    ReporteeId = messagesList[0].ReceiverId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = messagesList[0].SenderId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1179,7 +1186,7 @@ END
                     ReviewId = null,
                     Statement = "report report report report report",
                     ReportedId = messagesList[8].SenderId,
-                    ReporteeId = messagesList[8].ReceiverId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = messagesList[8].SenderId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1191,7 +1198,7 @@ END
                     ReviewId = reviewsList[0].Id,
                     Statement = "report report report report report",
                     ReportedId = reviewsList[0].ClientId,
-                    ReporteeId = reviewsList[0].ClientId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = reviewsList[0].ClientId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
@@ -1203,7 +1210,7 @@ END
                     ReviewId = reviewsList[5].Id,
                     Statement = "report report report report report",
                     ReportedId = reviewsList[5].ClientId,
-                    ReporteeId = reviewsList[5].ClientId == client1.Id? client2.Id : client1.Id,
+                    ReporterId = reviewsList[5].ClientId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
                     CreatedDate = DateTime.Now,
                     SolveDate = DateTime.Now
