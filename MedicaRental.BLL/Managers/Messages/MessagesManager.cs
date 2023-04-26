@@ -74,9 +74,9 @@ public class MessagesManager : IMessagesManager
                     (
                         g.First().ReceiverId == userId ? g.First().SenderId : g.First().ReceiverId,
                         g.First().ReceiverId == userId ? g.First().Sender!.User!.FirstName : g.First()!.Receiver!.User!.FirstName,
-                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Content,
-                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp,
-                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
+                        g.OrderBy(m => m.Timestamp).FirstOrDefault()!.Content,
+                        g.OrderBy(m => m.Timestamp).FirstOrDefault()!.Timestamp,
+                        g.OrderBy(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
                         g.Count(m => m.MesssageStatus != MessageStatus.Seen && m.ReceiverId == userId),
                         g.First().ReceiverId == userId ? Convert.ToBase64String(g.First().Sender!.ProfileImage ?? new byte[0]) : Convert.ToBase64String(g.First()!.Receiver!.ProfileImage ?? new byte[0])
                     )
