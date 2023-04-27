@@ -8,6 +8,7 @@ namespace MedicaRental.BLL.Dtos.Message
 {
     public record MessageNotificationDto
     (
+        string SenderId,
         string Username,
         string? ProfileImage,
         string Message,

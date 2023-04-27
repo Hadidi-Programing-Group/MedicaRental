@@ -27,15 +27,12 @@ public class MessagesRepo : EntityRepo<Message>, IMessagesRepo
             .Select(selector).ToListAsync();
     }
 
-    public async Task<IEnumerable<TResult>> GetLastNUnseenChats<TResult>(string userId, int number, Expression<Func<Message, TResult>> selector)
+    public async Task<IEnumerable<TResult>> GetUnseenChats<TResult>(string userId, Expression<Func<IGrouping<string, Message>, TResult>> selector)
     {
         return await _context.Messages
          .Where(m => m.ReceiverId == userId)
          .Where(m => m.MesssageStatus == MessageStatus.Sent)
-         .OrderByDescending(m => m.Timestamp)
-         .Include(m => m.Sender)
-         .ThenInclude(u => u!.User)
-         .Take(number)
+         .GroupBy(m => m.SenderId)
          .Select(selector).ToListAsync();
     }
 

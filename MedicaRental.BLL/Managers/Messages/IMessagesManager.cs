@@ -16,7 +16,7 @@ public interface IMessagesManager
 
     public Task<IEnumerable<MessageDto>> GetChat(string firstUserId, string secondUserId, int upTo, DateTime dateOpened);
 
-    public Task<IEnumerable<MessageNotificationDto>> GetLastNUnseenChats(string userId, int number);
+    public Task<IEnumerable<MessageNotificationDto>> GetUnseenChats(string userId);
     
     /// <summary>
     /// 

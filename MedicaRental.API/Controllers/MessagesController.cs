@@ -2,10 +2,12 @@
 using MedicaRental.BLL.Dtos.Message;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Models;
 using MedicaRental.DAL.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MedicaRental.API.Controllers
 {
@@ -15,11 +17,13 @@ namespace MedicaRental.API.Controllers
     {
         private readonly IMessagesManager _messagesManager;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IHubContext<ChatHub> _chatHub;
 
-        public MessagesController(IMessagesManager messagesManager, UserManager<AppUser> userManager)
+        public MessagesController(IMessagesManager messagesManager, UserManager<AppUser> userManager, IHubContext<ChatHub> chatHub)
         {
             _messagesManager = messagesManager;
             _userManager = userManager;
+            _chatHub = chatHub;
         }
 
         [HttpGet("allChats")]
@@ -35,6 +39,12 @@ namespace MedicaRental.API.Controllers
         {
             var userId = _userManager.GetUserId(User);
             var chat = await _messagesManager.GetChat(userId, secondUserId, upTo, dateOpened);
+
+            if (ChatHub.UserIds.TryGetValue(secondUserId, out string? conId))
+            {
+                await _chatHub.Clients.Client(conId).SendAsync("AllMessagesSeen", userId);
+            }
+
             return Ok(chat);
         }
 
@@ -52,10 +62,10 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("notifications")]
-        public async Task<IEnumerable<MessageNotificationDto>> GetLastNUnseenChats(int number)
+        public async Task<IEnumerable<MessageNotificationDto>> GetLastUnseenChats()
         {
             var userId = _userManager.GetUserId(User);
-            return await _messagesManager.GetLastNUnseenChats(userId, number);
+            return await _messagesManager.GetUnseenChats(userId);
         }
     }
 }

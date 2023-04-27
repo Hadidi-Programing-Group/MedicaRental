@@ -34,7 +34,7 @@ public class MessagesManager : IMessagesManager
             Timestamp = timeStamp
         };
         await _unitOfWork.Messages.AddAsync(msg);
-        
+
         _unitOfWork.Save();
 
         return msg.Id;
@@ -73,7 +73,7 @@ public class MessagesManager : IMessagesManager
                     new ChatDto
                     (
                         g.First().ReceiverId == userId ? g.First().SenderId : g.First().ReceiverId,
-                        g.First().ReceiverId == userId ? g.First().Sender!.User!.FirstName : g.First()!.Receiver!.User!.FirstName,
+                        g.First().ReceiverId == userId ? g.First().Sender!.User!.Name : g.First()!.Receiver!.User!.Name,
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Content,
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("o"),
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
@@ -99,8 +99,8 @@ public class MessagesManager : IMessagesManager
         }
 
         var res = _unitOfWork.Messages.UpdateRange(messages);
-        
-        if(res) _unitOfWork.Save();
+
+        if (res) _unitOfWork.Save();
 
         return res;
     }
@@ -119,7 +119,7 @@ public class MessagesManager : IMessagesManager
         }
 
         var res = _unitOfWork.Messages.UpdateRange(messages);
-        
+
         if (res)
             _unitOfWork.Save();
 
@@ -132,10 +132,22 @@ public class MessagesManager : IMessagesManager
             predicate: m => m.ReceiverId == userId && m.MesssageStatus != MessageStatus.Seen);
     }
 
-    public async Task<IEnumerable<MessageNotificationDto>> GetLastNUnseenChats(string userId, int number)
+    public async Task<IEnumerable<MessageNotificationDto>> GetUnseenChats(string userId)
     {
-        return await ((IMessagesRepo)_unitOfWork.Messages).GetLastNUnseenChats<MessageNotificationDto>(userId, number, m => 
-        new(m.Sender!.User!.Name, Convert.ToBase64String(m.Sender.ProfileImage ?? new byte[0]), m.Content, m.Timestamp.ToString("o")));
+        return await ((IMessagesRepo)_unitOfWork.Messages).GetUnseenChats<MessageNotificationDto>
+            (
+                userId,
+                g =>
+                    new MessageNotificationDto
+                    (
+                        g.First().SenderId,
+                        g.First().Sender!.User!.Name,
+                        Convert.ToBase64String(g.First().Sender!.ProfileImage?? new byte[0]),
+                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Content,
+                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("o")
+                     )
+           );
+
     }
 
     public async Task<bool> UpdateMessageStatus(Guid messageId)
@@ -144,7 +156,7 @@ public class MessagesManager : IMessagesManager
 
         if (msg is null)
             return false;
-        
+
         msg.MesssageStatus = MessageStatus.Seen;
         _unitOfWork.Messages.Update(msg);
         _unitOfWork.Save();

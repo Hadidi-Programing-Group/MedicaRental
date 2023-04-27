@@ -14,5 +14,5 @@ public interface IMessagesRepo
 
     public Task<IEnumerable<TResult>> GetUserChats<TResult>(string userId, int upTo, Expression<Func<IGrouping<string, Message>, TResult>> selector);
     
-    public Task<IEnumerable<TResult>> GetLastNUnseenChats<TResult>(string userId, int number, Expression<Func<Message, TResult>> selector);
+    public Task<IEnumerable<TResult>> GetUnseenChats<TResult>(string userId, Expression<Func<IGrouping<string, Message>, TResult>> selector);
 }

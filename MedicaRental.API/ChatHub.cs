@@ -13,7 +13,7 @@ namespace MedicaRental.API
     [Authorize]
     public class ChatHub : Hub
     {
-        private static Dictionary<string, string> _userIds = new Dictionary<string, string>();
+        public static Dictionary<string, string> UserIds { get; } = new();
         private readonly IMessagesManager _messagesManager;
 
         public ChatHub(IMessagesManager messagesManager)
@@ -27,7 +27,7 @@ namespace MedicaRental.API
 
             if (Context.UserIdentifier is not null)
             {
-                _userIds.TryAdd(Context.UserIdentifier, Context.ConnectionId);
+                UserIds.TryAdd(Context.UserIdentifier, Context.ConnectionId);
 
                 //_messagesManager.UpdateMessageStatusToReceived(Context.UserIdentifier, DateTime.UtcNow);
             }
@@ -40,9 +40,9 @@ namespace MedicaRental.API
             if (Context.UserIdentifier is null)
                 throw new NullReferenceException(nameof(Context.UserIdentifier));
 
-            if (_userIds.TryGetValue(Context.UserIdentifier, out var user))
+            if (UserIds.TryGetValue(Context.UserIdentifier, out var user))
             {
-                _userIds.Remove(Context.UserIdentifier);
+                UserIds.Remove(Context.UserIdentifier);
             }
 
             return base.OnDisconnectedAsync(exception);
@@ -52,9 +52,17 @@ namespace MedicaRental.API
         {   
             await _messagesManager.UpdateMessageStatus(messageId);
             
-            if (_userIds.TryGetValue(senderId, out string? conId))
+            if (UserIds.TryGetValue(senderId, out string? conId))
             {
                 await Clients.Client(conId).SendAsync("MessageSeen", messageId);
+            }
+        }
+
+        public async Task AllMessagesSeen(string userId)
+        {
+            if (UserIds.TryGetValue(userId, out string? conId))
+            {
+                await Clients.Client(conId).SendAsync("AllMessagesSeen", userId);
             }
         }
 
@@ -62,7 +70,7 @@ namespace MedicaRental.API
         {
             var messageId = await _messagesManager.AddMessage(Context.UserIdentifier!, receiverId, message, timeStamp);
             
-            if (_userIds.TryGetValue(receiverId, out string? conId))
+            if (UserIds.TryGetValue(receiverId, out string? conId))
             {
                 await Clients.Client(conId).SendAsync("ReceiveMessage", messageId, message, Context!.UserIdentifier!, timeStamp.ToString("o"), MessageStatus.Sent);
             }
