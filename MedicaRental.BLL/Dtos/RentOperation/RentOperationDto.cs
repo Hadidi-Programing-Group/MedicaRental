@@ -11,8 +11,8 @@ namespace MedicaRental.BLL.Dtos
     public record RentOperationDto
     (
         Guid Id,
-        DateTime RentDate,
-        DateTime ReturnDate,
+        string RentDate,
+        string ReturnDate,
         decimal Price,
         string UserId,
         string UserName,

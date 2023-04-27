@@ -15,7 +15,7 @@ namespace MedicaRental.DAL.Models
 
         public string ClientReview { get; set; } = string.Empty;
 
-        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
      
         [ForeignKey("Client")]
         public string ClientId { get; set; } = string.Empty;

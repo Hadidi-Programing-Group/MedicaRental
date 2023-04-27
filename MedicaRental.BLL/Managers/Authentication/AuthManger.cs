@@ -98,6 +98,15 @@ namespace MedicaRental.BLL.Managers.Authentication
             {
                 authModel.Message = "Inactive token, Re-login";
 
+                // Revoke any refreshTokens that are still active 
+                // (Secures Account against Hack)
+                foreach (var refreshtoken in user.RefreshTokens)
+                {
+                    refreshtoken.RevokedOn = DateTime.UtcNow;
+                }
+
+                await _userManager.UpdateAsync(user);
+
                 return authModel;
             }
 

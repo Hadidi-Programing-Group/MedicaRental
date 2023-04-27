@@ -253,7 +253,7 @@ public class AccountsManager : IAccountsManager
 
     //    var SignInCreds = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256Signature);
 
-    //    var expiry = DateTime.Now.AddDays(1);
+    //    var expiry = DateTime.UtcNow.AddDays(1);
 
     //    var token = new JwtSecurityToken(
     //        claims: ClaimsList,
