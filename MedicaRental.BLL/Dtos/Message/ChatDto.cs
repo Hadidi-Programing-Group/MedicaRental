@@ -7,7 +7,7 @@ namespace MedicaRental.BLL.Dtos
         string UserId,
         string UserName,
         string LastMessage,
-        DateTime MessageDate,
+        string MessageDate,
         MessageStatus MessageStatus,
         int UnseenMessagesCount,
         string? UserProfileImage

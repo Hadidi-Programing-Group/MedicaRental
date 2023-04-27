@@ -11,6 +11,6 @@ namespace MedicaRental.BLL.Dtos.Message
         string Username,
         string? ProfileImage,
         string Message,
-        DateTime MessageDate
+        string MessageDate
     );
 }

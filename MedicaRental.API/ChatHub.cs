@@ -29,7 +29,7 @@ namespace MedicaRental.API
             {
                 _userIds.TryAdd(Context.UserIdentifier, Context.ConnectionId);
 
-                //_messagesManager.UpdateMessageStatusToReceived(Context.UserIdentifier, DateTime.Now);
+                //_messagesManager.UpdateMessageStatusToReceived(Context.UserIdentifier, DateTime.UtcNow);
             }
 
             return base.OnConnectedAsync();
@@ -64,7 +64,7 @@ namespace MedicaRental.API
             
             if (_userIds.TryGetValue(receiverId, out string? conId))
             {
-                await Clients.Client(conId).SendAsync("ReceiveMessage", messageId, message, Context!.UserIdentifier!, timeStamp, MessageStatus.Sent);
+                await Clients.Client(conId).SendAsync("ReceiveMessage", messageId, message, Context!.UserIdentifier!, timeStamp.ToString("o"), MessageStatus.Sent);
             }
 
             return messageId;

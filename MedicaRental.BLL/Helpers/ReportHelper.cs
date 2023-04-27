@@ -12,10 +12,10 @@ public static class ReportHelper
                 r.Id,
                 r.Name,
                 r.IsSolved,
-                r.CreatedDate,
-                r.SolveDate,
-                r.Reported.Name,
-                r.Reporter.Name
+                r.CreatedDate.ToString("o"),
+                r.SolveDate == null? "" : ((DateTime)r.SolveDate).ToString("o"),
+                r.Reported!.Name,
+                r.Reporter!.Name
                 );
     public static Func<IQueryable<Report>, IIncludableQueryable<Report, object>> ReportListInclude = source => source.Include(s => s.Reported).ThenInclude(c => c.User).Include(s => s.Reporter).ThenInclude(c => c.User);
 }

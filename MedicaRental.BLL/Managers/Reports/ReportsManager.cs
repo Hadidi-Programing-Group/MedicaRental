@@ -65,8 +65,8 @@ public class ReportsManager : IReportsManager
             Name = report.Name,
             Statement = report.Statement,
             IsSolved = report.IsSolved,
-            CreatedDate = report.CreatedDate,
-            SolveDate = report.SolveDate,
+            CreatedDate = report.CreatedDate.ToString("o"),
+            SolveDate = report.SolveDate?.ToString("o")??"",
             ReportedId = report.ReportedId,
             ReporterId = report.ReporterId,
             ReportedName = report.Reported.Name,
@@ -83,7 +83,7 @@ public class ReportsManager : IReportsManager
 
             detailedReportDto.ContentId = message.Id;
             detailedReportDto.Content = message.Content;
-            detailedReportDto.ContentTimeStamp = message.Timestamp;
+            detailedReportDto.ContentTimeStamp = message.Timestamp.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Chats.ToString();
         }
 
@@ -98,7 +98,7 @@ public class ReportsManager : IReportsManager
 
             detailedReportDto.ContentId = item.Id;
             detailedReportDto.Content = item.Name;
-            detailedReportDto.ContentTimeStamp = item.CreationDate;
+            detailedReportDto.ContentTimeStamp = item.CreationDate.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Items.ToString();
         }
 
@@ -112,7 +112,7 @@ public class ReportsManager : IReportsManager
 
             detailedReportDto.ContentId = review.Id;
             detailedReportDto.Content = review.ClientReview;
-            detailedReportDto.ContentTimeStamp = review.CreateDate;
+            detailedReportDto.ContentTimeStamp = review.CreateDate.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Reviews.ToString();
         }
         return detailedReportDto;

@@ -60,7 +60,7 @@ public class MessagesManager : IMessagesManager
         if (succeeded) _unitOfWork.Save();
         else throw new Exception("WTF");
 
-        return await ((IMessagesRepo)_unitOfWork.Messages).GetChat<MessageDto>(firstUserId, secondUserId, upTo, m => new(m.Id, m.Content, m.SenderId, m.Timestamp, m.MesssageStatus));
+        return await ((IMessagesRepo)_unitOfWork.Messages).GetChat<MessageDto>(firstUserId, secondUserId, upTo, m => new(m.Id, m.Content, m.SenderId, m.Timestamp.ToString("o"), m.MesssageStatus));
     }
 
     public async Task<IEnumerable<ChatDto>> GetUserChats(string userId, int upTo)
@@ -74,9 +74,9 @@ public class MessagesManager : IMessagesManager
                     (
                         g.First().ReceiverId == userId ? g.First().SenderId : g.First().ReceiverId,
                         g.First().ReceiverId == userId ? g.First().Sender!.User!.FirstName : g.First()!.Receiver!.User!.FirstName,
-                        g.OrderBy(m => m.Timestamp).FirstOrDefault()!.Content,
-                        g.OrderBy(m => m.Timestamp).FirstOrDefault()!.Timestamp,
-                        g.OrderBy(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
+                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Content,
+                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("o"),
+                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
                         g.Count(m => m.MesssageStatus != MessageStatus.Seen && m.ReceiverId == userId),
                         g.First().ReceiverId == userId ? Convert.ToBase64String(g.First().Sender!.ProfileImage ?? new byte[0]) : Convert.ToBase64String(g.First()!.Receiver!.ProfileImage ?? new byte[0])
                     )
@@ -135,7 +135,7 @@ public class MessagesManager : IMessagesManager
     public async Task<IEnumerable<MessageNotificationDto>> GetLastNUnseenChats(string userId, int number)
     {
         return await ((IMessagesRepo)_unitOfWork.Messages).GetLastNUnseenChats<MessageNotificationDto>(userId, number, m => 
-        new(m.Sender!.User!.Name, Convert.ToBase64String(m.Sender.ProfileImage ?? new byte[0]), m.Content, m.Timestamp));
+        new(m.Sender!.User!.Name, Convert.ToBase64String(m.Sender.ProfileImage ?? new byte[0]), m.Content, m.Timestamp.ToString("o")));
     }
 
     public async Task<bool> UpdateMessageStatus(Guid messageId)

@@ -300,7 +300,7 @@ END
                     SubCategoryId = subCategoryList[0].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[8].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -316,7 +316,7 @@ END
                     SubCategoryId = subCategoryList[1].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[8].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -332,7 +332,7 @@ END
                     SubCategoryId = subCategoryList[2].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[7].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -348,7 +348,7 @@ END
                     SubCategoryId = subCategoryList[3].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[6].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -364,7 +364,7 @@ END
                     SubCategoryId = subCategoryList[4].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[5].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -380,7 +380,7 @@ END
                     SubCategoryId = subCategoryList[0].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[4].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -396,7 +396,7 @@ END
                     SubCategoryId = subCategoryList[1].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[3].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -412,7 +412,7 @@ END
                     SubCategoryId = subCategoryList[2].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[2].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -428,7 +428,7 @@ END
                     SubCategoryId = subCategoryList[3].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[1].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -437,7 +437,7 @@ END
                     Serial = "SN002",
                     Model = "Model B",
                     BrandId = BrandList[0].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                     Stock = 5,
                     Price = 300,
@@ -461,7 +461,7 @@ END
                     SubCategoryId = subCategoryList[0].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[8].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -477,7 +477,7 @@ END
                     SubCategoryId = subCategoryList[1].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[8].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -493,7 +493,7 @@ END
                     SubCategoryId = subCategoryList[2].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[7].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -509,7 +509,7 @@ END
                     SubCategoryId = subCategoryList[3].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[6].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -525,7 +525,7 @@ END
                     SubCategoryId = subCategoryList[4].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[5].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -541,7 +541,7 @@ END
                     SubCategoryId = subCategoryList[0].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[4].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -557,7 +557,7 @@ END
                     SubCategoryId = subCategoryList[1].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[3].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -573,7 +573,7 @@ END
                     SubCategoryId = subCategoryList[2].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[2].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -589,7 +589,7 @@ END
                     SubCategoryId = subCategoryList[3].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[1].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -598,7 +598,7 @@ END
                     Serial = "SN002",
                     Model = "Model B",
                     BrandId = BrandList[0].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                     Stock = 5,
                     Price = 300,
@@ -622,7 +622,7 @@ END
                     SubCategoryId = subCategoryList[0].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[8].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -638,7 +638,7 @@ END
                     SubCategoryId = subCategoryList[1].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[8].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -654,7 +654,7 @@ END
                     SubCategoryId = subCategoryList[2].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[7].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -670,7 +670,7 @@ END
                     SubCategoryId = subCategoryList[3].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[6].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -686,7 +686,7 @@ END
                     SubCategoryId = subCategoryList[4].Id,
                     SellerId = client1.Id,
                     BrandId = BrandList[5].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -702,7 +702,7 @@ END
                     SubCategoryId = subCategoryList[0].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[4].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -718,7 +718,7 @@ END
                     SubCategoryId = subCategoryList[1].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[3].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -734,7 +734,7 @@ END
                     SubCategoryId = subCategoryList[2].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[2].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -750,7 +750,7 @@ END
                     SubCategoryId = subCategoryList[3].Id,
                     SellerId = client2.Id,
                     BrandId = BrandList[1].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                 },
                 new Item {
@@ -759,7 +759,7 @@ END
                     Serial = "SN002",
                     Model = "Model B",
                     BrandId = BrandList[0].Id,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now.ToUniversalTime(),
                     IsListed = true,
                     Stock = 5,
                     Price = 300,
@@ -788,154 +788,154 @@ END
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi1",
                     ReceiverId = client1.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi2",
                     ReceiverId = client2.Id,
                     SenderId = client1.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi3",
                     ReceiverId = client2.Id,
                     SenderId = client3.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
                 new()
                 {
                     Content = "Hi4",
                     ReceiverId = client3.Id,
                     SenderId = client2.Id,
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Now.ToUniversalTime(),
                 },
 
             };
@@ -957,8 +957,8 @@ END
                     SellerId = itemList[0].SellerId,
                     Price = 100,
                     ItemId = itemList[0].Id,
-                    RentDate = DateTime.Now.AddDays(-5),
-                    ReturnDate = DateTime.Now.AddDays(+5),
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-5),
+                    ReturnDate = DateTime.Now.ToUniversalTime().AddDays(+5),
                     ReviewId = null
                 },
                 new()
@@ -967,8 +967,8 @@ END
                     SellerId = itemList[1].SellerId,
                     Price = 100,
                     ItemId = itemList[1].Id,
-                    RentDate = DateTime.Now.AddDays(-5),
-                    ReturnDate = DateTime.Now.AddDays(-1),
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-5),
+                    ReturnDate = DateTime.Now.ToUniversalTime().AddDays(-1),
                     ReviewId = null
                 },
                 new()
@@ -977,8 +977,8 @@ END
                     SellerId = itemList[2].SellerId,
                     Price = 100,
                     ItemId = itemList[2].Id,
-                    RentDate = DateTime.Now.AddDays(-8),
-                    ReturnDate = DateTime.Now,
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-8),
+                    ReturnDate = DateTime.Now.ToUniversalTime(),
                     ReviewId = null
                 },
                 new()
@@ -987,8 +987,8 @@ END
                     SellerId = itemList[3].SellerId,
                     Price = 100,
                     ItemId = itemList[3].Id,
-                    RentDate = DateTime.Now.AddDays(-7),
-                    ReturnDate = DateTime.Now.AddDays(+5),
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-7),
+                    ReturnDate = DateTime.Now.ToUniversalTime().AddDays(+5),
                     ReviewId = null
                 },
                 new()
@@ -997,8 +997,8 @@ END
                     SellerId = itemList[4].SellerId,
                     Price = 100,
                     ItemId = itemList[4].Id,
-                    RentDate = DateTime.Now.AddDays(-10),
-                    ReturnDate = DateTime.Now.AddDays(+2),
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-10),
+                    ReturnDate = DateTime.Now.ToUniversalTime().AddDays(+2),
                     ReviewId = null
                 },
                 new()
@@ -1007,8 +1007,8 @@ END
                     SellerId = itemList[5].SellerId,
                     Price = 1420,
                     ItemId = itemList[5].Id,
-                    RentDate = DateTime.Now.AddDays(-5),
-                    ReturnDate = DateTime.Now.AddDays(+30),
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-5),
+                    ReturnDate = DateTime.Now.ToUniversalTime().AddDays(+30),
                     ReviewId = null
                 },
                 new()
@@ -1017,8 +1017,8 @@ END
                     SellerId = itemList[6].SellerId,
                     Price = 200,
                     ItemId = itemList[6].Id,
-                    RentDate = DateTime.Now.AddDays(-5),
-                    ReturnDate = DateTime.Now.AddDays(+2),
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-5),
+                    ReturnDate = DateTime.Now.ToUniversalTime().AddDays(+2),
                     ReviewId = null
                 },
                 new()
@@ -1027,8 +1027,8 @@ END
                     SellerId = itemList[7].SellerId,
                     Price = 300,
                     ItemId = itemList[7].Id,
-                    RentDate = DateTime.Now.AddDays(-5),
-                    ReturnDate = DateTime.Now.AddDays(-2),
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-5),
+                    ReturnDate = DateTime.Now.ToUniversalTime().AddDays(-2),
                     ReviewId = null
                 },
                 new()
@@ -1037,8 +1037,8 @@ END
                     SellerId = itemList[8].SellerId,
                     Price = 500,
                     ItemId = itemList[8].Id,
-                    RentDate = DateTime.Now.AddDays(-5),
-                    ReturnDate = DateTime.Now.AddDays(+5),
+                    RentDate = DateTime.Now.ToUniversalTime().AddDays(-5),
+                    ReturnDate = DateTime.Now.ToUniversalTime().AddDays(+5),
                     ReviewId = null
                 }
             };
@@ -1151,8 +1151,8 @@ END
                     ReportedId = itemList[0].SellerId,
                     ReporterId = itemList[0].SellerId == client1.Id? client2.Id : client1.Id,
                     Name = "Report title",
-                    CreatedDate = DateTime.Now,
-                    SolveDate = DateTime.Now
+                    CreatedDate = DateTime.Now.ToUniversalTime(),
+                    SolveDate = DateTime.Now.ToUniversalTime()
                    
                 },
                 new()
@@ -1164,8 +1164,8 @@ END
                     ReportedId = itemList[5].SellerId,
                     ReporterId = itemList[5].SellerId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
-                    CreatedDate = DateTime.Now,
-                    SolveDate = DateTime.Now
+                    CreatedDate = DateTime.Now.ToUniversalTime(),
+                    SolveDate = DateTime.Now.ToUniversalTime()
                 },
                 new()
                 {
@@ -1176,8 +1176,8 @@ END
                     ReportedId = messagesList[0].SenderId,
                     ReporterId = messagesList[0].SenderId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
-                    CreatedDate = DateTime.Now,
-                    SolveDate = DateTime.Now
+                    CreatedDate = DateTime.Now.ToUniversalTime(),
+                    SolveDate = DateTime.Now.ToUniversalTime()
                 },
                 new()
                 {
@@ -1188,8 +1188,8 @@ END
                     ReportedId = messagesList[8].SenderId,
                     ReporterId = messagesList[8].SenderId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
-                    CreatedDate = DateTime.Now,
-                    SolveDate = DateTime.Now
+                    CreatedDate = DateTime.Now.ToUniversalTime(),
+                    SolveDate = DateTime.Now.ToUniversalTime()
                 },
                 new()
                 {
@@ -1200,8 +1200,8 @@ END
                     ReportedId = reviewsList[0].ClientId,
                     ReporterId = reviewsList[0].ClientId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
-                    CreatedDate = DateTime.Now,
-                    SolveDate = DateTime.Now
+                    CreatedDate = DateTime.Now.ToUniversalTime(),
+                    SolveDate = DateTime.Now.ToUniversalTime()
                 },
                 new()
                 {
@@ -1212,8 +1212,8 @@ END
                     ReportedId = reviewsList[5].ClientId,
                     ReporterId = reviewsList[5].ClientId == client1.Id? client2.Id : client1.Id,
                      Name = "Report title",
-                    CreatedDate = DateTime.Now,
-                    SolveDate = DateTime.Now
+                    CreatedDate = DateTime.Now.ToUniversalTime(),
+                    SolveDate = DateTime.Now.ToUniversalTime()
                 },
 
             };

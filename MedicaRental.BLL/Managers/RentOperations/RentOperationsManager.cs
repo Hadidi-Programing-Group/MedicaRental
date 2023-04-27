@@ -30,7 +30,7 @@ namespace MedicaRental.BLL.Managers
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Renter,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now && (searchText == null || MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.UtcNow && (searchText == null || MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
                         include: RentOperationHelper.RentOperationDtoInclude_Renter,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
@@ -38,7 +38,7 @@ namespace MedicaRental.BLL.Managers
 
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
                     );
 
                 return new(data, count);
@@ -56,7 +56,7 @@ namespace MedicaRental.BLL.Managers
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Renter,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
                         include: RentOperationHelper.RentOperationDtoInclude_Renter,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
@@ -64,7 +64,7 @@ namespace MedicaRental.BLL.Managers
 
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
                     );
                 return new(data, count);
             }
@@ -79,7 +79,7 @@ namespace MedicaRental.BLL.Managers
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Owner,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
                         include: RentOperationHelper.RentOperationDtoInclude_Owner,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
@@ -87,7 +87,7 @@ namespace MedicaRental.BLL.Managers
 
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.Now && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
                     );
 
                 return new(data, count);
@@ -103,14 +103,14 @@ namespace MedicaRental.BLL.Managers
                     (
                         orderBy: orderByQuery,
                         selector: RentOperationHelper.RentOperationDtoSelector_Owner,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
                         include: RentOperationHelper.RentOperationDtoInclude_Owner,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
                     );
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.Now && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                        predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
                     );
 
                 return new(data, count);
