@@ -15,12 +15,17 @@ namespace MedicaRental.API.Controllers
     {
         private readonly IAccountsManager _accountsManager;
         private readonly IClientsManager _clientsManager;
+        private readonly IReportActionManager _reportActionManager;
         private readonly UserManager<AppUser> _userManager;
 
-        public UsersController(IAccountsManager accountsManager, IClientsManager clientsManager, UserManager<AppUser> userManager)
+        public UsersController(IAccountsManager accountsManager, 
+            IClientsManager clientsManager, 
+            IReportActionManager reportActionManager,
+            UserManager<AppUser> userManager)
         {
             _accountsManager = accountsManager;
             _clientsManager = clientsManager;
+            _reportActionManager = reportActionManager;
             _userManager = userManager;
         }
 
@@ -148,18 +153,30 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("BlockUser")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<StatusDto>> BlockUserAsync(BlockUserInfoDto blockUserInfo)
         {
+            var userId =  _userManager.GetUserId(User);
+            if (userId is null)
+                return Unauthorized();
             var blockingStatus = await _accountsManager.BlockUserAsync(blockUserInfo);
-            return StatusCode((int)blockingStatus.StatusCode, blockingStatus.StatusMessage);
+
+            if (blockUserInfo.ReportId is null || blockingStatus.StatusCode != System.Net.HttpStatusCode.OK)
+                return StatusCode((int)blockingStatus.StatusCode, blockingStatus);
+
+            var insertReportActionDto = new InserReportActionDto(blockingStatus.StatusMessage, blockUserInfo.ReportId.Value, userId);
+            var addingReportAction = await _reportActionManager.AddReportAction(insertReportActionDto);
+
+            return StatusCode((int)addingReportAction.StatusCode, blockingStatus);
         }
 
         [HttpPost]
         [Route("UnBlockUser")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<StatusDto>> UnBlockUserAsync(string Email)
         {
             StatusDto blockingStatus = await _accountsManager.UnBlockUserAsync(Email);
-            return StatusCode((int)blockingStatus.StatusCode, blockingStatus.StatusMessage);
+            return StatusCode((int)blockingStatus.StatusCode, new { blockingStatus.StatusMessage });
         }
 
         [HttpPost]
@@ -167,7 +184,7 @@ namespace MedicaRental.API.Controllers
         public async Task<ActionResult<StatusDto>> ApproveUserAsync(string Email)
         {
             StatusDto blockingStatus = await _clientsManager.ApproveUserAsync(Email);
-            return StatusCode((int)blockingStatus.StatusCode, blockingStatus.StatusMessage);
+            return StatusCode((int)blockingStatus.StatusCode, new { blockingStatus.StatusMessage });
         } 
         #endregion
     }

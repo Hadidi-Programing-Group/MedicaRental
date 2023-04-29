@@ -30,7 +30,12 @@ public record DetailedReportDto
     public string Content { get; set; } = string.Empty;
     public string ContentTimeStamp { get; set; } = string.Empty;
     public string ReportCategory { get; set; } = string.Empty;
+    public bool IsReportedUserBlocked { get; set; }
+    public bool IsContentDeleted { get; set; }
+    public IEnumerable<ReportActionDto> ReportActions { get; set; } = new HashSet<ReportActionDto>();
 }
+
+public record ReportActionDto(string Action, DateTime CreateDate, string TakenBy);
 
 public record ReportDto(Guid Id, string Name, bool IsSolved, string CreatedDate, string? SolveDate, string ReportedName, string ReporterName);
 

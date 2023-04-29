@@ -2,8 +2,10 @@
 using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Report;
 using MedicaRental.BLL.Managers;
+using MedicaRental.DAL.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaRental.API.Controllers
@@ -13,9 +15,16 @@ namespace MedicaRental.API.Controllers
     public class ReportsController : ControllerBase
     {
         private readonly IReportsManager _ReportsManager;
-        public ReportsController(IReportsManager ReportsManager)
+        private readonly IReportActionManager _reportActionManager;
+        private readonly UserManager<AppUser> _userManager;
+
+        public ReportsController(IReportsManager ReportsManager,
+            IReportActionManager reportActionManager,
+            UserManager<AppUser> userManager)
         {
             _ReportsManager = ReportsManager;
+            _reportActionManager = reportActionManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -64,6 +73,26 @@ namespace MedicaRental.API.Controllers
             if (report is null)
                 return NotFound();
             return report;
+        }
+
+        [HttpPost]
+        [Route("MarkAsSolved/{Id}")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        public async Task<ActionResult<DetailedReportDto>> MarkAsSolved(Guid Id)
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId is null)
+                return Unauthorized();
+
+            StatusDto markAsSolvedResult = await _ReportsManager.MarkAsSolvedAsync(Id);
+
+            if (markAsSolvedResult.StatusCode != System.Net.HttpStatusCode.OK)
+                return StatusCode((int)markAsSolvedResult.StatusCode, markAsSolvedResult);
+
+            var insertReportActionDto = new InserReportActionDto(markAsSolvedResult.StatusMessage, Id, userId);
+            var addingReportAction = await _reportActionManager.AddReportAction(insertReportActionDto);
+
+            return StatusCode((int)addingReportAction.StatusCode, markAsSolvedResult);
         }
 
         [HttpPost]

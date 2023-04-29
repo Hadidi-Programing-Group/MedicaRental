@@ -122,10 +122,15 @@ namespace MedicaRental.DAL.Repositories
             }
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
-            
+
+            if (ignoreQueryFilter)
+            {
+                query = query.IgnoreQueryFilters();
+            }
+
             if (disableTracking)
             {
                 query = query.AsNoTracking();
@@ -154,9 +159,14 @@ namespace MedicaRental.DAL.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true)
+        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (ignoreQueryFilter)
+            {
+                query = query.IgnoreQueryFilters();
+            }
 
             if (disableTracking)
             {
@@ -191,9 +201,14 @@ namespace MedicaRental.DAL.Repositories
            return await query.ToListAsync();
         }
 
-        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (ignoreQueryFilter)
+            {
+                query = query.IgnoreQueryFilters();
+            }
 
             if (disableTracking)
             {
@@ -210,9 +225,14 @@ namespace MedicaRental.DAL.Repositories
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true)
+        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (ignoreQueryFilter)
+            {
+                query = query.IgnoreQueryFilters();
+            }
 
             if (disableTracking)
             {
@@ -242,9 +262,15 @@ namespace MedicaRental.DAL.Repositories
             return await query.Select(selector).ToListAsync();
         }
 
-        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true)
+        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (ignoreQueryFilter)
+            {
+                query = query.IgnoreQueryFilters();
+            }
+
             if (disableTracking)
             {
                 query = query.AsNoTracking();
@@ -278,9 +304,14 @@ namespace MedicaRental.DAL.Repositories
             return await query.Select(selector).ToListAsync();
         }
 
-        public async Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
+        public async Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (ignoreQueryFilter)
+            {
+                query = query.IgnoreQueryFilters();
+            }
 
             if (disableTracking)
             {
@@ -300,9 +331,14 @@ namespace MedicaRental.DAL.Repositories
             return await query.Select(selector).FirstOrDefaultAsync();
         }
 
-        public async Task<int> GetCountAsync(Expression<Func<TEntity, bool>>? predicate = null)
+        public async Task<int> GetCountAsync(Expression<Func<TEntity, bool>>? predicate = null, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (ignoreQueryFilter)
+            {
+                query = query.IgnoreQueryFilters();
+            }
 
             if (predicate != null)
             {

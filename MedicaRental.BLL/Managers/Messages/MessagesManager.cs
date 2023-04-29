@@ -47,7 +47,7 @@ public class MessagesManager : IMessagesManager
         if (succeeded)
         {
             _unitOfWork.Save();
-            return new("Message deleted successfully", HttpStatusCode.NoContent);
+            return new("Message deleted successfully", HttpStatusCode.OK);
         }
 
         return new("Message couldn't be deleted", HttpStatusCode.BadRequest);

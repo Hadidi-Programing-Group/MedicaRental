@@ -11,24 +11,24 @@ namespace MedicaRental.DAL.Repositories
     public interface IEntityRepo<TEntity> where TEntity : class
     {
         public Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-                                          Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true);
+                                          Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false);
 
-        public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true);
+        public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false);
 
         public Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null,
                                            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-                                           Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true);
+                                           Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false);
 
         public Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-                                          Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true);
+                                          Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false);
 
-        public Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true);
+        public Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false);
 
         public Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null,
                                            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-                                           Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true);
+                                           Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false);
 
-        public Task<int> GetCountAsync(Expression<Func<TEntity, bool>>? predicate = null);
+        public Task<int> GetCountAsync(Expression<Func<TEntity, bool>>? predicate = null, bool ignoreQueryFilter = false);
 
         public Task<bool> AddAsync(TEntity entity);
         public Task<bool> AddRangeAsync(IEnumerable<TEntity> entities);

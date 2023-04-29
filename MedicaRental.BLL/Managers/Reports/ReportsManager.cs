@@ -54,10 +54,12 @@ public class ReportsManager : IReportsManager
             predicate: (p) => p.Id == id,
             include: source => source.Include(r => r.Reported).ThenInclude(re => re.User)
                                      .Include(r => r.Reporter).ThenInclude(re => re.User)
+                                     .Include(r => r.ReportActions).ThenInclude(ra => ra.AppUser)
             );
 
         if (report is null)
             return null;
+
 
         var detailedReportDto = new DetailedReportDto()
         {
@@ -66,22 +68,28 @@ public class ReportsManager : IReportsManager
             Statement = report.Statement,
             IsSolved = report.IsSolved,
             CreatedDate = report.CreatedDate.ToString("o"),
-            SolveDate = report.SolveDate?.ToString("o")??"",
+            SolveDate = report.SolveDate?.ToString("o") ?? "",
             ReportedId = report.ReportedId,
             ReporterId = report.ReporterId,
             ReportedName = report.Reported.Name,
             ReporterName = report.Reported.Name,
+            IsReportedUserBlocked = report.Reported.User.LockoutEnd > DateTimeOffset.Now,
+            ReportActions = report.ReportActions.Select(ra => new ReportActionDto(
+                ra.Action, ra.CreateTime, ra.AppUser.Name 
+                ))
         };
 
         if (report.MessageId is not null)
         {
             var message = await _unitOfWork.Messages.FindAsync(
+                ignoreQueryFilter: true,
                 predicate: m => m.Id == report.MessageId
                 );
 
             if (message is null) return null;
 
             detailedReportDto.ContentId = message.Id;
+            detailedReportDto.IsContentDeleted = message.IsDeleted;
             detailedReportDto.Content = message.Content;
             detailedReportDto.ContentTimeStamp = message.Timestamp.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Chats.ToString();
@@ -91,6 +99,7 @@ public class ReportsManager : IReportsManager
         else if (report.ItemId is not null)
         {
             var item = await _unitOfWork.Items.FindAsync(
+                ignoreQueryFilter: true,
                 predicate: m => m.Id == report.ItemId
                 );
 
@@ -98,6 +107,7 @@ public class ReportsManager : IReportsManager
 
             detailedReportDto.ContentId = item.Id;
             detailedReportDto.Content = item.Name;
+            detailedReportDto.IsContentDeleted = item.IsDeleted;
             detailedReportDto.ContentTimeStamp = item.CreationDate.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Items.ToString();
         }
@@ -105,6 +115,7 @@ public class ReportsManager : IReportsManager
         else if (report.ReviewId is not null)
         {
             var review = await _unitOfWork.Reviews.FindAsync(
+                ignoreQueryFilter: true,
                 predicate: m => m.Id == report.ReviewId
                 );
 
@@ -112,6 +123,7 @@ public class ReportsManager : IReportsManager
 
             detailedReportDto.ContentId = review.Id;
             detailedReportDto.Content = review.ClientReview;
+            detailedReportDto.IsContentDeleted = review.IsDeleted;
             detailedReportDto.ContentTimeStamp = review.CreateDate.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Reviews.ToString();
         }
@@ -233,5 +245,25 @@ public class ReportsManager : IReportsManager
         return new InsertReportStatusDto(true, report.Id, "Report inserted successfully.");
     }
 
+    public async Task<StatusDto> MarkAsSolvedAsync(Guid id)
+    {
+        var report = await _unitOfWork.Reports.FindAsync(r => r.Id == id);
+        if (report is null)
+            return new StatusDto("Report not found", System.Net.HttpStatusCode.NotFound);
 
+        report.IsSolved = !report.IsSolved;
+
+        string actionTaken = report.IsSolved ? "Report was marked as solved" : "Report was re-opened";
+        var updateResult =  _unitOfWork.Reports.Update(report);
+        
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto(actionTaken, System.Net.HttpStatusCode.OK);
+        }
+        catch
+        {
+            return new StatusDto("Report couldn't be updated", System.Net.HttpStatusCode.InternalServerError);
+        }
+    }
 }

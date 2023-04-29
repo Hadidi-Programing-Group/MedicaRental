@@ -4,10 +4,12 @@ using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace MedicaRental.API.Controllers
 {
@@ -16,12 +18,16 @@ namespace MedicaRental.API.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly IMessagesManager _messagesManager;
+        private readonly IReportActionManager _reportActionManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IHubContext<ChatHub> _chatHub;
 
-        public MessagesController(IMessagesManager messagesManager, UserManager<AppUser> userManager, IHubContext<ChatHub> chatHub)
+        public MessagesController(IMessagesManager messagesManager,
+            IReportActionManager reportActionManager,
+            UserManager<AppUser> userManager, IHubContext<ChatHub> chatHub)
         {
             _messagesManager = messagesManager;
+            _reportActionManager = reportActionManager;
             _userManager = userManager;
             _chatHub = chatHub;
         }
@@ -48,10 +54,41 @@ namespace MedicaRental.API.Controllers
             return Ok(chat);
         }
 
-        [HttpDelete]
-        public async Task<StatusDto> DeleteMessage(string userId, Guid messageId)
+        //[HttpDelete]
+        //public async Task<StatusDto> DeleteMessage(string userId, Guid messageId)
+        //{
+        //    return await _messagesManager.DeleteMessage(userId, messageId);
+        //}
+
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult<StatusDto>> DeleteMessage(DeleteMessageRequestDto deleteMessageRequestDto)
         {
-            return await _messagesManager.DeleteMessage(userId, messageId);
+            var currentUserId = _userManager.GetUserId(User);
+            
+            var claim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+
+            if (claim?.Value == UserRoles.Client.ToString())
+            {
+                if (currentUserId != deleteMessageRequestDto.UserId)
+                    return Unauthorized();
+
+                return await _messagesManager.DeleteMessage(deleteMessageRequestDto.UserId, deleteMessageRequestDto.MessageId);
+            }
+
+            else 
+            {
+
+                StatusDto deleteMessageResult = await _messagesManager.DeleteMessage(deleteMessageRequestDto.UserId, deleteMessageRequestDto.MessageId);
+                if (deleteMessageRequestDto.ReportId is null || deleteMessageResult.StatusCode != System.Net.HttpStatusCode.OK)
+                    return StatusCode((int)deleteMessageResult.StatusCode, deleteMessageResult);
+
+                var insertReportActionDto = new InserReportActionDto(deleteMessageResult.StatusMessage, deleteMessageRequestDto.ReportId.Value, currentUserId);
+                var addingReportAction = await _reportActionManager.AddReportAction(insertReportActionDto);
+
+                return StatusCode((int)addingReportAction.StatusCode, deleteMessageResult);
+            }
+
         }
 
         [HttpGet("notificationCount")]
