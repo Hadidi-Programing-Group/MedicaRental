@@ -214,5 +214,14 @@ namespace MedicaRental.API.Controllers
             return await _itemsManager.ReListItem(itemId);
         }
         #endregion
+
+        [HttpGet]
+        [Route("isowner/{itemId}")]
+        public async Task<ActionResult<ItemOwnerStatusDto>> GetIsItemOwnerStatus(Guid itemId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var IsOwner = await _itemsManager.GetItemOwnerStatus(userId, itemId);
+            return IsOwner;
+        }
     }
 }
