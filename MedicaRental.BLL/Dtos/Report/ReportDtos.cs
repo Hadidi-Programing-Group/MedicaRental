@@ -31,6 +31,7 @@ public record DetailedReportDto
     public string ContentTimeStamp { get; set; } = string.Empty;
     public string ReportCategory { get; set; } = string.Empty;
     public bool IsReportedUserBlocked { get; set; }
+    public bool IsContentDeleted { get; set; }
     public IEnumerable<ReportActionDto> ReportActions { get; set; } = new HashSet<ReportActionDto>();
 }
 

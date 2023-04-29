@@ -82,12 +82,14 @@ public class ReportsManager : IReportsManager
         if (report.MessageId is not null)
         {
             var message = await _unitOfWork.Messages.FindAsync(
+                ignoreQueryFilter: true,
                 predicate: m => m.Id == report.MessageId
                 );
 
             if (message is null) return null;
 
             detailedReportDto.ContentId = message.Id;
+            detailedReportDto.IsContentDeleted = message.IsDeleted;
             detailedReportDto.Content = message.Content;
             detailedReportDto.ContentTimeStamp = message.Timestamp.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Chats.ToString();
@@ -97,6 +99,7 @@ public class ReportsManager : IReportsManager
         else if (report.ItemId is not null)
         {
             var item = await _unitOfWork.Items.FindAsync(
+                ignoreQueryFilter: true,
                 predicate: m => m.Id == report.ItemId
                 );
 
@@ -104,6 +107,7 @@ public class ReportsManager : IReportsManager
 
             detailedReportDto.ContentId = item.Id;
             detailedReportDto.Content = item.Name;
+            detailedReportDto.IsContentDeleted = item.IsDeleted;
             detailedReportDto.ContentTimeStamp = item.CreationDate.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Items.ToString();
         }
@@ -111,6 +115,7 @@ public class ReportsManager : IReportsManager
         else if (report.ReviewId is not null)
         {
             var review = await _unitOfWork.Reviews.FindAsync(
+                ignoreQueryFilter: true,
                 predicate: m => m.Id == report.ReviewId
                 );
 
@@ -118,6 +123,7 @@ public class ReportsManager : IReportsManager
 
             detailedReportDto.ContentId = review.Id;
             detailedReportDto.Content = review.ClientReview;
+            detailedReportDto.IsContentDeleted = review.IsDeleted;
             detailedReportDto.ContentTimeStamp = review.CreateDate.ToString("o");
             detailedReportDto.ReportCategory = ReportCategory.Reviews.ToString();
         }
