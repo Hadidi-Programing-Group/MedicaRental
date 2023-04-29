@@ -3,6 +3,7 @@ using MedicaRental.BLL.Dtos.Authentication;
 using MedicaRental.BLL.Managers.Authentication;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
+using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -20,18 +21,18 @@ namespace MedicaRental.BLL.Managers;
 public class AccountsManager : IAccountsManager
 {
     private readonly UserManager<AppUser> _userManager;
-    private readonly IAuthManger authManger;
-    private readonly IConfiguration _configuration;
+    private readonly IAuthManger _authManger;
+    private readonly IUnitOfWork _unitOfWork;
 
     public AccountsManager(
         UserManager<AppUser> userManager,
         IAuthManger authManger,
-        IConfiguration configuration
+        IUnitOfWork unitOfWork
     )
     {
         _userManager = userManager;
-        this.authManger = authManger;
-        _configuration = configuration;
+        this._authManger = authManger;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<StatusDto> BlockUserAsync(BlockUserInfoDto blockUserInfo)
@@ -77,7 +78,8 @@ public class AccountsManager : IAccountsManager
                 null,
                 null,
                 null,
-                DateTime.UtcNow
+                DateTime.UtcNow,
+                null
             );
 
         var isBlocked = await _userManager.IsLockedOutAsync(user);
@@ -89,13 +91,14 @@ public class AccountsManager : IAccountsManager
                 null,
                 null,
                 null,
-                DateTime.UtcNow
+                DateTime.UtcNow,
+                null
             );
         #endregion
 
 
         #region Creating the JWT
-        var jwtSecurityToken = await authManger.CreateJwtToken(user);
+        var jwtSecurityToken = await _authManger.CreateJwtToken(user);
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenString = tokenHandler.WriteToken(jwtSecurityToken);
@@ -109,25 +112,36 @@ public class AccountsManager : IAccountsManager
 
         #region RefreshToken Check/Create
 
-        if (user.RefreshTokens.Any(t => t.IsActive))
+        var activeRefreshToken = await _unitOfWork.RefreshToken.FindAsync(
+            predicate: t => t.AppUserId == user.Id && t.RevokedOn == null
+            );
+        if (activeRefreshToken is not null)
         {
-            var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
             authModel.RefreshToken = activeRefreshToken.Token;
             authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
         }
         else
         {
-            var refreshToken = authManger.GenerateRefreshToken();
+            var refreshToken = _authManger.GenerateRefreshToken();
             authModel.RefreshToken = refreshToken.Token;
             authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
             //Save to Database
             user.RefreshTokens.Add(refreshToken);
             await _userManager.UpdateAsync(user);
         }
+
+
+        //var refreshToken = authManger.GenerateRefreshToken();
+        //authModel.RefreshToken = refreshToken.Token;
+        //authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+        ////Save to Database
+        //user.RefreshTokens.Add(refreshToken);
+        //await _userManager.UpdateAsync(user);
+
         #endregion
 
 
-
+        var claims = await _userManager.GetClaimsAsync(user);
 
 
         return new LoginStatusWithTokenDto(
@@ -137,8 +151,9 @@ public class AccountsManager : IAccountsManager
             authModel.TokenString,
             authModel.ExpiresOn,
             authModel.RefreshToken,
-            authModel.RefreshTokenExpiration
-        );
+            authModel.RefreshTokenExpiration,
+            claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? UserRoles.Client.ToString()
+        ) ;
 
         //return authModel;
     }
@@ -238,7 +253,7 @@ public class AccountsManager : IAccountsManager
 
     //    var SignInCreds = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256Signature);
 
-    //    var expiry = DateTime.Now.AddDays(1);
+    //    var expiry = DateTime.UtcNow.AddDays(1);
 
     //    var token = new JwtSecurityToken(
     //        claims: ClaimsList,

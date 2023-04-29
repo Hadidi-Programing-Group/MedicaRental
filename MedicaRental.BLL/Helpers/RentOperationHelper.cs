@@ -27,8 +27,8 @@ namespace MedicaRental.BLL.Helpers
         public static Expression<Func<RentOperation, RentOperationDto>> RentOperationDtoSelector_Owner = ro => new
         (
             ro.Id,
-            ro.RentDate,
-            ro.ReturnDate,
+            ro.RentDate.ToString("o"),
+            ro.ReturnDate.ToString("o"),
             ro.Price,
             ro.ClientId,
             ro.Client!.Name,
@@ -41,8 +41,8 @@ namespace MedicaRental.BLL.Helpers
         public static Expression<Func<RentOperation, RentOperationDto>> RentOperationDtoSelector_Renter = ro => new
         (
             ro.Id,
-            ro.RentDate,
-            ro.ReturnDate,
+            ro.RentDate.ToString("o"),
+            ro.ReturnDate.ToString("o"),
             ro.Price,
             ro.SellerId,
             ro.Seller!.Name,

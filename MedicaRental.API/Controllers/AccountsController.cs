@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Text;
 
 namespace MedicaRental.API.Controllers
@@ -87,8 +88,13 @@ namespace MedicaRental.API.Controllers
         public async Task<IActionResult> RenewTokens()
         {
             var refreshToken = Request.Cookies["refreshToken"];
+
             if (refreshToken is null)
-                return Unauthorized();
+            return new ContentResult
+            {
+                StatusCode = (int)HttpStatusCode.Unauthorized,
+                Content = "RefreshToken is not found"
+            };
 
             var result = await _authManger.RenewTokens(refreshToken);
 

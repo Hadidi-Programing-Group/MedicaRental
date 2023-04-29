@@ -24,9 +24,69 @@ namespace MedicaRental.API.Controllers
             _userManager = userManager;
         }
 
+        #region Raouf-Added
+
+        [HttpGet]
+        [Route("allClients")]
+        public async Task<ActionResult<List<UserProfileInfoDto>>> GetAllClients()
+        {
+            var clients = await _clientsManager.GetAllClientsAsync();
+
+            if (!clients.Any()) return NotFound();
+
+            return Ok(clients);
+        }
+
+        [HttpGet]
+        [Route("GetAllClientsApprovalInfo")]
+        //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        public async Task<ActionResult<List<UserApprovalInfoDto>>> GetAllClientsApprovalInfo()
+        {
+            var approvalInfoList = await _clientsManager.GetAllClientsApprovalInfoAsync();
+
+            if (!approvalInfoList.Any()) return NotFound();
+
+            return Ok(approvalInfoList);
+        }
+
+
+
+        [HttpGet]
+        [Route("clientsNeedingApproval")]
+        //[Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        public async Task<ActionResult<IEnumerable<UserProfileInfoDto>>> GetClientsNeedingApproval()
+        {
+            var clients = await _clientsManager.GetClientsNeedingApprovalAsync();
+
+            if (!clients.Any())
+            {
+                return NotFound();
+            }
+            return Ok(clients);
+        }
+
+       
+
+        [HttpGet]
+        [Route("GetClientApprovalInfoWithId/{userId}")]
+        //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        public async Task<ActionResult<UserApprovalInfoWithIdDto>> GetClientApprovalInfoWithId(string userId)
+        {
+            var approvalInfo = await _clientsManager.GetClientApprovalInfoWithIdAsync(userId);
+
+            if (approvalInfo is null) return NotFound();
+
+            return approvalInfo;
+        }
+
+
+        #endregion
+
+        #region Old-endpoints
+
         [HttpGet]
         [Route("GetInfo")]
-        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<UserProfileInfoDto>> GetUserInfo()
         {
             var userId = _userManager.GetUserId(User);
@@ -57,7 +117,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("GetApprovalInfo")]
-        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<UserApprovalInfoDto>> GetApprovalInfo()
         {
             var userId = _userManager.GetUserId(User);
@@ -90,8 +150,8 @@ namespace MedicaRental.API.Controllers
         [Route("BlockUser")]
         public async Task<ActionResult<StatusDto>> BlockUserAsync(BlockUserInfoDto blockUserInfo)
         {
-            var blockingStatus =  await _accountsManager.BlockUserAsync(blockUserInfo);
-            return StatusCode((int) blockingStatus.StatusCode, blockingStatus.StatusMessage);
+            var blockingStatus = await _accountsManager.BlockUserAsync(blockUserInfo);
+            return StatusCode((int)blockingStatus.StatusCode, blockingStatus.StatusMessage);
         }
 
         [HttpPost]
@@ -108,6 +168,7 @@ namespace MedicaRental.API.Controllers
         {
             StatusDto blockingStatus = await _clientsManager.ApproveUserAsync(Email);
             return StatusCode((int)blockingStatus.StatusCode, blockingStatus.StatusMessage);
-        }
+        } 
+        #endregion
     }
 }

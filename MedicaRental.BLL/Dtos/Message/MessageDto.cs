@@ -12,7 +12,7 @@ namespace MedicaRental.BLL.Dtos
         Guid Id,
         string Message,
         string SenderId,
-        DateTime MessageDate,
+        string MessageDate,
         MessageStatus MessageStatus
     );
 }

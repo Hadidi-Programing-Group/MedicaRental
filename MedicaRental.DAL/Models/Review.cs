@@ -14,6 +14,8 @@ namespace MedicaRental.DAL.Models
         public bool IsDeleted { get; set; }
 
         public string ClientReview { get; set; } = string.Empty;
+
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
      
         [ForeignKey("Client")]
         public string ClientId { get; set; } = string.Empty;

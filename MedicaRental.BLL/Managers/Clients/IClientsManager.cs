@@ -16,4 +16,10 @@ public interface IClientsManager
     Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto registerInfoDto);
     Task<StatusDto> UpdateApprovalInfoAsync(string userId, UpdateApprovalInfoDto updateProfileInfoDto);
     Task<StatusDto> UpdateClientInfoAsync(string userId, UpdateProfileInfoDto updateProfileInfoDto);
+
+    Task<List<UserApprovalInfoDto>> GetAllClientsApprovalInfoAsync();
+    Task<List<UserProfileInfoDto>> GetAllClientsAsync();
+
+    Task<IEnumerable<UserProfileInfoWithIdDto>> GetClientsNeedingApprovalAsync();
+    Task<UserApprovalInfoWithIdDto?> GetClientApprovalInfoWithIdAsync(string userId);
 }

@@ -18,11 +18,11 @@ public class ItemsRepo : EntityRepo<Item>, IItemsRepo
 
     public bool HasRenters(Item item)
     {
-        return item.ItemRenters.Any(r => r.ReturnDate > DateTime.Now);
+        return item.ItemRenters.Any(r => r.ReturnDate > DateTime.UtcNow);
     }
 
     public bool HasRenters(IEnumerable<Item> items)
     {
-        return items.Any(i => i.ItemRenters.Any(r => r.ReturnDate > DateTime.Now));
+        return items.Any(i => i.ItemRenters.Any(r => r.ReturnDate > DateTime.UtcNow));
     }
 }
