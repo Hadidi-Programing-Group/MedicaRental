@@ -1,4 +1,5 @@
 ﻿using MedicaRental.DAL.Context;
+using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -41,5 +42,7 @@ namespace MedicaRental.DAL.Models
         [ForeignKey("Item")]
         public Guid? ItemId { get; set; }
         public Item? Item { get; set; }
+
+        public ICollection<ReportAction>   ReportActions { get; set; } = new HashSet<ReportAction>();   
     }
 }
