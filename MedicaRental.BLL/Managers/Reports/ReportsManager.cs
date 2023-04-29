@@ -60,6 +60,7 @@ public class ReportsManager : IReportsManager
         if (report is null)
             return null;
 
+
         var detailedReportDto = new DetailedReportDto()
         {
             Id = report.Id,
@@ -67,11 +68,12 @@ public class ReportsManager : IReportsManager
             Statement = report.Statement,
             IsSolved = report.IsSolved,
             CreatedDate = report.CreatedDate.ToString("o"),
-            SolveDate = report.SolveDate?.ToString("o")??"",
+            SolveDate = report.SolveDate?.ToString("o") ?? "",
             ReportedId = report.ReportedId,
             ReporterId = report.ReporterId,
             ReportedName = report.Reported.Name,
             ReporterName = report.Reported.Name,
+            IsReportedUserBlocked = report.Reported.User.LockoutEnd > DateTimeOffset.Now,
             ReportActions = report.ReportActions.Select(ra => new ReportActionDto(
                 ra.Action, ra.CreateTime, ra.AppUser.Name 
                 ))
