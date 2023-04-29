@@ -21,6 +21,7 @@ public interface IUnitOfWork : IDisposable
     IEntityRepo<Review> Reviews {get;}
     IEntityRepo<Brand> Brands {get; }
     IEntityRepo<RentOperation> RentOperations { get;}
+    IEntityRepo<ReportAction> ReportActions { get; }
 
     IEntityRepo<RefreshToken> RefreshToken { get; }
 
