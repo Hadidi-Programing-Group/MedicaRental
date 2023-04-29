@@ -24,6 +24,7 @@ namespace MedicaRental.DAL.Context
         public DbSet<Report> Reports => Set<Report>();
         public DbSet<RentOperation> RentOperations => Set<RentOperation>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<ReportAction> ReportActions => Set<ReportAction>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 
@@ -43,6 +44,7 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new MessageEntityTypeConfiguration());
             builder.ApplyConfiguration(new ReportEntityTypeConfiguration());
             builder.ApplyConfiguration(new RentOperationEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ReportActionEntityTypeConfiguration());
         }
 
         public static int LevDist (string s1, string? s2, int? maxDistance) => throw new NotSupportedException();
