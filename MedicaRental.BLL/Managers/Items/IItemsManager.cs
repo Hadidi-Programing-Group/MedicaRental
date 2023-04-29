@@ -39,5 +39,6 @@ public interface IItemsManager
 
     public Task<StatusDto> UnListItem(Guid id);
     public Task<StatusDto> ReListItem(Guid id);
+    public Task<ItemOwnerStatusDto> GetItemOwnerStatus(string usreId, Guid ItemId);
 
 }

@@ -521,5 +521,17 @@ public class ItemsManager : IItemsManager
         }
         catch (Exception) { return null; }
     }
+
+    public async Task<ItemOwnerStatusDto> GetItemOwnerStatus(string usreId, Guid ItemId)
+    {
+        var items = await _unitOfWork.Items.FindAllAsync(predicate: u => u.SellerId == usreId);
+        foreach(var item in items)
+        {
+            if (item.Id == ItemId)
+                return new ItemOwnerStatusDto(true);
+        }
+
+        return new ItemOwnerStatusDto(false);
+    }
     #endregion
 }
