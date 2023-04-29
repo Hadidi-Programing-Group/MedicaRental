@@ -37,10 +37,10 @@ public class AccountsManager : IAccountsManager
 
     public async Task<StatusDto> BlockUserAsync(BlockUserInfoDto blockUserInfo)
     {
-        var user = await _userManager.FindByEmailAsync(blockUserInfo.Email);
+        var user = await _userManager.FindByIdAsync(blockUserInfo.Id);
         if (user is null)
             return new StatusDto(
-                StatusMessage: $"User {blockUserInfo.Email} coudn't be found",
+                StatusMessage: $"User {blockUserInfo.Id} coudn't be found",
                 StatusCode: System.Net.HttpStatusCode.NotFound
             );
 
@@ -49,11 +49,11 @@ public class AccountsManager : IAccountsManager
         if (lockDate.Succeeded)
             return new StatusDto(
                 StatusCode: System.Net.HttpStatusCode.OK,
-                StatusMessage: $"User {blockUserInfo.Email} is blocked untill {blockUserInfo.EndDate}"
+                StatusMessage: $"User {user.Email} is blocked untill {blockUserInfo.EndDate}"
             );
         else
             return new StatusDto(
-                StatusMessage: $"User {blockUserInfo.Email} coudn't be blocked",
+                StatusMessage: $"User {user.Email} coudn't be blocked",
                 StatusCode: System.Net.HttpStatusCode.BadRequest
             );
     }
