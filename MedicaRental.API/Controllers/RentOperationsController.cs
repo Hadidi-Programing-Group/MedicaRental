@@ -73,9 +73,12 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("isrented/{itemId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ItemHasBeenRentedToUserDto>> GetIsItemRentedStatus (Guid itemId)
         {
             var userId = _userManager.GetUserId(User);
+            if (userId is null)
+                return new ItemHasBeenRentedToUserDto(false);
             var IsReturned = await _rentOperationsManager.GetRentingStatus(userId, itemId);
             return IsReturned;
         }
