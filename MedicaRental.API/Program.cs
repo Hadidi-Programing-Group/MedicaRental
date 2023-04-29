@@ -154,6 +154,7 @@ builder.Services.AddScoped<IReviewsManager, ReviewsManager>();
 builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
 builder.Services.AddScoped<IRentOperationsManager, RentOperationsManager>();
+builder.Services.AddScoped<IReportActionManager, ReportActionManager>();
 
 builder.Services.AddScoped<IAuthManger, AuthManger>();
 

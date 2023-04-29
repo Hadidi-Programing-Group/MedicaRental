@@ -54,6 +54,7 @@ public class ReportsManager : IReportsManager
             predicate: (p) => p.Id == id,
             include: source => source.Include(r => r.Reported).ThenInclude(re => re.User)
                                      .Include(r => r.Reporter).ThenInclude(re => re.User)
+                                     .Include(r => r.ReportActions).ThenInclude(ra => ra.AppUser)
             );
 
         if (report is null)
@@ -71,6 +72,9 @@ public class ReportsManager : IReportsManager
             ReporterId = report.ReporterId,
             ReportedName = report.Reported.Name,
             ReporterName = report.Reported.Name,
+            ReportActions = report.ReportActions.Select(ra => new ReportActionDto(
+                ra.Action, ra.CreateTime, ra.AppUser.Name 
+                ))
         };
 
         if (report.MessageId is not null)
@@ -233,5 +237,25 @@ public class ReportsManager : IReportsManager
         return new InsertReportStatusDto(true, report.Id, "Report inserted successfully.");
     }
 
+    public async Task<StatusDto> MarkAsSolvedAsync(Guid id)
+    {
+        var report = await _unitOfWork.Reports.FindAsync(r => r.Id == id);
+        if (report is null)
+            return new StatusDto("Report not found", System.Net.HttpStatusCode.NotFound);
 
+        report.IsSolved = !report.IsSolved;
+
+        string actionTaken = report.IsSolved ? "Report was marked as solved" : "Report was re-opened";
+        var updateResult =  _unitOfWork.Reports.Update(report);
+        
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto(actionTaken, System.Net.HttpStatusCode.OK);
+        }
+        catch
+        {
+            return new StatusDto("Report couldn't be updated", System.Net.HttpStatusCode.InternalServerError);
+        }
+    }
 }

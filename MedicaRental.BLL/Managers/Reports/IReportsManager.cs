@@ -20,5 +20,5 @@ public interface IReportsManager
     Task<DetailedReportDto?> GetByIdAsync(Guid? id);
     Task<DeleteReportStatusDto> DeleteByIdAsync(Guid id);
     Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport);
-
+    Task<StatusDto> MarkAsSolvedAsync(Guid id);
 }
