@@ -40,7 +40,7 @@ public class MessagesManager : IMessagesManager
         return msg.Id;
     }
 
-    public async Task<StatusDto> DeleteMessage(string userId, Guid messageId)
+    public async Task<StatusDto> DeleteMessage(Guid messageId)
     {
         var succeeded = await _unitOfWork.Messages.DeleteOneById(messageId);
 
