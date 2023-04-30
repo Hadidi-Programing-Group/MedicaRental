@@ -26,7 +26,7 @@ public interface IMessagesManager
     /// <returns></returns>
     public Task<bool> UpdateMessageStatusToSeen(string firstUserId, string secondUserId, DateTime dateOpened);
     
-    public Task<StatusDto> DeleteMessage(string userId, Guid messageId);
+    public Task<StatusDto> DeleteMessage(Guid messageId);
 
     public Task<Guid> AddMessage(string fromId, string toId, string message, DateTime timeStamp);
 

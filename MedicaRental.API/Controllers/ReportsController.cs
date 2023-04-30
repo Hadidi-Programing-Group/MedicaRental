@@ -99,7 +99,8 @@ namespace MedicaRental.API.Controllers
         [Route("InsertReport")]
         public async Task<ActionResult> InsertReport(InsertReportDtos insertReportDtos)
         {
-            InsertReportStatusDto insertReportStatusDto = await _ReportsManager.InsertNewReport(insertReportDtos);
+            var reporteeId = _userManager.GetUserId(User); 
+            InsertReportStatusDto insertReportStatusDto = await _ReportsManager.InsertNewReport(insertReportDtos, reporteeId);
 
             if (!insertReportStatusDto.isCreated)
                 return BadRequest(insertReportStatusDto.StatusMessage);

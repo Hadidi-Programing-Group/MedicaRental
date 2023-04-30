@@ -19,6 +19,6 @@ public interface IReportsManager
     Task<PageDto<ReportDto>?> GetItemReportsAsync(int page);
     Task<DetailedReportDto?> GetByIdAsync(Guid? id);
     Task<DeleteReportStatusDto> DeleteByIdAsync(Guid id);
-    Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport);
+    Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport, string reporteeId);
     Task<StatusDto> MarkAsSolvedAsync(Guid id);
 }

@@ -206,7 +206,7 @@ public class ReportsManager : IReportsManager
         }
     }
 
-    public async Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport)
+    public async Task<InsertReportStatusDto> InsertNewReport(InsertReportDtos insertReport, string reporteeId)
     {
         if (insertReport == null)
         {
@@ -220,7 +220,7 @@ public class ReportsManager : IReportsManager
             Statement = insertReport.Statement,
             ReportedId = insertReport.ReportedId,
 
-            ReporterId = insertReport.ReporteeId,
+            ReporterId = reporteeId,
 
             MessageId = insertReport.MessageId,
             ReviewId = insertReport.ReviewId,

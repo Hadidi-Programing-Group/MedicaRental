@@ -63,23 +63,19 @@ namespace MedicaRental.API.Controllers
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<StatusDto>> DeleteMessage(DeleteMessageRequestDto deleteMessageRequestDto)
-        {
-            var currentUserId = _userManager.GetUserId(User);
-            
+        {            
             var claim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
 
             if (claim?.Value == UserRoles.Client.ToString())
             {
-                if (currentUserId != deleteMessageRequestDto.UserId)
-                    return Unauthorized();
-
-                return await _messagesManager.DeleteMessage(deleteMessageRequestDto.UserId, deleteMessageRequestDto.MessageId);
+                return await _messagesManager.DeleteMessage(deleteMessageRequestDto.MessageId);
             }
 
             else 
             {
+                var currentUserId = _userManager.GetUserId(User);
 
-                StatusDto deleteMessageResult = await _messagesManager.DeleteMessage(deleteMessageRequestDto.UserId, deleteMessageRequestDto.MessageId);
+                StatusDto deleteMessageResult = await _messagesManager.DeleteMessage(deleteMessageRequestDto.MessageId);
                 if (deleteMessageRequestDto.ReportId is null || deleteMessageResult.StatusCode != System.Net.HttpStatusCode.OK)
                     return StatusCode((int)deleteMessageResult.StatusCode, deleteMessageResult);
 

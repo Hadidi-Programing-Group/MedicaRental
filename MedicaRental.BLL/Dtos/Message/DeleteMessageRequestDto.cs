@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
-public record DeleteMessageRequestDto(string UserId, Guid MessageId, Guid? ReportId);
+public record DeleteMessageRequestDto(Guid MessageId, Guid? ReportId);
