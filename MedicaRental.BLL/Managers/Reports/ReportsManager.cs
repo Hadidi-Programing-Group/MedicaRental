@@ -252,6 +252,7 @@ public class ReportsManager : IReportsManager
             return new StatusDto("Report not found", System.Net.HttpStatusCode.NotFound);
 
         report.IsSolved = !report.IsSolved;
+        report.SolveDate = report.IsSolved ? DateTime.Now : null;
 
         string actionTaken = report.IsSolved ? "Report was marked as solved" : "Report was re-opened";
         var updateResult =  _unitOfWork.Reports.Update(report);
