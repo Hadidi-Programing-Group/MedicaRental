@@ -533,5 +533,27 @@ public class ItemsManager : IItemsManager
 
         return new ItemOwnerStatusDto(false);
     }
+
     #endregion
+    public async Task<StatusDto> DeleteItemByAdmin(Guid itemId)
+    {
+        var item = await _unitOfWork.Items.FindAsync(predicate: i => i.Id == itemId, disableTracking: false);
+
+        if (item is null)
+            return new StatusDto("No item with the given id.", HttpStatusCode.NotFound);
+
+
+
+        _unitOfWork.Items.Delete(item);
+
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto("Item deleted successfully", HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return new StatusDto($"Item couldn't be deleted.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
 }
