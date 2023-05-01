@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using System;
@@ -11,36 +12,38 @@ namespace MedicaRental.BLL.Managers;
 
 public class ReviewsManager : IReviewsManager
 {
-    private readonly IUnitOfWork unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ReviewsManager(IUnitOfWork _unitOfWork)
+    public ReviewsManager(IUnitOfWork unitOfWork)
     {
-        unitOfWork = _unitOfWork;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<DeleteReviewStatusDto> DeleteByIdAsync(Guid id)
+    public async Task<StatusDto> DeleteByIdAsync(Guid id, string currentUserId, string role)
     {
-        await unitOfWork.Reviews.DeleteOneById(id);
+        var review = await _unitOfWork.Reviews.FindAsync(r => r.Id == id);
+        if (review is null) 
+            return new StatusDto("Review Couldn't be found", System.Net.HttpStatusCode.NotFound);
+
+        if (role == UserRoles.Client.ToString() && review.ClientId != currentUserId) 
+            return new StatusDto("You are not allowed to delete this review", System.Net.HttpStatusCode.Unauthorized);
+
+        await _unitOfWork.Reviews.DeleteOneById(id);
         try
         {
-            unitOfWork.Save();
-            return new DeleteReviewStatusDto(
-                isDeleted: true,
-                StatusMessage: "Review has been deleted successfully.");
+            _unitOfWork.Save();
+            return new StatusDto("Review has been deleted", System.Net.HttpStatusCode.OK);
         }
 
         catch
         {
-            return new DeleteReviewStatusDto(
-                isDeleted: false,
-                StatusMessage: "Unable to delete the review!"
-                );
+            return new StatusDto("Review couldn't be deleted", System.Net.HttpStatusCode.InternalServerError);
         }
     }
 
     public async Task<IEnumerable<ReviewDto>> GetAllAsync()
     {
-        var reviews = await unitOfWork.Reviews.GetAllAsync(
+        var reviews = await _unitOfWork.Reviews.GetAllAsync(
                 selector: rev => new ReviewDto
                 (
                     rev.Id,
@@ -58,7 +61,7 @@ public class ReviewsManager : IReviewsManager
 
     public async Task<ReviewDto?> GetByIdAsync(Guid? id)
     {
-        var review = await unitOfWork.Reviews.FindAsync(
+        var review = await _unitOfWork.Reviews.FindAsync(
             predicate: S => S.Id == id);
         if (review is null)
             return null;
@@ -76,7 +79,7 @@ public class ReviewsManager : IReviewsManager
 
     public async Task<InsertReviewStatusDto> InsertReview(InsertReviewDto insertReview)
     {
-        var client = await unitOfWork.Clients.FindAsync(
+        var client = await _unitOfWork.Clients.FindAsync(
             predicate: C => C.Id == insertReview.ClientId);
         if (client is null)
         {
@@ -86,7 +89,7 @@ public class ReviewsManager : IReviewsManager
                 StatusMessage: "There is no client with such id!");
         }
 
-        var seller = await unitOfWork.Clients.FindAsync(
+        var seller = await _unitOfWork.Clients.FindAsync(
             predicate: C => C.Id == insertReview.SellerId);
         if (seller is null)
         {
@@ -96,7 +99,7 @@ public class ReviewsManager : IReviewsManager
                 StatusMessage: "There is no seller with such id!");
         }
 
-        var Item = await unitOfWork.Items.FindAsync(
+        var Item = await _unitOfWork.Items.FindAsync(
             predicate: C => C.Id == insertReview.ItemId);
         if (Item is null)
         {
@@ -106,7 +109,7 @@ public class ReviewsManager : IReviewsManager
                 StatusMessage: "There is no Item with such id!");
         }
 
-        var RentOps = await unitOfWork.RentOperations.FindAllAsync(
+        var RentOps = await _unitOfWork.RentOperations.FindAllAsync(
             predicate: R => R.ClientId==insertReview.ClientId&&R.ItemId==insertReview.ItemId&&R.ReviewId==null);
         var RentOp = RentOps.LastOrDefault();
         if (RentOp is null || RentOps is null)
@@ -129,13 +132,13 @@ public class ReviewsManager : IReviewsManager
             RentOperationId = RentOp.Id          
         };
 
-        await unitOfWork.Reviews.AddAsync(review);
+        await _unitOfWork.Reviews.AddAsync(review);
         try
         {
-            unitOfWork.Save();
+            _unitOfWork.Save();
             RentOp.ReviewId = review.Id;
-            unitOfWork.RentOperations.Update(RentOp);
-            unitOfWork.Save();
+            _unitOfWork.RentOperations.Update(RentOp);
+            _unitOfWork.Save();
             return new InsertReviewStatusDto(
                 isCreated: true,
                 Id: review.Id,
