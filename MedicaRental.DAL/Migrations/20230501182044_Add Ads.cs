@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class FinalMigration : Migration
+    public partial class AddAds : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -297,7 +297,8 @@ namespace MedicaRental.DAL.Migrations
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false)
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Ads = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -457,6 +458,33 @@ namespace MedicaRental.DAL.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ReportActions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AdminId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReportActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ReportActions_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ReportActions_Reports_ReportId",
+                        column: x => x.ReportId,
+                        principalTable: "Reports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -553,6 +581,16 @@ namespace MedicaRental.DAL.Migrations
                 column: "SellerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ReportActions_AdminId",
+                table: "ReportActions",
+                column: "AdminId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReportActions_ReportId",
+                table: "ReportActions",
+                column: "ReportId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reports_ItemId",
                 table: "Reports",
                 column: "ItemId");
@@ -625,10 +663,13 @@ namespace MedicaRental.DAL.Migrations
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "Reports");
+                name: "ReportActions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Reports");
 
             migrationBuilder.DropTable(
                 name: "Messages");
