@@ -180,6 +180,9 @@ namespace MedicaRental.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("Ads")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("BrandId")
                         .HasColumnType("uniqueidentifier");
 
@@ -416,6 +419,35 @@ namespace MedicaRental.DAL.Migrations
                     b.HasIndex("ReviewId");
 
                     b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.ReportAction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
+
+                    b.HasIndex("ReportId");
+
+                    b.ToTable("ReportActions");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Review", b =>
@@ -764,6 +796,25 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Review");
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.ReportAction", b =>
+                {
+                    b.HasOne("MedicaRental.DAL.Context.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MedicaRental.DAL.Models.Report", "Report")
+                        .WithMany("ReportActions")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Report");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Review", b =>
                 {
                     b.HasOne("MedicaRental.DAL.Models.Client", "Client")
@@ -903,6 +954,11 @@ namespace MedicaRental.DAL.Migrations
             modelBuilder.Entity("MedicaRental.DAL.Models.RentOperation", b =>
                 {
                     b.Navigation("Review");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.Report", b =>
+                {
+                    b.Navigation("ReportActions");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>
