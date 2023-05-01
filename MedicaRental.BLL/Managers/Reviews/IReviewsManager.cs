@@ -12,6 +12,6 @@ public interface IReviewsManager
 {
     Task<IEnumerable<ReviewDto>> GetAllAsync();
     Task<ReviewDto?> GetByIdAsync(Guid? id);
-    Task<DeleteReviewStatusDto> DeleteByIdAsync(Guid id);
+    Task<StatusDto> DeleteByIdAsync(Guid id, string currentUserId, string role);
     Task<InsertReviewStatusDto> InsertReview(InsertReviewDto insertReview);
 }

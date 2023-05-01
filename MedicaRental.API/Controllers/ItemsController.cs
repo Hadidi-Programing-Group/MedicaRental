@@ -13,11 +13,15 @@ namespace MedicaRental.API.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IItemsManager _itemsManager;
+        private readonly IReportActionManager _reportActionManager;
         private readonly UserManager<AppUser> _userManager;
 
-        public ItemsController(IItemsManager itemsManager, UserManager<AppUser> userManager)
+        public ItemsController(IItemsManager itemsManager,
+            IReportActionManager reportActionManager,   
+            UserManager<AppUser> userManager)
         {
             _itemsManager = itemsManager;
+            _reportActionManager = reportActionManager;
             _userManager = userManager;
         }
 
@@ -222,6 +226,24 @@ namespace MedicaRental.API.Controllers
             var userId = _userManager.GetUserId(User);
             var IsOwner = await _itemsManager.GetItemOwnerStatus(userId, itemId);
             return IsOwner;
+        }
+
+        [HttpPost]
+        [Route("DeleteByAdmin")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        public async Task<ActionResult<StatusDto>> DeleteItemByAdmin(DeleteItemAdminRequestDto deleteItemAdminRequest)
+        {
+            var adminId = _userManager.GetUserId(User);
+            if (adminId is null) return Unauthorized();
+
+            StatusDto deleteResult = await _itemsManager.DeleteItemByAdmin(deleteItemAdminRequest.ItemId);
+            if (deleteResult.StatusCode != System.Net.HttpStatusCode.OK)
+                return StatusCode((int)(deleteResult.StatusCode), deleteResult);
+
+            var insertReportActionDto = new InserReportActionDto(deleteResult.StatusMessage, deleteItemAdminRequest.ReportId, adminId);
+            var addingReportAction = await _reportActionManager.AddReportAction(insertReportActionDto);
+
+            return StatusCode((int)addingReportAction.StatusCode, deleteResult);
         }
     }
 }

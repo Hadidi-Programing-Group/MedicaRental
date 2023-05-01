@@ -5,9 +5,11 @@ using MedicaRental.BLL.Dtos.SubCategory;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace MedicaRental.API.Controllers
 {
@@ -18,11 +20,17 @@ namespace MedicaRental.API.Controllers
         private readonly IReviewsManager _reviewssManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IItemsManager itemsManager;
-        public ReviewsController(IReviewsManager reviewsManager,IItemsManager _itemsManager, UserManager<AppUser> userManager)
+        private readonly IReportActionManager _reportActionManager;
+
+        public ReviewsController(IReviewsManager reviewsManager,
+            IItemsManager _itemsManager,
+            IReportActionManager reportActionManager,
+            UserManager<AppUser> userManager)
         {
             _reviewssManager = reviewsManager;
             _userManager = userManager;
             itemsManager = _itemsManager;
+            _reportActionManager = reportActionManager;
         }
 
         [HttpGet]
@@ -69,14 +77,25 @@ namespace MedicaRental.API.Controllers
                 value: new { Message = InsertStatus.StatusMessage });
         }
 
-        [HttpDelete]
-        [Route("{id}")]
-        public async Task<ActionResult> DeleteReview(Guid id)
+        [HttpPost]
+        [Route("DeleteReview")]
+        [Authorize]
+        public async Task<ActionResult> DeleteReview(DeleteReviewRequestDto deleteReviewRequest)
         {
-            DeleteReviewStatusDto DeleteStatus = await _reviewssManager.DeleteByIdAsync(id);
-            if (DeleteStatus.isDeleted)
-                  return NoContent();
-            return BadRequest(DeleteStatus.StatusMessage);
+            var currentUserId = _userManager.GetUserId(User);
+            var claim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            var DeleteStatus = await _reviewssManager.DeleteByIdAsync(deleteReviewRequest.ReviewId, currentUserId, claim?.Value ?? UserRoles.Client.ToString());
+
+
+            if (deleteReviewRequest.ReportId is not null && claim?.Value == UserRoles.Admin.ToString())
+            {
+                var insertReportActionDto = new InserReportActionDto(DeleteStatus.StatusMessage, deleteReviewRequest.ReportId.Value, currentUserId);
+                var addingReportAction = await _reportActionManager.AddReportAction(insertReportActionDto);
+
+                return StatusCode((int)addingReportAction.StatusCode, DeleteStatus);
+            }
+
+            return StatusCode((int)DeleteStatus.StatusCode, DeleteStatus);
         }
     }
 }
