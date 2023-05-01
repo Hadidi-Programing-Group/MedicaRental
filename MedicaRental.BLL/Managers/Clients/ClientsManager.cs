@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Helpers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
@@ -40,8 +41,8 @@ public class ClientsManager : IClientsManager
             selector: c => new UserApprovalInfoWithIdDto(
                 c.Id,
                 c.Ssn,
-                c.NationalIdImage,
-                c.UnionCardImage
+                c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
+                c.UnionCardImage ?? SharedHelper.CardPlaceHolder
                 ));
     }
 
@@ -72,8 +73,8 @@ public class ClientsManager : IClientsManager
 
         var approvalInfoList = clients.Select(c => new UserApprovalInfoDto(
             c.Ssn,
-            c.NationalIdImage,
-            c.UnionCardImage
+            c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
+            c.UnionCardImage ?? SharedHelper.CardPlaceHolder
         )).ToList();
 
         return approvalInfoList;
@@ -146,8 +147,8 @@ public class ClientsManager : IClientsManager
             predicate: c => c.Id == userId,
             selector: c => new UserApprovalInfoDto(
                 c.Ssn,
-                c.NationalIdImage,
-                c.UnionCardImage
+                c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
+                c.UnionCardImage ?? SharedHelper.CardPlaceHolder
                 ));
     }
     public async Task<UserProfileInfoDto?> GetClientInfoAsync(string userId)

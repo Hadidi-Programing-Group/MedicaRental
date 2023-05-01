@@ -14,7 +14,7 @@ namespace MedicaRental.API.Controllers
     [ApiController]
     public class ReportsController : ControllerBase
     {
-        private readonly IReportsManager _ReportsManager;
+        private readonly IReportsManager _reportsManager;
         private readonly IReportActionManager _reportActionManager;
         private readonly UserManager<AppUser> _userManager;
 
@@ -22,7 +22,7 @@ namespace MedicaRental.API.Controllers
             IReportActionManager reportActionManager,
             UserManager<AppUser> userManager)
         {
-            _ReportsManager = ReportsManager;
+            _reportsManager = ReportsManager;
             _reportActionManager = reportActionManager;
             _userManager = userManager;
         }
@@ -32,7 +32,7 @@ namespace MedicaRental.API.Controllers
         [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<PageDto<ReportDto>?>> GetAllChatsReports(int page)
         {
-            var reports = (await _ReportsManager.GetChatReportsAsync(page));
+            var reports = (await _reportsManager.GetChatReportsAsync(page));
             if (reports == null)
                 return NotFound();
 
@@ -44,7 +44,7 @@ namespace MedicaRental.API.Controllers
         [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<PageDto<ReportDto>?>> GetAllReviewsReports(int page)
         {
-            var reports = (await _ReportsManager.GetReviewReportsAsync(page));
+            var reports = (await _reportsManager.GetReviewReportsAsync(page));
             if (reports == null)
                 return NotFound();
 
@@ -57,7 +57,7 @@ namespace MedicaRental.API.Controllers
         [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<PageDto<ReportDto>?>> GetAllItemsReports(int page)
         {
-            var reports = (await _ReportsManager.GetItemReportsAsync(page));
+            var reports = (await _reportsManager.GetItemReportsAsync(page));
             if (reports == null)
                 return NotFound();
 
@@ -69,7 +69,7 @@ namespace MedicaRental.API.Controllers
         [Route("{Id}")]
         public async Task<ActionResult<DetailedReportDto>> GetById(Guid Id)
         {
-            DetailedReportDto? report = await _ReportsManager.GetByIdAsync(Id);
+            DetailedReportDto? report = await _reportsManager.GetByIdAsync(Id);
             if (report is null)
                 return NotFound();
             return report;
@@ -84,7 +84,7 @@ namespace MedicaRental.API.Controllers
             if (userId is null)
                 return Unauthorized();
 
-            StatusDto markAsSolvedResult = await _ReportsManager.MarkAsSolvedAsync(Id);
+            StatusDto markAsSolvedResult = await _reportsManager.MarkAsSolvedAsync(Id);
 
             if (markAsSolvedResult.StatusCode != System.Net.HttpStatusCode.OK)
                 return StatusCode((int)markAsSolvedResult.StatusCode, markAsSolvedResult);
@@ -100,7 +100,7 @@ namespace MedicaRental.API.Controllers
         public async Task<ActionResult> InsertReport(InsertReportDtos insertReportDtos)
         {
             var reporteeId = _userManager.GetUserId(User); 
-            InsertReportStatusDto insertReportStatusDto = await _ReportsManager.InsertNewReport(insertReportDtos, reporteeId);
+            InsertReportStatusDto insertReportStatusDto = await _reportsManager.InsertNewReport(insertReportDtos, reporteeId);
 
             if (!insertReportStatusDto.isCreated)
                 return BadRequest(insertReportStatusDto.StatusMessage);
@@ -117,7 +117,7 @@ namespace MedicaRental.API.Controllers
         [Route("{Id}")]
         public async Task<ActionResult> DeleteReportAsync(Guid Id)
         {
-            DeleteReportStatusDto deleteReportStatusDto = await _ReportsManager.DeleteByIdAsync(Id);
+            DeleteReportStatusDto deleteReportStatusDto = await _reportsManager.DeleteByIdAsync(Id);
 
             if (!deleteReportStatusDto.isDeleted)
                 return BadRequest(deleteReportStatusDto.StatusMessage);
