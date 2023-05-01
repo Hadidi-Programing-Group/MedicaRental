@@ -85,6 +85,21 @@ namespace MedicaRental.API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetInfo/{userId}")]
+        //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        public async Task<ActionResult<UserProfileInfoDto>> GetUserInfo(string userId)
+        {
+            if (userId is null) return Unauthorized();
+
+            UserProfileInfoDto? userProfileInfo = await _clientsManager.GetClientInfoAsync(userId);
+
+            if (userProfileInfo is null) return NotFound();
+
+            return userProfileInfo;
+        }
+
+
         #endregion
 
         #region Old-endpoints
