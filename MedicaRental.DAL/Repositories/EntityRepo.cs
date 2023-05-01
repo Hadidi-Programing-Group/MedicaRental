@@ -122,7 +122,7 @@ namespace MedicaRental.DAL.Repositories
             }
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
@@ -159,7 +159,7 @@ namespace MedicaRental.DAL.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
@@ -201,7 +201,7 @@ namespace MedicaRental.DAL.Repositories
            return await query.ToListAsync();
         }
 
-        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
@@ -225,7 +225,7 @@ namespace MedicaRental.DAL.Repositories
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
@@ -262,7 +262,7 @@ namespace MedicaRental.DAL.Repositories
             return await query.Select(selector).ToListAsync();
         }
 
-        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
@@ -304,7 +304,7 @@ namespace MedicaRental.DAL.Repositories
             return await query.Select(selector).ToListAsync();
         }
 
-        public async Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
