@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230429185752_AddReportActionsTakenBy")]
-    partial class AddReportActionsTakenBy
+    [Migration("20230501182044_Add Ads")]
+    partial class AddAds
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -181,6 +181,9 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Ads")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("BrandId")
                         .HasColumnType("uniqueidentifier");
