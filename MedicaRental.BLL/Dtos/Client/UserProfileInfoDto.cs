@@ -27,3 +27,14 @@ public record UpdateApprovalInfoDto
     [Base64StringImageValidation]
     public string UnionImage { get; set; } = string.Empty;
 }
+
+public record UpdateApprovalInfoRejectDto
+{
+    [RegularExpression(@"^\d{14}$", ErrorMessage = "National ID must be 14 numbers")]
+    public string NationalId { get; set; } = string.Empty;
+
+    public string? NationalImage { get; set; }
+
+    
+    public string? UnionImage { get; set; }
+}

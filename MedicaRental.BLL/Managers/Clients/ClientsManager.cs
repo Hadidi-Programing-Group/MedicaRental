@@ -99,6 +99,27 @@ public class ClientsManager : IClientsManager
     }
 
 
+    public async Task<StatusDto> UpdateApprovalInfoRejectAsync(string userId, UpdateApprovalInfoRejectDto updateApprovalInfoDto)
+    {
+        var client = await _unitOfWork.Clients.FindAsync(c => c.Id == userId);
+        if (client is null)
+            return new StatusDto(StatusMessage: "User couldn't be found", StatusCode: System.Net.HttpStatusCode.NotFound);
+
+        client.Ssn = updateApprovalInfoDto.NationalId;
+
+        if (updateApprovalInfoDto.NationalImage is null)
+        client.NationalIdImage = SharedHelper.RejectedImgPlaceholder;
+
+        if (updateApprovalInfoDto.UnionImage is null)
+            client.UnionCardImage = SharedHelper.RejectedImgPlaceholder;
+
+
+        var update = _unitOfWork.Clients.Update(client);
+        _unitOfWork.Save();
+
+        return new StatusDto("User has been updated successully", System.Net.HttpStatusCode.OK);
+    }
+
     #endregion
 
     public async Task<StatusDto> ApproveUserAsync(string email)

@@ -15,6 +15,7 @@ public interface IClientsManager
     Task<UserProfileInfoDto?> GetClientInfoAsync(string userId);
     Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto registerInfoDto);
     Task<StatusDto> UpdateApprovalInfoAsync(string userId, UpdateApprovalInfoDto updateProfileInfoDto);
+
     Task<StatusDto> UpdateClientInfoAsync(string userId, UpdateProfileInfoDto updateProfileInfoDto);
 
     Task<List<UserApprovalInfoDto>> GetAllClientsApprovalInfoAsync();
@@ -22,4 +23,7 @@ public interface IClientsManager
 
     Task<IEnumerable<UserProfileInfoWithIdDto>> GetClientsNeedingApprovalAsync();
     Task<UserApprovalInfoWithIdDto?> GetClientApprovalInfoWithIdAsync(string userId);
+
+    Task<StatusDto> UpdateApprovalInfoRejectAsync(string userId, UpdateApprovalInfoRejectDto updateProfileInfoDto);
+
 }
