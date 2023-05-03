@@ -55,7 +55,9 @@ public class CartItemsManager : ICartItemsManager
 
     public async Task<IEnumerable<CartItemDto>> GetCartItemsAsync(string userId)
     {
-        var cartItems = await _unitOfWork.CartItems.GetAllAsync(
+        var cartItems = await _unitOfWork.CartItems.FindAllAsync(
+            predicate: ca => ca.ClientId == userId,
+            include: source => source.Include(ca => ca.Item),
             selector: ca => new CartItemDto(
                 ca.Id,
                 ca.ItemId,
@@ -63,8 +65,8 @@ public class CartItemsManager : ICartItemsManager
                 ca.Item.Model,
                 ca.Item.Price,
                 Convert.ToBase64String(ca.Item.Image!)
-                ),
-            include: source => source.Include(ca => ca.Item));
+                )
+            );
         return cartItems;
 
     }

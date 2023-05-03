@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaRental.API.Controllers;
 
+[Route("api/[controller]")]
+[ApiController]
 public class CartItemsController : Controller
 {
     private readonly ICartItemsManager _cartItemsManager;
