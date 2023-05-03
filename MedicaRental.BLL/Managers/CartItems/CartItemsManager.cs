@@ -71,6 +71,12 @@ public class CartItemsManager : ICartItemsManager
 
     }
 
+    public async Task<bool> IsInCartAsync(Guid itemId, string userId)
+    {
+        var cartItem = await _unitOfWork.CartItems.FindAsync(ca => ca.ItemId == itemId && ca.ClientId == userId);
+        return cartItem is not null;
+    }
+
     public async Task<StatusDto> RemoveCartItemAsync(Guid itemId, string userId)
     {
         var cartItem = await _unitOfWork.CartItems.FindAsync(ca => ca.ItemId == itemId && ca.ClientId == userId);
