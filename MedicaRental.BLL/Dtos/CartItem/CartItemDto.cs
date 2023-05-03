@@ -11,6 +11,7 @@ public record CartItemDto(
     Guid ItemId,
     string Name,
     string Model,
-    decimal Price,
-    string Image
+    decimal PricePerDay,
+    string Image,
+    int NumberOfDays
 );

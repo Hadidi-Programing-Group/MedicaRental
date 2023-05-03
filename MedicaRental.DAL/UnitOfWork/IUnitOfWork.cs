@@ -23,6 +23,7 @@ public interface IUnitOfWork : IDisposable
     IEntityRepo<RentOperation> RentOperations { get;}
     IEntityRepo<ReportAction> ReportActions { get; }
     IEntityRepo<CartItem> CartItems { get; }
+    IEntityRepo<AdPrice> AdPrices { get; }
 
     IEntityRepo<RefreshToken> RefreshToken { get; }
 

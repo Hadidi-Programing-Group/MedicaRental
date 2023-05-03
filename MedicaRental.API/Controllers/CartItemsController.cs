@@ -31,6 +31,17 @@ public class CartItemsController : Controller
         return Ok(cartItems);
     }
 
+    [HttpGet]
+    [Route("IsInCart/{itemId}")]
+    [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+    public async Task<ActionResult<bool>> IsInCart(Guid ItemId)
+    {
+        var userId = _userManager.GetUserId(User);
+        bool cartItems = await _cartItemsManager.IsInCartAsync(ItemId, userId);
+        return Ok(cartItems);
+
+    }
+
     [HttpPost]
     [Authorize(Policy = ClaimRequirement.ClientPolicy)]
     public async Task<ActionResult<StatusDto>> AddToCart(AddToCartRequestDto addToCartRequest)

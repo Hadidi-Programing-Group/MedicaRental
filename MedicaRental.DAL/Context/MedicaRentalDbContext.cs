@@ -26,6 +26,7 @@ namespace MedicaRental.DAL.Context
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<ReportAction> ReportActions => Set<ReportAction>();
         public DbSet<CartItem> CartItems => Set<CartItem>();
+        public DbSet<AdPrice> AdPrices => Set<AdPrice>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 
