@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230501182044_Add Ads")]
-    partial class AddAds
+    [Migration("20230503091015_AddCartItems")]
+    partial class AddCartItems
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -117,6 +117,28 @@ namespace MedicaRental.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Brand");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.CartItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Category", b =>
@@ -658,6 +680,25 @@ namespace MedicaRental.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.CartItem", b =>
+                {
+                    b.HasOne("MedicaRental.DAL.Models.Client", "Client")
+                        .WithMany("CartItems")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MedicaRental.DAL.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
                 {
                     b.HasOne("MedicaRental.DAL.Context.AppUser", "User")
@@ -933,6 +974,8 @@ namespace MedicaRental.DAL.Migrations
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("ItemsForRent");
 
                     b.Navigation("ReceivedMessages");
