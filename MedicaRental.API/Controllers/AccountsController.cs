@@ -50,6 +50,20 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost]
+        [Route("/RegisterAdminMod")]
+        public async Task<ActionResult> RegisterAdminModAsync(BaseUserRegisterInfoDto BaseUserRegisterInfoDto)
+        {
+            BaseUserRegisterStatusDto BaseUserRegisterStatus =
+                await _accountsManager.RegisterNewUserAsync(BaseUserRegisterInfoDto);
+
+            if (!BaseUserRegisterStatus.isCreated)
+                return BadRequest(BaseUserRegisterStatus.RegisterMessage);
+
+            return Ok( /*clientRegisterStatus.RegisterMessage*/
+            );
+        }
+
+        [HttpPost]
         [Route("/Login")]
         public async Task<ActionResult<LoginStatusWithTokenDto>> LoginAsync(
             LoginInfoDto loginInfoDto
