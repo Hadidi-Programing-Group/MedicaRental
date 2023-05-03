@@ -37,23 +37,30 @@ namespace MedicaRental.API.Controllers
         {
             var result = await _adminManger.UpdateUserRoleAsync(userRoleUpdateDto);
 
-            // StatuesCode, and the full DTO object. 
+            // StatuesCode, and the full DTO object.
             return StatusCode((int)result.StatusCode, result);
         }
 
         [HttpPost]
         [Route("UpdateReportStatus")]
         public async Task<ActionResult<ReportUpdateStatusDto>> UpdateReportStatusAsync(
-           ReportUpdateDto reportUpdateDto
-       )
+            ReportUpdateDto reportUpdateDto
+        )
         {
             var result = await _adminManger.UpdateReportStatus(reportUpdateDto);
 
-            // StatuesCode, and the full DTO object. 
+            // StatuesCode, and the full DTO object.
             return StatusCode((int)result.StatusCode, result);
         }
 
+        [HttpGet]
+        [Route("GetAllAdminMod")]
+        public async Task<ActionResult<IEnumerable<RoleMangerUserInfoDto>>> GetAllAdminMod()
+        {
+            var result = await _adminManger.GetAllAdminMod();
 
-
+            // StatuesCode, and the full DTO object.
+            return Ok(result);
+        }
     }
 }

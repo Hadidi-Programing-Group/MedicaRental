@@ -5,6 +5,7 @@ using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -164,7 +165,47 @@ public class AdminsManager : IAdminsManager
     }
 
 
+    #region ByRaouf => For AdminPanel
 
+
+    public async Task<IEnumerable<RoleMangerUserInfoDto>> GetAllAdminMod()
+    {
+        var adminUsers = await _userManager.GetUsersForClaimAsync(new Claim(ClaimTypes.Role, "admin"));
+        var modUsers = await _userManager.GetUsersForClaimAsync(new Claim(ClaimTypes.Role, "Moderator"));
+
+        var adminModlist = new List<RoleMangerUserInfoDto>();
+
+        foreach (var user in adminUsers)
+        {
+            var temp = new RoleMangerUserInfoDto()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email= user.Email,
+                Role = UserRoles.Admin.ToString()
+            };
+
+            adminModlist.Add(temp);    
+        }
+
+        foreach (var user in modUsers)
+        {
+            var temp = new RoleMangerUserInfoDto()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Role = UserRoles.Moderator.ToString()
+            };
+
+            adminModlist.Add(temp);
+        }
+
+        var orderedAdminModlist = adminModlist.OrderByDescending(user => user.Role == "admin" ? 0 : 1).ToList();
+
+        return orderedAdminModlist;
+    }
+    #endregion
 
 
 }
