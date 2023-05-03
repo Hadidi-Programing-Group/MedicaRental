@@ -180,7 +180,7 @@ public class AdminsManager : IAdminsManager
             var temp = new RoleMangerUserInfoDto()
             {
                 Id = user.Id,
-                UserName = user.UserName,
+                FullName = $"{user.FirstName} {user.LastName}",
                 Email= user.Email,
                 Role = UserRoles.Admin.ToString()
             };
@@ -193,7 +193,7 @@ public class AdminsManager : IAdminsManager
             var temp = new RoleMangerUserInfoDto()
             {
                 Id = user.Id,
-                UserName = user.UserName,
+                FullName = $"{user.FirstName} {user.LastName}",
                 Email = user.Email,
                 Role = UserRoles.Moderator.ToString()
             };
