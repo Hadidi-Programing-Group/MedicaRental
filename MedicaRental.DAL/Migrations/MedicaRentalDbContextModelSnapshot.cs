@@ -117,6 +117,28 @@ namespace MedicaRental.DAL.Migrations
                     b.ToTable("Brand");
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.CartItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Category", b =>
                 {
                     b.Property<Guid>("Id")
@@ -656,6 +678,25 @@ namespace MedicaRental.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.CartItem", b =>
+                {
+                    b.HasOne("MedicaRental.DAL.Models.Client", "Client")
+                        .WithMany("CartItems")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MedicaRental.DAL.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
                 {
                     b.HasOne("MedicaRental.DAL.Context.AppUser", "User")
@@ -931,6 +972,8 @@ namespace MedicaRental.DAL.Migrations
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("ItemsForRent");
 
                     b.Navigation("ReceivedMessages");
