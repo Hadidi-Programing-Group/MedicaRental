@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Message;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Net;
 using System.Security.Claims;
 
 namespace MedicaRental.API.Controllers
@@ -54,37 +56,28 @@ namespace MedicaRental.API.Controllers
             return Ok(chat);
         }
 
-        //[HttpDelete]
-        //public async Task<StatusDto> DeleteMessage(string userId, Guid messageId)
-        //{
-        //    return await _messagesManager.DeleteMessage(userId, messageId);
-        //}
+        [HttpDelete("{messageId}")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        public async Task<ActionResult<StatusDto>> DeleteMessage(Guid messageId)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            return await _messagesManager.DeleteMessage(messageId, currentUserId);
+        }
 
         [HttpPost]
-        [Authorize]
-        public async Task<ActionResult<StatusDto>> DeleteMessage(DeleteMessageRequestDto deleteMessageRequestDto)
-        {            
-            var claim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]  
+        public async Task<ActionResult<StatusDto>> DeleteMessageِSuper(DeleteMessageRequestDto deleteMessageRequestDto)
+        {
+            StatusDto deleteMessageResult = await _messagesManager.DeleteMessage(deleteMessageRequestDto.MessageId);
+            
+            if (deleteMessageRequestDto.ReportId is null || deleteMessageResult.StatusCode != HttpStatusCode.OK)
+                return StatusCode((int)deleteMessageResult.StatusCode, deleteMessageResult);
 
-            if (claim?.Value == UserRoles.Client.ToString())
-            {
-                return await _messagesManager.DeleteMessage(deleteMessageRequestDto.MessageId);
-            }
+            var currentUserId = _userManager.GetUserId(User);
+            var insertReportActionDto = new InserReportActionDto(deleteMessageResult.StatusMessage, deleteMessageRequestDto.ReportId.Value, currentUserId);
+            var addingReportAction = await _reportActionManager.AddReportAction(insertReportActionDto);
 
-            else 
-            {
-                var currentUserId = _userManager.GetUserId(User);
-
-                StatusDto deleteMessageResult = await _messagesManager.DeleteMessage(deleteMessageRequestDto.MessageId);
-                if (deleteMessageRequestDto.ReportId is null || deleteMessageResult.StatusCode != System.Net.HttpStatusCode.OK)
-                    return StatusCode((int)deleteMessageResult.StatusCode, deleteMessageResult);
-
-                var insertReportActionDto = new InserReportActionDto(deleteMessageResult.StatusMessage, deleteMessageRequestDto.ReportId.Value, currentUserId);
-                var addingReportAction = await _reportActionManager.AddReportAction(insertReportActionDto);
-
-                return StatusCode((int)addingReportAction.StatusCode, deleteMessageResult);
-            }
-
+            return StatusCode((int)addingReportAction.StatusCode, deleteMessageResult);
         }
 
         [HttpGet("notificationCount")]
