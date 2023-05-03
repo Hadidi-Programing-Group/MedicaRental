@@ -72,7 +72,7 @@ namespace MedicaRental.API
             
             if (UserIds.TryGetValue(receiverId, out string? conId))
             {
-                await Clients.Client(conId).SendAsync("ReceiveMessage", messageId, message, Context!.UserIdentifier!, timeStamp.ToString("o"), MessageStatus.Sent);
+                await Clients.Client(conId).SendAsync("ReceiveMessage", messageId, message, Context!.UserIdentifier!, timeStamp.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"), MessageStatus.Sent);
             }
 
             return messageId;

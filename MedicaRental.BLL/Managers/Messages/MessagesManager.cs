@@ -40,6 +40,25 @@ public class MessagesManager : IMessagesManager
         return msg.Id;
     }
 
+    public async Task<StatusDto> DeleteMessage(Guid messageId, string userId)
+    {
+        var message = await _unitOfWork.Messages.FindAsync(m => m.Id == messageId);
+
+        if (message == null) return new("Message not found.", HttpStatusCode.NotFound);
+
+        if (message.SenderId != userId) return new("Attemptto delete another user's message.", HttpStatusCode.Forbidden);
+
+        var succeeded = await _unitOfWork.Messages.DeleteOneById(messageId);
+
+        if (succeeded)
+        {
+            _unitOfWork.Save();
+            return new("Message deleted successfully", HttpStatusCode.OK);
+        }
+
+        return new("Message couldn't be deleted", HttpStatusCode.BadRequest);
+    }
+
     public async Task<StatusDto> DeleteMessage(Guid messageId)
     {
         var succeeded = await _unitOfWork.Messages.DeleteOneById(messageId);
@@ -60,7 +79,7 @@ public class MessagesManager : IMessagesManager
         if (succeeded) _unitOfWork.Save();
         else throw new Exception("WTF");
 
-        return await ((IMessagesRepo)_unitOfWork.Messages).GetChat<MessageDto>(firstUserId, secondUserId, upTo, m => new(m.Id, m.Content, m.SenderId, m.Timestamp.ToString("o"), m.MesssageStatus));
+        return await ((IMessagesRepo)_unitOfWork.Messages).GetChat<MessageDto>(firstUserId, secondUserId, upTo, m => new(m.Id, m.Content, m.SenderId, m.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"), m.MesssageStatus));
     }
 
     public async Task<IEnumerable<ChatDto>> GetUserChats(string userId, int upTo)
@@ -75,7 +94,7 @@ public class MessagesManager : IMessagesManager
                         g.First().ReceiverId == userId ? g.First().SenderId : g.First().ReceiverId,
                         g.First().ReceiverId == userId ? g.First().Sender!.User!.Name : g.First()!.Receiver!.User!.Name,
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Content,
-                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("o"),
+                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
                         g.Count(m => m.MesssageStatus != MessageStatus.Seen && m.ReceiverId == userId),
                         g.First().ReceiverId == userId ? Convert.ToBase64String(g.First().Sender!.ProfileImage ?? new byte[0]) : Convert.ToBase64String(g.First()!.Receiver!.ProfileImage ?? new byte[0])
@@ -144,7 +163,7 @@ public class MessagesManager : IMessagesManager
                         g.First().Sender!.User!.Name,
                         Convert.ToBase64String(g.First().Sender!.ProfileImage?? new byte[0]),
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Content,
-                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("o")
+                        g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
                      )
            );
 

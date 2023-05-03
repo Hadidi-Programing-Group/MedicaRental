@@ -12,8 +12,8 @@ public static class ReportHelper
                 r.Id,
                 r.Name,
                 r.IsSolved,
-                r.CreatedDate.ToString("o"),
-                r.SolveDate == null? "" : ((DateTime)r.SolveDate).ToString("o"),
+                r.CreatedDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                r.SolveDate == null? "" : ((DateTime)r.SolveDate).ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                 r.Reported!.Name,
                 r.Reporter!.Name
                 );
