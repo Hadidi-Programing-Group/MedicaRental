@@ -1221,6 +1221,26 @@ END
             _unitOfWork.Save();
         }
         #endregion
+
+
+        #region SeedAdPrices
+        var adPricesList = (await _unitOfWork.AdPrices.GetAllAsync()).ToList();
+
+        if (!adPricesList.Any())
+        {
+            adPricesList = new()
+            {
+                new AdPrice()
+                {
+                    Price = 50,
+                    Description = "Per Day"
+                }
+
+            };
+            await _unitOfWork.AdPrices.AddRangeAsync(adPricesList);
+            _unitOfWork.Save();
+        }
+        #endregion
     }
 }
 

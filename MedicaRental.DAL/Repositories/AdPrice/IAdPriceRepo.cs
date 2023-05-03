@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.BLL.Dtos;
+namespace MedicaRental.DAL.Repositories;
 
-public record AddToCartRequestDto(Guid ItemId, int NumberOfDays);
+public interface IAdPriceRepo
+{
+}

@@ -23,6 +23,10 @@ public class CartItemsManager : ICartItemsManager
         if (string.IsNullOrEmpty(userId))
             return new StatusDto("Invalid User Id", System.Net.HttpStatusCode.Unauthorized);
 
+        if (addToCartRequest.NumberOfDays == 0)
+            return new StatusDto("Number of days can't be 0", System.Net.HttpStatusCode.BadRequest);
+
+
         var client = await _unitOfWork.Clients.FindAsync(c => c.Id == userId);
         if (client is null)
             return new StatusDto("User is not found", System.Net.HttpStatusCode.NotFound);
@@ -38,6 +42,7 @@ public class CartItemsManager : ICartItemsManager
         {
             ItemId = item.Id,
             ClientId = client.Id,
+            NumberOfDays = addToCartRequest.NumberOfDays,
         };
 
 
@@ -55,6 +60,7 @@ public class CartItemsManager : ICartItemsManager
 
     public async Task<IEnumerable<CartItemDto>> GetCartItemsAsync(string userId)
     {
+        var pricePerDay = (await _unitOfWork.AdPrices.GetAllAsync()).FirstOrDefault();
         var cartItems = await _unitOfWork.CartItems.FindAllAsync(
             predicate: ca => ca.ClientId == userId,
             include: source => source.Include(ca => ca.Item),
@@ -63,8 +69,9 @@ public class CartItemsManager : ICartItemsManager
                 ca.ItemId,
                 ca.Item.Name,
                 ca.Item.Model,
-                ca.Item.Price,
-                Convert.ToBase64String(ca.Item.Image!)
+                pricePerDay.Price,
+                Convert.ToBase64String(ca.Item.Image!),
+                ca.NumberOfDays
                 )
             );
         return cartItems;
