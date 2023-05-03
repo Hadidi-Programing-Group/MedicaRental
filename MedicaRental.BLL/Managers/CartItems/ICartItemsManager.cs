@@ -10,4 +10,5 @@ namespace MedicaRental.BLL.Managers;
 public interface ICartItemsManager
 {
     Task<StatusDto> AddToCartAsync(AddToCartRequestDto addToCartRequest, string userId);
+    Task<StatusDto> RemoveCartItemAsync(Guid itemId, string userId);
 }

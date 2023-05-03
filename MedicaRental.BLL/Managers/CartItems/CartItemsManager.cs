@@ -1,6 +1,7 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,39 @@ public class CartItemsManager : ICartItemsManager
         catch
         {
             return new StatusDto("Could't add item to cart", System.Net.HttpStatusCode.InternalServerError);
+        }
+    }
+
+    public async Task<IEnumerable<CartItemDto>> GetCartItemsAsync(string userId)
+    {
+        var cartItems = await _unitOfWork.CartItems.GetAllAsync(
+            selector: ca => new CartItemDto(
+                ca.Id,
+                ca.ItemId,
+                ca.Item.Name,
+                ca.Item.Model,
+                ca.Item.Price,
+                Convert.ToBase64String(ca.Item.Image!)
+                ),
+            include: source => source.Include(ca => ca.Item));
+
+    }
+
+    public async Task<StatusDto> RemoveCartItemAsync(Guid itemId, string userId)
+    {
+        var cartItem = await _unitOfWork.CartItems.FindAsync(ca => ca.ItemId == itemId && ca.ClientId == userId);
+        if (cartItem is null)
+             return new StatusDto("Item is not found", System.Net.HttpStatusCode.NotFound);
+
+        try
+        {
+            _unitOfWork.CartItems.Delete(cartItem);
+            _unitOfWork.Save();
+            return new StatusDto("Item removed from cart", System.Net.HttpStatusCode.OK);
+        }
+        catch
+        {
+            return new StatusDto("Could't remove item from cart", System.Net.HttpStatusCode.InternalServerError);
         }
     }
 }
