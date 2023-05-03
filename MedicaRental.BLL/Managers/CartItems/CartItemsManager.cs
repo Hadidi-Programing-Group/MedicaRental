@@ -65,6 +65,7 @@ public class CartItemsManager : ICartItemsManager
                 Convert.ToBase64String(ca.Item.Image!)
                 ),
             include: source => source.Include(ca => ca.Item));
+        return cartItems;
 
     }
 
