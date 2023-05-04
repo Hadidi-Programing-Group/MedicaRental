@@ -302,6 +302,28 @@ public class ItemsManager : IItemsManager
         catch (Exception) { return null; }
     }
 
+    public async Task<PageDto<HomeItemDto>?> GetAllAdsAsync()
+    {
+        try
+        {
+            var data = await _unitOfWork.Items.FindAllAsync
+                (
+                    predicate: i => i.Ads && i.IsListed,
+                    selector: ItemHelper.HomeDtoSelector,
+                    include: ItemHelper.HomeDtoInclude
+                );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    i => i.Ads && i.IsListed
+                );
+
+            return new(data, count);
+
+        }
+        catch (Exception) { return null; }
+    }
+
     public async Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy, string? searchText)
     {
         try

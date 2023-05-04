@@ -10,6 +10,7 @@ namespace MedicaRental.BLL.Managers;
 
 public interface IItemsManager
 {
+    public Task<PageDto<HomeItemDto>?> GetAllAdsAsync();
     public Task<PageDto<HomeItemDto>?> GetAllItemsAsync(int page, string? orderBy, string? searchText, IEnumerable<Guid> categories, IEnumerable<Guid> subCategories, IEnumerable<Guid> brands);
     public Task<PageDto<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, int page, string? orderBy, string? searchText);
     public Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy, string? searchText);

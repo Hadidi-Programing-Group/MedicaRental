@@ -35,6 +35,17 @@ namespace MedicaRental.API.Controllers
             return Ok(items);
         }
 
+        [HttpGet]
+        [Route("getAllAds")]
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetAllAds()
+        {
+            var items = await _itemsManager.GetAllAdsAsync();
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
+        }
+
         [HttpGet("seller/{sellerId}")]
         public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySeller(string sellerId, int page, string? orderBy, string? searchText)
         {
