@@ -26,5 +26,52 @@ namespace MedicaRental.BLL.Helpers
         public const string RateAsc = "RateAsc";
 
         public static readonly Func<string, string?, bool> Lev = (string name, string? text) => MedicaRentalDbContext.LevDist(name, text, SearchMaxDistance) <= SearchMaxDistance;
+    
+        private static string GetImageTypeFromBase64(string base64String)
+        {
+            byte[] bytes = Convert.FromBase64String(base64String);
+            if (bytes.Length < 4)
+            {
+                return "";
+            }
+
+            // Check for JPEG
+            if (bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF)
+            {
+                return "jpeg";
+            }
+
+            // Check for PNG
+            if (bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47 && bytes[4] == 0x0D && bytes[5] == 0x0A && bytes[6] == 0x1A && bytes[7] == 0x0A)
+            {
+                return "png";
+            }
+
+            // Check for ICO
+            if (bytes[0] == 0x00 && bytes[1] == 0x00 && bytes[2] == 0x01 && bytes[3] == 0x00)
+            {
+                return "ico";
+            }
+
+            return "";
+        }
+
+        public static string GetMimeFromBase64(string base64String)
+        {
+            string imageType = GetImageTypeFromBase64(base64String);
+
+            switch (imageType)
+            {
+                case "jpeg":
+                    return $"data:image/jpeg;base64,{base64String}";
+                case "png":
+                    return $"data:image/png;base64,{base64String}";
+                case "ico":
+                    return $"data:image/x-icon;base64,{base64String}";
+                default:
+                    return"";
+            }
+        }
+
     }
 }
