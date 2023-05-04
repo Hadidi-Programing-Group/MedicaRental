@@ -22,7 +22,7 @@ namespace MedicaRental.BLL.Helpers
             i.SellerId,
             i.Seller!.Name,
             i.Brand!.Name,
-            Convert.ToBase64String(i.Image!)
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!))
          );
 
         public static Expression<Func<Item, SellerItemDto>> SellerDtoSelector = i => new
@@ -39,7 +39,7 @@ namespace MedicaRental.BLL.Helpers
             new(i.Category!.Id, i.Category.Name),
             new(i.SubCategory!.Id, i.SubCategory.Name),
             i.Reviews.Select(r => new ReviewBaseDto(r.Id, r.Rating, r.ClientReview, r.Client!.Name)),
-            Convert.ToBase64String(i.Image!)
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!))
          );
 
         public static Expression<Func<Item, RenterItemDto>> RenterDtoSelector = i => new
@@ -57,7 +57,7 @@ namespace MedicaRental.BLL.Helpers
             new(i.SubCategory!.Id, i.SubCategory.Name),
             new(i.Seller!.Id, i.Seller.Name, i.Seller.Rating),
             i.Reviews.Select(r => new ReviewBaseDto(r.Id, r.Rating, r.ClientReview, r.Client!.Name)),
-            Convert.ToBase64String(i.Image!)
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!))
          );
 
         public static Expression<Func<Item, ListItemDto>> ListedDtoSelector = i => new

@@ -10,10 +10,10 @@ namespace MedicaRental.BLL.Managers;
 
 public interface ISubCategoriesManager
 {
-    Task<IEnumerable<SubCategoriesDto>> GetAllAsync();
-    Task<SubCategoriesDto?> GetByIdAsync(Guid? id);
+    Task<PageDto<SubCategoryWithCategoryDto>> GetAllWithCategoryAsync(int page, string? searchText);
+    Task<SubCategoryWithCategoryDto?> GetByIdAsync(Guid? id);
     Task<DeleteSubCategoryStatusDto> DeleteByIdAsync(Guid id);
-    Task<UpdateSubCategoryStatusDto> UpdateSubCategory(Guid id, UpdateSubCategoryDto updateSubCategory);
+    Task<UpdateSubCategoryStatusDto> UpdateSubCategory(UpdateSubCategoryDto updateSubCategory);
     Task<InsertSubCategoryStatusDto> InsertSubCategory(InsertSubCategoryDto insertSubCategory);
 
 }

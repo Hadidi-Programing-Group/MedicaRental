@@ -1,5 +1,6 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Dtos.Message;
+using MedicaRental.BLL.Helpers;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.Repositories;
 using MedicaRental.DAL.UnitOfWork;
@@ -97,7 +98,7 @@ public class MessagesManager : IMessagesManager
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.MesssageStatus,
                         g.Count(m => m.MesssageStatus != MessageStatus.Seen && m.ReceiverId == userId),
-                        g.First().ReceiverId == userId ? Convert.ToBase64String(g.First().Sender!.ProfileImage ?? new byte[0]) : Convert.ToBase64String(g.First()!.Receiver!.ProfileImage ?? new byte[0])
+                        g.First().ReceiverId == userId ? SharedHelper.GetMimeFromBase64(Convert.ToBase64String(g.First().Sender!.ProfileImage ?? Array.Empty<byte>())) : SharedHelper.GetMimeFromBase64(Convert.ToBase64String(g.First()!.Receiver!.ProfileImage ?? Array.Empty<byte>()))
                     )
            );
 
@@ -161,7 +162,7 @@ public class MessagesManager : IMessagesManager
                     (
                         g.First().SenderId,
                         g.First().Sender!.User!.Name,
-                        Convert.ToBase64String(g.First().Sender!.ProfileImage?? new byte[0]),
+                        SharedHelper.GetMimeFromBase64(Convert.ToBase64String(g.First().Sender!.ProfileImage?? Array.Empty<byte>())),
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Content,
                         g.OrderByDescending(m => m.Timestamp).FirstOrDefault()!.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
                      )

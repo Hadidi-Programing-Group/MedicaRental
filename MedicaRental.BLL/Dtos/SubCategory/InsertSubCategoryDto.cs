@@ -16,6 +16,7 @@ namespace MedicaRental.BLL.Dtos.SubCategory
         [Required(ErrorMessage = "SubCategory image is required!")]
         [Base64StringImageValidation]
         public string Icon { get; set; } = string.Empty;
+        
         [Required(ErrorMessage = "Category Id is required!")]
         public Guid CategoryId { get; set; }
     }

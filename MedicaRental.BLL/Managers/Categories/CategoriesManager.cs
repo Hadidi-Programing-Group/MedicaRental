@@ -1,4 +1,6 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Helpers;
+using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -41,21 +43,63 @@ public class CategoriesManager : ICategoriesManager
         }
     }
 
-    public async Task<IEnumerable<CategoryWithSubCategoriesDto>> GetAllAsyc()
+    public async Task<IEnumerable<CategoryWithSubCategoriesDto>> GetAllWithSubCategoriesAsync()
     {
         var categories = await _unitOfWork.Categories.GetAllAsync(
             include: source => source.Include(category => category.SubCategories),
             selector: category => new CategoryWithSubCategoriesDto(
                 category.Id,
                 category.Name,
-                category.Icon,
-                category.SubCategories.Select(sc => new SubCategoryDto(
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String(category.Icon ?? Array.Empty<byte>())),
+                category.SubCategories.Select(sc => new SubCategoryWithCategoryDto(
                 sc.Id,
                 sc.Name,
-                sc.Icon
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String(sc.Icon ?? Array.Empty<byte>())),
+                sc.CategoryId,
+                category.Name
                 )).ToList()
             )
         );
+
+        return categories;
+    }
+
+    public async Task<PageDto<CategoryDto>> GetAllAsync(int page, string? searchText)
+    {
+        var categories = await _unitOfWork.Categories.FindAllAsync(
+            predicate: c => searchText == null ||
+            MedicaRentalDbContext.LevDist(c.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance,
+            orderBy: searchText == null ? q => q.OrderBy(c => c.Name) :
+            q => q.OrderBy(c => MedicaRentalDbContext.LevDist(c.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(c => c.Name),
+            skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
+            take: SharedHelper.Take,
+            selector: category => new CategoryDto(
+                category.Id,
+                category.Name,
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String(category.Icon ?? Array.Empty<byte>()))
+            )
+        );
+
+        var count = await _unitOfWork.Categories.GetCountAsync
+                (
+                    c => searchText == null ||
+                    MedicaRentalDbContext.LevDist(c.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance
+                );
+
+        return new PageDto<CategoryDto>(categories, count);
+    }
+
+    public async Task<IEnumerable<CategoryDto>> GetAllAsync()
+    {
+        var categories = await _unitOfWork.Categories.FindAllAsync(
+            orderBy: q => q.OrderBy(c => c.Name),
+            selector: category => new CategoryDto(
+                category.Id,
+                category.Name,
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String(category.Icon ?? Array.Empty<byte>()))
+            )
+        );
+
 
         return categories;
     }
@@ -73,11 +117,13 @@ public class CategoriesManager : ICategoriesManager
         return new CategoryWithSubCategoriesDto(
             Id: category.Id,
             Name: category.Name,
-            Icon: category.Icon,
-            SubCategories: category.SubCategories.Select(sc => new SubCategoryDto(
+            Icon: SharedHelper.GetMimeFromBase64(Convert.ToBase64String(category.Icon ?? Array.Empty<byte>())),
+            SubCategories: category.SubCategories.Select(sc => new SubCategoryWithCategoryDto(
                 Id: sc.Id,
                 Name: sc.Name,
-                Icon: sc.Icon
+                Icon: SharedHelper.GetMimeFromBase64(Convert.ToBase64String(sc.Icon ?? Array.Empty<byte>())),
+                CategoryId: sc.CategoryId,
+                CategoryName: category.Name
                 )).ToList()
             );
     }
@@ -96,11 +142,6 @@ public class CategoriesManager : ICategoriesManager
         try
         {
             _unitOfWork.Save();
-            return new InsertCategoryStatusDto(
-                isCreated: true,
-                Id: category.Id,
-                StatusMessage: "Category Created Successfully"
-                );
         }
         catch
         {
@@ -110,38 +151,71 @@ public class CategoriesManager : ICategoriesManager
                 StatusMessage: "Failed to insert new Category"
                 );
         }
-    }
-
-    public async Task<UpdateCategoryStatusDto> UpdateNewCategory(Guid id, UpdateCategoryDto updateCategoryDto)
-    {
-        var category = await _unitOfWork.Categories.FindAsync(c => c.Id == id);
-        if (category is null)
-            return new UpdateCategoryStatusDto(
-                isUpdated: false,
-                Id: null,
-                StatusMessage: "Category Couldn't be found"
-                );
-
-        category.Name = updateCategoryDto.Name;
-        category.Icon = Convert.FromBase64String(updateCategoryDto.Icon);
-
-        _unitOfWork.Categories.Update(category);
 
         try
         {
             _unitOfWork.Save();
-            return new UpdateCategoryStatusDto(
-                isUpdated: true,
-                Id: category.Id,
-                StatusMessage: "Category was updated successfully"
-                );
+            return new InsertCategoryStatusDto(
+               isCreated: true,
+               Id: category.Id,
+               StatusMessage: "Category Created Successfully"
+               );
         }
         catch
         {
+            return new InsertCategoryStatusDto(
+                isCreated: true,
+                Id: null,
+                StatusMessage: "Failed to insert new Category"
+                );
+        }
+    }
+
+    public async Task<UpdateCategoryStatusDto> UpdateNewCategory(UpdateCategoryDto updateCategoryDto)
+    {
+        var category = await _unitOfWork.Categories.FindAsync
+            (
+                c => c.Id == updateCategoryDto.Id,
+                disableTracking: false
+            );
+
+        if (category is null)
+        {
+            return new UpdateCategoryStatusDto
+                (
+                    isUpdated: false,
+                    StatusMessage: "Category Couldn't be found"
+                );
+        }
+
+        category.Name = updateCategoryDto.Name;
+        category.Icon = Convert.FromBase64String(updateCategoryDto.Icon);
+
+        var succeeded = _unitOfWork.Categories.Update(category);
+
+        if (!succeeded)
+        {
             return new UpdateCategoryStatusDto(
                 isUpdated: false,
-                Id: null,
                 StatusMessage: "Category Couldn't be updated"
+                );
+        }
+
+        try
+        {
+            _unitOfWork.Save();
+            return new UpdateCategoryStatusDto
+               (
+                   isUpdated: true,
+                   StatusMessage: "Category updated Successfully"
+               );
+        }
+        catch
+        {
+            return new UpdateCategoryStatusDto
+                (
+                   isUpdated: false,
+                   StatusMessage: "Category Couldn't be updated"
                 );
         }
     }
