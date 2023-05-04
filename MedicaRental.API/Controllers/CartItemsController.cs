@@ -6,6 +6,7 @@ using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace MedicaRental.API.Controllers;
 
@@ -33,13 +34,17 @@ public class CartItemsController : Controller
 
     [HttpGet]
     [Route("IsInCart/{itemId}")]
-    [Authorize(Policy = ClaimRequirement.ClientPolicy)]
     public async Task<ActionResult<bool>> IsInCart(Guid ItemId)
     {
-        var userId = _userManager.GetUserId(User);
-        bool cartItems = await _cartItemsManager.IsInCartAsync(ItemId, userId);
-        return Ok(cartItems);
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null)
+            return false;
 
+        var claims = await _userManager.GetClaimsAsync(user);
+        var userRole = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        if (userRole is null || userRole.Value != UserRoles.Client.ToString()) return false;
+
+        return await _cartItemsManager.IsInCartAsync(ItemId, user.Id);
     }
 
     [HttpPost]
