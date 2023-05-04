@@ -10,6 +10,9 @@ namespace MedicaRental.BLL.Dtos;
 
 public record UpdateCategoryDto
 {
+    [Required(ErrorMessage = "Category Id is required")]
+    public Guid Id { get; set; }
+
     [Required(ErrorMessage = "Category name is required")]
     public string Name { get; set; } = string.Empty;
 
