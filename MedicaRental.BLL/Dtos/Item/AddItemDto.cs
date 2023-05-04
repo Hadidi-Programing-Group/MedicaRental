@@ -6,18 +6,20 @@ using System.Net;
 namespace MedicaRental.BLL.Dtos
 {
     public record AddItemDto
-    (
-        string Name,
-        string Description,
-        string Serial,
-        string Model,
-        int Stock,
-        decimal Price,
-        string Image,
-        bool IsListed,
-        Guid BrandId,
-        Guid CategoryId,
-        Guid SubCategoryId,
-        string SellerId
-    );
+    {
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public string? Serial { get; set; }
+        public string? Model { get; set; }       
+        public int Stock { get; set; }
+        public decimal Price { get; set; }
+        public string? Image { get; set; }
+  
+        public bool IsListed { get; set; }
+        public Guid BrandId { get; set; }
+        public Guid CategoryId { get; set; }
+        public Guid SubCategoryId { get; set; }
+
+        public string? SellerId { get; set; }
+    };
 }
