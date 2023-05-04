@@ -10,12 +10,16 @@ namespace MedicaRental.BLL.Dtos.SubCategory
 {
     public record UpdateSubCategoryDto
     {
+        [Required(ErrorMessage = "SubCategory Id is required!")]
+        public Guid Id { get; set; }
+
         [Required(ErrorMessage = "SubCategory name is required!")]
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "SubCategory image is required!")]
         [Base64StringImageValidation]
         public string Icon { get; set; } = string.Empty;
+        
         [Required(ErrorMessage = "Category Id is required!")]
         public Guid CategoryId { get; set; }
     }
