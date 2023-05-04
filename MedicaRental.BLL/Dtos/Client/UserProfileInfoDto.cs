@@ -12,7 +12,7 @@ public record UserProfileInfoDto(string Name, string FirstName, string LastName,
 
 public record UpdateProfileInfoDto(string FirstName, string LastName, string PhoneNumber, string Address, string Email);
 
-public record UserApprovalInfoDto(string NationalId, byte[] NationalImage, byte[] UnionImage);
+public record UserApprovalInfoDto(string NationalId, string NationalImage, string UnionImage);
 
 public record UpdateApprovalInfoDto
 {

@@ -41,8 +41,8 @@ public class ClientsManager : IClientsManager
             selector: c => new UserApprovalInfoWithIdDto(
                 c.Id,
                 c.Ssn,
-                c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
-                c.UnionCardImage ?? SharedHelper.CardPlaceHolder
+         SharedHelper.GetMimeFromBase64(Convert.ToBase64String(c.NationalIdImage ?? SharedHelper.CardPlaceHolder)),
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(c.UnionCardImage ?? SharedHelper.CardPlaceHolder))
                 ));
     }
 
@@ -73,8 +73,8 @@ public class ClientsManager : IClientsManager
 
         var approvalInfoList = clients.Select(c => new UserApprovalInfoDto(
             c.Ssn,
-            c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
-            c.UnionCardImage ?? SharedHelper.CardPlaceHolder
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(c.NationalIdImage ?? SharedHelper.CardPlaceHolder)),
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(c.UnionCardImage ?? SharedHelper.CardPlaceHolder))
         )).ToList();
 
         return approvalInfoList;
@@ -168,8 +168,8 @@ public class ClientsManager : IClientsManager
             predicate: c => c.Id == userId,
             selector: c => new UserApprovalInfoDto(
                 c.Ssn,
-                c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
-                c.UnionCardImage ?? SharedHelper.CardPlaceHolder
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String( c.NationalIdImage ?? SharedHelper.CardPlaceHolder)),
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String( c.UnionCardImage ?? SharedHelper.CardPlaceHolder))
                 ));
     }
     public async Task<UserProfileInfoDto?> GetClientInfoAsync(string userId)
