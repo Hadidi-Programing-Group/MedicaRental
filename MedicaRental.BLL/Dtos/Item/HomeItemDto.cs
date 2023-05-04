@@ -14,6 +14,7 @@ namespace MedicaRental.BLL.Dtos
         string SellerName,
         string BrandName,
         [Base64StringImageValidation]
-        string Image
+        string Image,
+        bool IsAd = false
     );
 }

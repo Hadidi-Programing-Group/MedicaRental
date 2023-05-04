@@ -22,7 +22,8 @@ namespace MedicaRental.BLL.Helpers
             i.SellerId,
             i.Seller!.Name,
             i.Brand!.Name,
-            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!))
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!)),
+            i.Ads
          );
 
         public static Expression<Func<Item, SellerItemDto>> SellerDtoSelector = i => new
