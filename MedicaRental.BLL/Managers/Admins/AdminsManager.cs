@@ -205,6 +205,46 @@ public class AdminsManager : IAdminsManager
 
         return orderedAdminModlist;
     }
+
+
+
+    public async Task<StatusDto> DeleteAdminMod(string id)
+    {
+
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return new StatusDto(
+
+               StatusCode: System.Net.HttpStatusCode.NotFound,
+       StatusMessage: $"User with id {id} cannot be found");
+        }
+
+        // Prevents the deletion of OwnerAccount.
+        if (user.Email == "admin@admin.com")
+        {
+            return new StatusDto(
+
+               StatusCode: System.Net.HttpStatusCode.BadRequest,
+       StatusMessage: $"Failed to delete User {user.Email} ");
+        }
+
+
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            return new StatusDto(
+
+               StatusCode: System.Net.HttpStatusCode.BadRequest,
+       StatusMessage: $"Failed to delete User {user.Email} ");
+        }
+
+        return new StatusDto (
+
+                StatusCode: System.Net.HttpStatusCode.OK,
+        StatusMessage: $"User {user.Email} has been deleted");
+
+    }
     #endregion
 
 

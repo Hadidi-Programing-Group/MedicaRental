@@ -1,4 +1,5 @@
-﻿using MedicaRental.BLL.Dtos.Admin;
+﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -61,6 +62,18 @@ namespace MedicaRental.API.Controllers
 
             // StatuesCode, and the full DTO object.
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("DeleteAdminMod")]
+        public async Task<ActionResult<StatusDto>> DeleteAdminMod(
+         string id
+     )
+        {
+            var result = await _adminManger.DeleteAdminMod(id);
+
+            // StatuesCode, and the full DTO object.
+            return StatusCode((int)result.StatusCode, result);
         }
     }
 }

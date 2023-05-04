@@ -17,4 +17,6 @@ public interface IAdminsManager
 
 
     Task<IEnumerable<RoleMangerUserInfoDto>> GetAllAdminMod();
+
+    Task<StatusDto> DeleteAdminMod(string id); 
 }
