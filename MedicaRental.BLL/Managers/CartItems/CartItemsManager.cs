@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Helpers;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +71,7 @@ public class CartItemsManager : ICartItemsManager
                 ca.Item.Name,
                 ca.Item.Model,
                 pricePerDay.Price,
-                Convert.ToBase64String(ca.Item.Image!),
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String(ca.Item.Image!)),
                 ca.NumberOfDays
                 )
             );
