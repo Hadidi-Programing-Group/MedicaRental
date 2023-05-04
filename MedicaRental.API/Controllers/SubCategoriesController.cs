@@ -18,9 +18,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<SubCategoriesDto>>> GetAllSubCategory()
+        public async Task<ActionResult<PageDto<SubCategoryWithCategoryDto>>> GetAllWithCategory(int page, string? searchText)
         {
-            var subcategories = (await subCategoriesManager.GetAllAsync()).ToList();
+            var subcategories = (await subCategoriesManager.GetAllWithCategoryAsync(page, searchText));
             if (subcategories is null)
                 return NotFound();
             return subcategories;
@@ -28,7 +28,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<SubCategoriesDto>> GetSubcategoryById(Guid id)
+        public async Task<ActionResult<SubCategoryWithCategoryDto>> GetSubcategoryById(Guid id)
         {
             var subCategory = await subCategoriesManager.GetByIdAsync(id);
             if (subCategory is null) return NotFound();
@@ -48,10 +48,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPut]
-        [Route("{id}")]
-        public async Task<ActionResult> UpdateSubCategory(Guid id, UpdateSubCategoryDto SubCategory)
+        public async Task<ActionResult> UpdateSubCategory(UpdateSubCategoryDto SubCategory)
         {
-            UpdateSubCategoryStatusDto UpdateStatus = await subCategoriesManager.UpdateSubCategory(id, SubCategory);
+            UpdateSubCategoryStatusDto UpdateStatus = await subCategoriesManager.UpdateSubCategory(SubCategory);
             if (!UpdateStatus.isUpdated)
                 return BadRequest(UpdateStatus.StatusMessage);
             return CreatedAtAction(
@@ -69,7 +68,5 @@ namespace MedicaRental.API.Controllers
                    return NoContent();
             return BadRequest(DeleteStatus.StatusMessage);
         }
-
-
     }
 }
