@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos.Brand;
 
-public record  BrandDto(Guid Id,string Name,string CountryOfOrigin, byte[]? Image);
+public record  BrandDto(Guid Id,string Name,string CountryOfOrigin, string Image);

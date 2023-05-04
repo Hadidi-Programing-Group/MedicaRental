@@ -1,5 +1,6 @@
 ﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Dtos.Brand;
+using MedicaRental.BLL.Helpers;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +48,7 @@ namespace MedicaRental.BLL.Managers
                  brand.Id,
                  brand.Name,
                  brand.CountryOfOrigin,
-                 brand.Image
+                 SharedHelper.GetMimeFromBase64(Convert.ToBase64String(brand.Image!))
                 )
              
          );
@@ -65,7 +66,7 @@ namespace MedicaRental.BLL.Managers
                 Id: brand.Id,
                 Name: brand.Name,
                 CountryOfOrigin: brand.CountryOfOrigin,
-                Image:brand.Image);
+                Image: SharedHelper.GetMimeFromBase64(Convert.ToBase64String(brand.Image!)));
         }
 
         public async Task<InsertBrandStatusDto> InsertNewBrand(InsertBrandDto insertBrandDto)
