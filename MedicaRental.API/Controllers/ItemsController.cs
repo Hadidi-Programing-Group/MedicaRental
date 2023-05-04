@@ -184,6 +184,8 @@ namespace MedicaRental.API.Controllers
         [HttpPost("one")]
         public async Task<ActionResult<StatusDto>> AddItem(AddItemDto item)
         {
+            var userId = _userManager.GetUserId(User);
+            item.SellerId = userId;
             return await _itemsManager.AddItemAsync(item);
         }
 

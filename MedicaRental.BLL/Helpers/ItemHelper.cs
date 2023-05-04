@@ -120,18 +120,18 @@ namespace MedicaRental.BLL.Helpers
         {
             return new()
             {
-                Name = item.Name,
-                Description = item.Description,
-                Serial = item.Serial,
-                Model = item.Model,
-                Stock = item.Stock,
-                Price = item.Price,
-                Image = Convert.FromBase64String(item.Image),
-                IsListed = item.IsListed,
-                BrandId = item.BrandId,
-                CategoryId = item.CategoryId,
-                SubCategoryId = item.SubCategoryId,
-                SellerId = item.SellerId
+                Name = item?.Name??"",
+                Description = item?.Description??"",
+                Serial = item?.Serial??"",
+                Model = item?.Model ?? "",
+                Stock = item?.Stock??0,
+                Price = item?.Price??0,
+                Image = Convert.FromBase64String(item?.Image??""),
+                IsListed = item?.IsListed??true,
+                BrandId = item?.BrandId??Guid.Empty,
+                CategoryId = item?.CategoryId ?? Guid.Empty,
+                SubCategoryId = item?.SubCategoryId ?? Guid.Empty,
+                SellerId = item?.SellerId ?? ""
             };
         }
 
