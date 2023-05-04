@@ -157,8 +157,8 @@ builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
 builder.Services.AddScoped<IRentOperationsManager, RentOperationsManager>();
 builder.Services.AddScoped<IReportActionManager, ReportActionManager>();
-
 builder.Services.AddScoped<IAuthManger, AuthManger>();
+builder.Services.AddScoped<ITransactionsManager, TransactionsManager>();
 
 #endregion
 
@@ -178,7 +178,8 @@ builder.Services.AddHostedService<DailyRatingCalculationService>();
 builder.Services.AddHostedService<DailyClearTokenService>();
 
 #region SignalR
-builder.Services.AddSignalR().AddJsonProtocol(options => {
+builder.Services.AddSignalR().AddJsonProtocol(options =>
+{
     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
 });
 #endregion
@@ -238,7 +239,7 @@ string GetRDSConnectionString()
 {
     var appConfig = System.Configuration.ConfigurationManager.AppSettings;
 
-    string dbname = Environment.GetEnvironmentVariable("RDS_DB_NAME")??string.Empty;
+    string dbname = Environment.GetEnvironmentVariable("RDS_DB_NAME") ?? string.Empty;
 
     if (string.IsNullOrEmpty(dbname)) return builder.Configuration.GetConnectionString("MedicaRentalDbConn");
 

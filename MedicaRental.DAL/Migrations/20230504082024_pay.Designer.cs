@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230501182044_Add Ads")]
-    partial class AddAds
+    [Migration("20230504082024_pay")]
+    partial class pay
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -525,6 +525,35 @@ namespace MedicaRental.DAL.Migrations
                     b.ToTable("SubCategories");
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.Transaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PyamentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Transactions");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -863,6 +892,17 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.Transaction", b =>
+                {
+                    b.HasOne("MedicaRental.DAL.Context.AppUser", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -917,6 +957,8 @@ namespace MedicaRental.DAL.Migrations
             modelBuilder.Entity("MedicaRental.DAL.Context.AppUser", b =>
                 {
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Brand", b =>

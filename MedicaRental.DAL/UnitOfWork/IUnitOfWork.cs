@@ -13,18 +13,19 @@ public interface IUnitOfWork : IDisposable
 {
     IEntityRepo<Item> Items { get; }
     IEntityRepo<Category> Categories { get; }
-    IEntityRepo<SubCategory> SubCategories {get;}
-    IEntityRepo<Client> Clients {get;}
-    IEntityRepo<AppUser> Admins {get;}
-    IEntityRepo<Message> Messages {get;}
-    IEntityRepo<Report> Reports {get;}
-    IEntityRepo<Review> Reviews {get;}
-    IEntityRepo<Brand> Brands {get; }
-    IEntityRepo<RentOperation> RentOperations { get;}
+    IEntityRepo<SubCategory> SubCategories { get; }
+    IEntityRepo<Client> Clients { get; }
+    IEntityRepo<AppUser> Admins { get; }
+    IEntityRepo<Message> Messages { get; }
+    IEntityRepo<Report> Reports { get; }
+    IEntityRepo<Review> Reviews { get; }
+    IEntityRepo<Brand> Brands { get; }
+    IEntityRepo<RentOperation> RentOperations { get; }
     IEntityRepo<ReportAction> ReportActions { get; }
 
     IEntityRepo<RefreshToken> RefreshToken { get; }
 
+    IEntityRepo<Transaction> Trasactions { get; }
 
     int Save();
 }

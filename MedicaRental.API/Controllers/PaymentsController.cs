@@ -1,6 +1,13 @@
-﻿using Microsoft.AspNetCore;
+﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Transactions;
+using MedicaRental.BLL.Managers;
+using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Models;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,28 +22,40 @@ namespace MedicaRental.API.Controllers
     [ApiController]
     public class PaymentsController : ControllerBase
     {
-        public PaymentsController()
+        private readonly ITransactionsManager _transactionsManager;
+        private readonly UserManager<AppUser> _userManager;
+
+        public PaymentsController(ITransactionsManager transactionsManager, UserManager<AppUser> userManager)
         {
+            this._transactionsManager = transactionsManager;
+            this._userManager = userManager;
         }
+        [Authorize]
         [HttpPost("create-payment-intent")]
-        public ActionResult<PaymentIntent> Create([FromBody] PaymentIntent intent)
+        public ActionResult<PaymentIntent> Create([FromBody] payment payment)
         {
-            Console.WriteLine(intent.Amount);
+            Console.WriteLine(payment.Amount);
             var paymentIntentService = new PaymentIntentService();
             var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
             {
-                Amount = 5000,
+                Amount = payment.Amount,
                 Currency = "usd",
                 AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
                 {
                     Enabled = true,
                 },
-
             });
             Console.WriteLine($"Client Sercre {paymentIntent.ClientSecret}");
+
+            _transactionsManager.InsertTransaction(new TransactionDto()
+            {
+                Ammount = paymentIntent.Amount / 100,
+                PaymentId = paymentIntent.Id,
+                UserId = _userManager.GetUserId(User)
+
+            });
             //return Ok(new { client_secret = paymentIntent.ClientSecret });
             return Ok(paymentIntent.ToJson());
-
         }
         [HttpPost("webhook")]
         public async Task<IActionResult> Index()
@@ -55,8 +74,13 @@ namespace MedicaRental.API.Controllers
                 {
                     var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
                     Console.WriteLine("A successful payment for {0} was made.", paymentIntent.Amount);
-                    // Then define and call a method to handle the successful payment intent.
-                    // handlePaymentIntentSucceeded(paymentIntent);
+                    TransactionDto? t = await _transactionsManager.GetByPaymentIdAsync(paymentIntent.Id);
+                    if (t is null)
+                    {
+                        await Console.Out.WriteLineAsync("payment was not saved to DB");
+                    }
+                    _ = _transactionsManager
+                        .UpdateTransaction(new UpdateTransactionStatusDto(paymentIntent.Id, TransactionStatus.Success));
                 }
                 else if (stripeEvent.Type == Events.PaymentMethodAttached)
                 {
@@ -79,8 +103,12 @@ namespace MedicaRental.API.Controllers
             {
                 return StatusCode(500);
             }
+
         }
     }
-
+    public class payment
+    {
+        public int Amount { get; set; }
+    }
 }
 

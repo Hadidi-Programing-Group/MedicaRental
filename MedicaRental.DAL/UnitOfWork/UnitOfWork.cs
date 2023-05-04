@@ -27,6 +27,7 @@ public class UnitOfWork : IUnitOfWork
     private IEntityRepo<ReportAction>? _reportActions;
 
     private IEntityRepo<RefreshToken>? _refreshToken;
+    private IEntityRepo<Transaction>? _transactions;
 
     #endregion
 
@@ -52,6 +53,7 @@ public class UnitOfWork : IUnitOfWork
     public IEntityRepo<RentOperation> RentOperations => _rentOperations ??= new RentOperationsRepo(_context);
     public IEntityRepo<RefreshToken> RefreshToken => _refreshToken ??= new RefreshTokenRepo(_context);
     public IEntityRepo<ReportAction> ReportActions => _reportActions ??= new ReportActionRepo(_context);
+    public IEntityRepo<Transaction> Trasactions => _transactions ??= new TransactionsRepo(_context);
 
     #endregion
 
