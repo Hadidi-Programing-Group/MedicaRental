@@ -41,7 +41,10 @@ jobs:
         dotnet-version: 7.0.x
     - name: Restore dependencies
       run: dotnet restore
-    
+      
+    - name: Install EF Core CLI
+      run: dotnet tool install dotnet-ef --global
+      
     - name: Drop DataBase
       run : dotnet ef database drop -f --project MedicaRental.API/MedicaRental.API.csproj
     - name: Update DataBase
