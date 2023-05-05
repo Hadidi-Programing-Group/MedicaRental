@@ -56,6 +56,17 @@ namespace MedicaRental.API.Controllers
             return Ok(items);
         }
 
+
+        [HttpGet("seller/GetAllItems/{sellerId}")]
+        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetAllItemsBySeller(string sellerId)
+        {
+            var items = await _itemsManager.GetAllItemsBySellerAsync(sellerId);
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
+        }
+
         [HttpGet("listed")]
         [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<PageDto<ListItemDto>>?> GetListedItems(int page, string? orderBy, string? searchText)

@@ -399,6 +399,30 @@ public class ItemsManager : IItemsManager
         catch (Exception) { return null; }
     }
 
+
+
+
+    #region AdminRent 
+
+
+    public async Task<IEnumerable<HomeItemDto>?> GetAllItemsBySellerAsync(string sellerId, string? orderBy = null, string? searchText = null)
+    {
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, searchText);
+            var data = await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => i.IsListed && sellerId == i.SellerId && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                    include: ItemHelper.HomeDtoInclude
+                );
+
+            return data;
+        }
+        catch (Exception) { return null; }
+    }
+    #endregion
     #region May be removed
     public async Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy)
     {
