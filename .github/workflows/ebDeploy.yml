@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RDS_DB_NAME: MedicaRental_DB
-      RDS_USERNAME: "{{ secrets.RDS_USERNAME }}"
-      RDS_PASSWORD: "{{ secrets.RDS_PASSWORD }}"
-      RDS_HOSTNAME: "{{ secrets.RDS_HOSTNAME }}"
+      RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
+      RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+      RDS_HOSTNAME: ${{ secrets.RDS_HOSTNAME }}
       
     steps:
     - uses: actions/checkout@v3
