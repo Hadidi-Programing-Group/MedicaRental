@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.RentOperation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,7 @@ namespace MedicaRental.BLL.Managers
         public Task<ItemHasBeenRentedToUserDto> GetRentingStatus(string usreId, Guid ItemId);
         
         public Task<Guid?> AddRentOperation(InsertRentOperationDto rentOperationDto);
+
+        public Task<IEnumerable<GetRentedItemsDto>?> GetRentedItemsAsync();
     }
 }

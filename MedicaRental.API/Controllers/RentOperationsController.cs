@@ -95,5 +95,17 @@ namespace MedicaRental.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("GetRentedItems")]
+        public async Task<IActionResult> GetRentedItems()
+        {
+            var data = await _rentOperationsManager.GetRentedItemsAsync();
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(data);
+        }
     }
 }

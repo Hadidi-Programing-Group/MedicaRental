@@ -1,9 +1,11 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.RentOperation;
 using MedicaRental.BLL.Helpers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.Repositories;
 using MedicaRental.DAL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -165,6 +167,37 @@ namespace MedicaRental.BLL.Managers
 
             }
             catch
+            {
+                return null;
+            }
+        }
+
+
+        // Return today
+
+        public async Task<IEnumerable<GetRentedItemsDto>?> GetRentedItemsAsync()
+        {
+            try
+            {
+                var data = await _unitOfWork.RentOperations.FindAllAsync(
+                    selector: ro => new GetRentedItemsDto(
+                        ro.Id,
+                        ro.RentDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        ro.ReturnDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        ro.Price,
+                        ro.ClientId,
+                        $"{ro.Client!.User!.FirstName} {ro.Client!.User.LastName}" ,
+                        ro.ItemId,
+                        ro.Item!.Name
+                    ),
+                    predicate: ro => ro.ReturnDate.Date <= DateTime.UtcNow.Date,
+                    orderBy:ro => ro.OrderByDescending(ro => ro.ReturnDate.Date == DateTime.UtcNow.Date).ThenByDescending(ro => ro.ReturnDate),
+                    include: ro => ro.Include(ro => ro.Client).ThenInclude(ro => ro!.User).Include(ro => ro.Item)
+                );
+
+                return data;
+            }
+            catch (Exception)
             {
                 return null;
             }
