@@ -11,7 +11,7 @@ namespace MedicaRental.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+    //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
     public class RentOperationsController : ControllerBase
     {
         private readonly IRentOperationsManager _rentOperationsManager;
@@ -84,7 +84,7 @@ namespace MedicaRental.API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost]  
         //[Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<ItemHasBeenRentedToUserDto>> InsertRentOperation(InsertRentOperationDto rentOperationDto)
         {
