@@ -282,5 +282,18 @@ public class ClientsManager : IClientsManager
         return new StatusDto("User has been updated successully", System.Net.HttpStatusCode.OK);
     }
 
-   
+    public async Task<UserBasicInfoDto?> GetClientInfoByEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if(user is null) return null;
+        
+        var client = await _unitOfWork.Clients.FindAsync(c => c.Id == user.Id);
+
+        if (client is null) return null;
+
+        return new(user.Id, user.Name, client.Ssn);
+    }
+
+
 }

@@ -14,5 +14,7 @@ namespace MedicaRental.BLL.Managers
         public Task<PageDto<RentOperationDto>?> GetOnRentItemsAsync(string userId, int page, string? orderBy, string? searchText);
         public Task<PageDto<RentOperationDto>?> GetOnRentItemsHistoryAsync(string userId, int page, string? orderBy, string? searchText);
         public Task<ItemHasBeenRentedToUserDto> GetRentingStatus(string usreId, Guid ItemId);
+        
+        public Task<Guid?> AddRentOperation(InsertRentOperationDto rentOperationDto);
     }
 }

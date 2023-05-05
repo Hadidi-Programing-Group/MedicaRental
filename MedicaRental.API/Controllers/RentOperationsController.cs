@@ -11,7 +11,7 @@ namespace MedicaRental.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+    //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
     public class RentOperationsController : ControllerBase
     {
         private readonly IRentOperationsManager _rentOperationsManager;
@@ -81,6 +81,18 @@ namespace MedicaRental.API.Controllers
                 return new ItemHasBeenRentedToUserDto(false);
             var IsReturned = await _rentOperationsManager.GetRentingStatus(userId, itemId);
             return IsReturned;
+        }
+
+
+        [HttpPost]  
+        //[Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        public async Task<ActionResult<ItemHasBeenRentedToUserDto>> InsertRentOperation(InsertRentOperationDto rentOperationDto)
+        {
+            var id = await _rentOperationsManager.AddRentOperation(rentOperationDto);
+
+            if(id  is null) return BadRequest();
+
+            return NoContent();
         }
     }
 }

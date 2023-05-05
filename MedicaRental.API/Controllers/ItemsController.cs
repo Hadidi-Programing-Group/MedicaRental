@@ -269,5 +269,16 @@ namespace MedicaRental.API.Controllers
 
             return StatusCode((int)addingReportAction.StatusCode, deleteResult);
         }
+
+
+        [HttpGet("sellerItems/{sellerId}")]
+        public async Task<ActionResult<ItemMinimalDto>> GetSellerItemsMinimal(string sellerId)
+        {
+            var items = await _itemsManager.GetItemsBySellerMinimal(sellerId);
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
+        }
     }
 }

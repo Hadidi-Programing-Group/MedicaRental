@@ -13,6 +13,7 @@ public interface IClientsManager
     Task<StatusDto> ApproveUserAsync(string email);
     Task<UserApprovalInfoDto?> GetClientApprovalInfoAsync(string userId);
     Task<UserProfileInfoDto?> GetClientInfoAsync(string userId);
+    Task<UserBasicInfoDto?> GetClientInfoByEmailAsync(string email);
     Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto registerInfoDto);
     Task<StatusDto> UpdateApprovalInfoAsync(string userId, UpdateApprovalInfoDto updateProfileInfoDto);
 

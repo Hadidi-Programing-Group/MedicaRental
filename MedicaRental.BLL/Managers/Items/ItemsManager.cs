@@ -581,6 +581,7 @@ public class ItemsManager : IItemsManager
     }
 
     #endregion
+    
     public async Task<StatusDto> DeleteItemByAdmin(Guid itemId)
     {
         var item = await _unitOfWork.Items.FindAsync(predicate: i => i.Id == itemId, disableTracking: false);
@@ -601,5 +602,18 @@ public class ItemsManager : IItemsManager
         {
             return new StatusDto($"Item couldn't be deleted.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
         }
+    }
+
+    public async Task<IEnumerable<ItemMinimalDto>?> GetItemsBySellerMinimal(string sellerId)
+    {
+        var items = await _unitOfWork.Items.FindAllAsync
+            (
+                predicate: i => i.SellerId == sellerId,
+                selector: i => new ItemMinimalDto(i.Id, i.Name, i.Price),
+                orderBy: q => q.OrderBy(i=>i.Name)
+           );
+
+        if (items is null) return null;
+        return items;
     }
 }
