@@ -62,7 +62,7 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         region: eu-central-1
         application_name: MedicaRental_EB
-        environment_name: MedicaRental_EB-env
+        environment_name: MedicaRentalEB-env
         version_label: "ver-${{ github.sha }}"
         deployment_package: ./app/deploy.zip
     - name: revoke runner ip address
