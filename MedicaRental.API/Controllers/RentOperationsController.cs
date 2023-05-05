@@ -82,5 +82,17 @@ namespace MedicaRental.API.Controllers
             var IsReturned = await _rentOperationsManager.GetRentingStatus(userId, itemId);
             return IsReturned;
         }
+
+
+        [HttpPost]
+        //[Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        public async Task<ActionResult<ItemHasBeenRentedToUserDto>> InsertRentOperation(InsertRentOperationDto rentOperationDto)
+        {
+            var id = await _rentOperationsManager.AddRentOperation(rentOperationDto);
+
+            if(id  is null) return BadRequest();
+
+            return NoContent();
+        }
     }
 }

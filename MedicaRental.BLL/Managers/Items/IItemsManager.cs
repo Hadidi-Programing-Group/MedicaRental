@@ -25,6 +25,8 @@ public interface IItemsManager
     public Task<PageDto<SellerItemDto>?> GetAllItemsForSellerAsync(int page, string? orderBy);
     public Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy);
 
+    public Task<IEnumerable<ItemMinimalDto>?> GetItemsBySellerMinimal(string sellerId);
+
     public Task<HomeItemDto?> FindItemAsync(Guid id);
     public Task<SellerItemDto?> FindItemForSellerAsync(Guid id);
     public Task<RenterItemDto?> FindItemForRenterAsync(Guid id);
