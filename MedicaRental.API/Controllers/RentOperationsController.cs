@@ -107,5 +107,13 @@ namespace MedicaRental.API.Controllers
 
             return Ok(data);
         }
+
+        [HttpPut("acceptReturn/{rentOperationId}")]
+        public async Task<IActionResult> AcceptReturn(Guid rentOperationId)
+        {
+            var result = await _rentOperationsManager.AcceptReturnAsync(rentOperationId);
+            //return StatusCode((int)result.StatusCode, result.StatusMessage);
+            return Ok(new { message = result.StatusMessage });
+        }
     }
 }

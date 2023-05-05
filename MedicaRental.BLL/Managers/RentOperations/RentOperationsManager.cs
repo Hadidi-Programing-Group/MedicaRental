@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -200,6 +201,36 @@ namespace MedicaRental.BLL.Managers
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+
+        public async Task<StatusDto> AcceptReturnAsync(Guid rentOperationId)
+        {
+            // Find the rent operation
+            var rentOperation = await _unitOfWork.RentOperations.FindAsync(ro => ro.Id == rentOperationId, disableTracking: false);
+            if (rentOperation == null)
+                return new StatusDto("Rent operation not found.", HttpStatusCode.NotFound);
+
+            // Soft delete the rent operation
+            rentOperation.IsDeleted = true;
+
+            // Find the item
+            var item = await _unitOfWork.Items.FindAsync(i => i.Id == rentOperation.ItemId, disableTracking: false);
+            if (item == null)
+                return new StatusDto("Item not found.", HttpStatusCode.NotFound);
+
+            // Increase the item stock
+            item.Stock++;
+
+            try
+            {
+                _unitOfWork.Save();
+                return new StatusDto("Return accepted successfully.", HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return new StatusDto($"Return couldn't be accepted.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
             }
         }
     }
