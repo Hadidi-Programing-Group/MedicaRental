@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RDS_DB_NAME: MedicaRental_DB
-      RDS_USERNAME: "{{ secrets.RDS_USERNAME }}"
-      RDS_PASSWORD: "{{ secrets.RDS_PASSWORD }}"
-      RDS_HOSTNAME: "{{ secrets.RDS_HOSTNAME }}"
+      RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
+      RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+      RDS_HOSTNAME: ${{ secrets.RDS_HOSTNAME }}
       
     steps:
     - uses: actions/checkout@v3
@@ -41,7 +41,10 @@ jobs:
         dotnet-version: 7.0.x
     - name: Restore dependencies
       run: dotnet restore
-    
+      
+    - name: Install EF Core CLI
+      run: dotnet tool install dotnet-ef --global
+      
     - name: Drop DataBase
       run : dotnet ef database drop -f --project MedicaRental.API/MedicaRental.API.csproj
     - name: Update DataBase
@@ -59,7 +62,7 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         region: eu-central-1
         application_name: MedicaRental_EB
-        environment_name: MedicaRental_EB-env
+        environment_name: MedicaRentalEB-env
         version_label: "ver-${{ github.sha }}"
         deployment_package: ./app/deploy.zip
     - name: revoke runner ip address
