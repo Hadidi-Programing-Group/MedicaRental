@@ -48,6 +48,12 @@ public class AccountsManager : IAccountsManager
                 StatusCode: System.Net.HttpStatusCode.NotFound
             );
 
+        if (user.LockoutEnd > DateTimeOffset.Now)
+            return new StatusDto(
+                StatusCode: System.Net.HttpStatusCode.BadGateway,
+                StatusMessage: $"User {user.Email} is already blocked"
+            );
+
         var lockDate = await _userManager.SetLockoutEndDateAsync(user, blockUserInfo.EndDate);
 
         if (lockDate.Succeeded)

@@ -203,8 +203,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost]
-        [Route("UnBlockUser")]
+        [Route("UnBlockUser/{Email}")]
         [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        
         public async Task<ActionResult<StatusDto>> UnBlockUserAsync(string Email)
         {
             StatusDto blockingStatus = await _accountsManager.UnBlockUserAsync(Email);

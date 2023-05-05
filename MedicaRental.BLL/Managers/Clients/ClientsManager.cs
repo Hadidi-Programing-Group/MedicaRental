@@ -292,7 +292,7 @@ public class ClientsManager : IClientsManager
 
         if (client is null) return null;
 
-        return new(user.Id, user.Name, client.Ssn);
+        return new(user.Id, user.Name, client.Ssn, user.LockoutEnd > DateTimeOffset.Now);
     }
 
 
