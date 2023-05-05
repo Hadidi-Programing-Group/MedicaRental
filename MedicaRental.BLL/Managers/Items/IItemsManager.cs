@@ -44,4 +44,11 @@ public interface IItemsManager
     public Task<StatusDto> ReListItem(Guid id);
     public Task<ItemOwnerStatusDto> GetItemOwnerStatus(string usreId, Guid ItemId);
     Task<StatusDto> DeleteItemByAdmin(Guid itemId);
+
+
+    #region Admin rent
+
+    Task<IEnumerable<HomeItemDto>?> GetAllItemsBySellerAsync(string sellerId, string? orderBy = null, string? searchText = null);
+    #endregion
+
 }

@@ -1,0 +1,71 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      RDS_DB_NAME: MedicaRental_DB
+      RDS_USERNAME: "{{ secrets.RDS_USERNAME }}"
+      RDS_PASSWORD: "{{ secrets.RDS_PASSWORD }}"
+      RDS_HOSTNAME: "{{ secrets.RDS_HOSTNAME }}"
+      
+    steps:
+    - uses: actions/checkout@v3
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+    - name: get runner ip address
+      id: ip
+      uses: haythem/public-ip@v1.2
+    - name: whitelist runner ip address
+      run: |
+         aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.RDS_SECGRP_ID }} \
+            --protocol tcp \
+            --port 0-65535 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Drop DataBase
+      run : dotnet ef database drop -f --project MedicaRental.API/MedicaRental.API.csproj
+    - name: Update DataBase
+      run : dotnet ef database update --project MedicaRental.API/MedicaRental.API.csproj
+    
+    - name: Publish
+      run: dotnet publish MedicaRental.API/MedicaRental.API.csproj -c Release -o ./app
+    - name: Generate deployment package
+      run: zip -r deploy.zip .
+      working-directory: ./app
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v21
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        region: eu-central-1
+        application_name: MedicaRental_EB
+        environment_name: MedicaRental_EB-env
+        version_label: "ver-${{ github.sha }}"
+        deployment_package: ./app/deploy.zip
+    - name: revoke runner ip address
+      run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.RDS_SECGRP_ID }} \
+            --protocol tcp \
+            --port 0-65535 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
