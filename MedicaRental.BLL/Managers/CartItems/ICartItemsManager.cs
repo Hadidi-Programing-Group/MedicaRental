@@ -13,4 +13,5 @@ public interface ICartItemsManager
     Task<IEnumerable<CartItemDto>> GetCartItemsAsync(string userId);
     Task<bool> IsInCartAsync(Guid itemId, string userId);
     Task<StatusDto> RemoveCartItemAsync(Guid itemId, string userId);
+    Task<StatusDto> RemoveCartItemsAsync(IEnumerable<Guid> itemsId, string userId);
 }

@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Stripe;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace MedicaRental.API.Controllers
 {
@@ -23,16 +24,18 @@ namespace MedicaRental.API.Controllers
     public class TransactionsController : ControllerBase
     {
         private readonly ITransactionsManager _transactionsManager;
+        private readonly ICartItemsManager _cartItemsManager;
         private readonly ITransactionItemsManager _transactionItemsManager;
         private readonly IItemsManager _itemsManager;
         private readonly UserManager<AppUser> _userManager;
 
-        public TransactionsController(ITransactionsManager transactionsManager, ITransactionItemsManager transactionItemsManager, IItemsManager itemsManager, UserManager<AppUser> userManager)
+        public TransactionsController(ITransactionsManager transactionsManager, ITransactionItemsManager transactionItemsManager, IItemsManager itemsManager, ICartItemsManager cartItemsManager, UserManager<AppUser> userManager)
         {
             _transactionsManager = transactionsManager;
             _transactionItemsManager = transactionItemsManager;
             _userManager = userManager;
             _itemsManager = itemsManager;
+            _cartItemsManager = cartItemsManager;
         }
 
         [Authorize]
@@ -40,6 +43,7 @@ namespace MedicaRental.API.Controllers
         public async Task<ActionResult<PaymentIntent>> CreateStripePaymentIntent(IEnumerable<CartItemMinimalDto> items)
         {
             var amount = _itemsManager.GetTotalPrice(items.Select(i => i.ItemId));
+            var userId = _userManager.GetUserId(User);
 
             var paymentIntentService = new PaymentIntentService();
             var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
@@ -60,7 +64,7 @@ namespace MedicaRental.API.Controllers
             {
                 Ammount = paymentIntent.Amount / 100,
                 PaymentId = paymentIntent.Id,
-                ClientId = _userManager.GetUserId(User)
+                ClientId = userId
             });
 
             if (transactionId is null) 
@@ -71,8 +75,12 @@ namespace MedicaRental.API.Controllers
             if(!inserted)
                 return StatusCode(StatusCodes.Status500InternalServerError);
 
+            var result = await _cartItemsManager.RemoveCartItemsAsync(items.Select(i => i.Id), userId);
 
-            return Ok(paymentIntent.ToJson());
+            if(result.StatusCode == HttpStatusCode.OK)
+                return Ok(paymentIntent.ToJson());
+
+            return StatusCode((int)result.StatusCode);
         }
 
         [HttpPost("webhook")]

@@ -102,4 +102,23 @@ public class CartItemsManager : ICartItemsManager
             return new StatusDto("Could't remove item from cart", System.Net.HttpStatusCode.InternalServerError);
         }
     }
+
+    public async Task<StatusDto> RemoveCartItemsAsync(IEnumerable<Guid> itemsId, string userId)
+    {
+        var items = await _unitOfWork.CartItems.FindAllAsync(predicate: ca => itemsId.Contains(ca.ItemId) && ca.ClientId == userId);
+        
+        if (items is null)
+            return new StatusDto("Items not found", System.Net.HttpStatusCode.NotFound);
+
+        try
+        {
+            _unitOfWork.CartItems.DeleteRange(items);
+            _unitOfWork.Save();
+            return new StatusDto("Items removed from cart", System.Net.HttpStatusCode.OK);
+        }
+        catch
+        {
+            return new StatusDto("Could't remove items from cart", System.Net.HttpStatusCode.InternalServerError);
+        }
+    }
 }
