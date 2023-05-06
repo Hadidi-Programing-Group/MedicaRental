@@ -25,6 +25,8 @@ public class UnitOfWork : IUnitOfWork
     private IEntityRepo<Brand>? _brands;
     private IEntityRepo<RentOperation>? _rentOperations;
     private IEntityRepo<ReportAction>? _reportActions;
+    private IEntityRepo<CartItem>? _cartItems;
+    private IEntityRepo<AdPrice>? _adPrices;
 
     private IEntityRepo<RefreshToken>? _refreshToken;
     private IEntityRepo<Transaction>? _transactions;
@@ -55,6 +57,8 @@ public class UnitOfWork : IUnitOfWork
     public IEntityRepo<ReportAction> ReportActions => _reportActions ??= new ReportActionRepo(_context);
     public IEntityRepo<Transaction> Trasactions => _transactions ??= new TransactionsRepo(_context);
 
+    public IEntityRepo<CartItem> CartItems => _cartItems ??= new CartItemRepo(_context);
+    public IEntityRepo<AdPrice> AdPrices => _adPrices ??= new AdPriceRepo(_context);
     #endregion
 
     private bool disposed = false;

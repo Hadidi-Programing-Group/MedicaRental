@@ -35,10 +35,32 @@ namespace MedicaRental.API.Controllers
             return Ok(items);
         }
 
+        [HttpGet]
+        [Route("getAllAds")]
+        public async Task<ActionResult<PageDto<HomeItemDto>>> GetAllAds()
+        {
+            var items = await _itemsManager.GetAllAdsAsync();
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
+        }
+
         [HttpGet("seller/{sellerId}")]
         public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySeller(string sellerId, int page, string? orderBy, string? searchText)
         {
             var items = await _itemsManager.GetItemsBySellerAsync(sellerId, page, orderBy, searchText);
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
+        }
+
+
+        [HttpGet("seller/GetAllItems/{sellerId}")]
+        public async Task<ActionResult<IEnumerable<HomeItemDto>>> GetAllItemsBySeller(string sellerId)
+        {
+            var items = await _itemsManager.GetAllItemsBySellerAsync(sellerId);
 
             if (items is null) return BadRequest();
 
@@ -173,6 +195,8 @@ namespace MedicaRental.API.Controllers
         [HttpPost("one")]
         public async Task<ActionResult<StatusDto>> AddItem(AddItemDto item)
         {
+            var userId = _userManager.GetUserId(User);
+            item.SellerId = userId;
             return await _itemsManager.AddItemAsync(item);
         }
 
@@ -244,6 +268,17 @@ namespace MedicaRental.API.Controllers
             var addingReportAction = await _reportActionManager.AddReportAction(insertReportActionDto);
 
             return StatusCode((int)addingReportAction.StatusCode, deleteResult);
+        }
+
+
+        [HttpGet("sellerItems/{sellerId}")]
+        public async Task<ActionResult<ItemMinimalDto>> GetSellerItemsMinimal(string sellerId)
+        {
+            var items = await _itemsManager.GetItemsBySellerMinimal(sellerId);
+
+            if (items is null) return BadRequest();
+
+            return Ok(items);
         }
     }
 }

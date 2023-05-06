@@ -35,6 +35,10 @@ public class AccountsManager : IAccountsManager
         _unitOfWork = unitOfWork;
     }
 
+   
+
+
+
     public async Task<StatusDto> BlockUserAsync(BlockUserInfoDto blockUserInfo)
     {
         var user = await _userManager.FindByIdAsync(blockUserInfo.Id);
@@ -42,6 +46,12 @@ public class AccountsManager : IAccountsManager
             return new StatusDto(
                 StatusMessage: $"User {blockUserInfo.Id} coudn't be found",
                 StatusCode: System.Net.HttpStatusCode.NotFound
+            );
+
+        if (user.LockoutEnd > DateTimeOffset.Now)
+            return new StatusDto(
+                StatusCode: System.Net.HttpStatusCode.BadGateway,
+                StatusMessage: $"User {user.Email} is already blocked"
             );
 
         var lockDate = await _userManager.SetLockoutEndDateAsync(user, blockUserInfo.EndDate);
@@ -114,7 +124,7 @@ public class AccountsManager : IAccountsManager
 
         var activeRefreshToken = await _unitOfWork.RefreshToken.FindAsync(
             predicate: t => t.AppUserId == user.Id && t.RevokedOn == null
-            );
+        );
         if (activeRefreshToken is not null)
         {
             authModel.RefreshToken = activeRefreshToken.Token;
@@ -130,7 +140,6 @@ public class AccountsManager : IAccountsManager
             await _userManager.UpdateAsync(user);
         }
 
-
         //var refreshToken = authManger.GenerateRefreshToken();
         //authModel.RefreshToken = refreshToken.Token;
         //authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
@@ -143,7 +152,6 @@ public class AccountsManager : IAccountsManager
 
         var claims = await _userManager.GetClaimsAsync(user);
 
-
         return new LoginStatusWithTokenDto(
             "Login Successful",
             System.Net.HttpStatusCode.OK,
@@ -152,8 +160,9 @@ public class AccountsManager : IAccountsManager
             authModel.ExpiresOn,
             authModel.RefreshToken,
             authModel.RefreshTokenExpiration,
-            claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? UserRoles.Client.ToString()
-        ) ;
+            claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value
+                ?? UserRoles.Client.ToString()
+        );
 
         //return authModel;
     }

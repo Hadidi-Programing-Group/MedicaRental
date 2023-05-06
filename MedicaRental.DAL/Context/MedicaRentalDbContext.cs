@@ -26,6 +26,9 @@ namespace MedicaRental.DAL.Context
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<ReportAction> ReportActions => Set<ReportAction>();
         public DbSet<Transaction> Transactions => Set<Transaction>();
+        public DbSet<CartItem> CartItems => Set<CartItem>();
+        public DbSet<AdPrice> AdPrices => Set<AdPrice>();
+
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 
 
@@ -45,7 +48,9 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new ReportEntityTypeConfiguration());
             builder.ApplyConfiguration(new RentOperationEntityTypeConfiguration());
             builder.ApplyConfiguration(new ReportActionEntityTypeConfiguration());
+            builder.ApplyConfiguration(new CartItemEntityTypeConfiguration());
         }
+
 
         public static int LevDist(string s1, string? s2, int? maxDistance) => throw new NotSupportedException();
 

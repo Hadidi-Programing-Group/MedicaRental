@@ -1,12 +1,15 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.RentOperation;
 using MedicaRental.BLL.Helpers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.Repositories;
 using MedicaRental.DAL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -136,6 +139,99 @@ namespace MedicaRental.BLL.Managers
             }
 
             return new ItemHasBeenRentedToUserDto(isRented: false);
+        }
+        
+        public async Task<Guid?> AddRentOperation(InsertRentOperationDto rentOperationDto)
+        {
+            var item = await _unitOfWork.Items.FindAsync(i => i.Id == rentOperationDto.ItemId, disableTracking: false);
+
+            if (item == null) return null;
+            
+            var rentOp = new RentOperation()
+            {
+                ClientId = rentOperationDto.ClientId,
+                ItemId = rentOperationDto.ItemId,
+                SellerId = rentOperationDto.SellerId,
+                RentDate = rentOperationDto.RentDate,
+                ReturnDate = rentOperationDto.ReturnDate,
+                Price = rentOperationDto.Price
+            };
+
+            var res = await _unitOfWork.RentOperations.AddAsync(rentOp);
+
+            item.Stock--;
+
+            try
+            {
+                _unitOfWork.Save();
+                return rentOp.Id;
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        // Return today
+
+        public async Task<IEnumerable<GetRentedItemsDto>?> GetRentedItemsAsync()
+        {
+            try
+            {
+                var data = await _unitOfWork.RentOperations.FindAllAsync(
+                    selector: ro => new GetRentedItemsDto(
+                        ro.Id,
+                        ro.RentDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        ro.ReturnDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        ro.Price,
+                        ro.ClientId,
+                        $"{ro.Client!.User!.FirstName} {ro.Client!.User.LastName}" ,
+                        ro.ItemId,
+                        ro.Item!.Name
+                    ),
+                    predicate: ro => ro.ReturnDate.Date <= DateTime.UtcNow.Date,
+                    orderBy:ro => ro.OrderByDescending(ro => ro.ReturnDate.Date == DateTime.UtcNow.Date).ThenByDescending(ro => ro.ReturnDate),
+                    include: ro => ro.Include(ro => ro.Client).ThenInclude(ro => ro!.User).Include(ro => ro.Item)
+                );
+
+                return data;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+
+        public async Task<StatusDto> AcceptReturnAsync(Guid rentOperationId)
+        {
+            // Find the rent operation
+            var rentOperation = await _unitOfWork.RentOperations.FindAsync(ro => ro.Id == rentOperationId, disableTracking: false);
+            if (rentOperation == null)
+                return new StatusDto("Rent operation not found.", HttpStatusCode.NotFound);
+
+            // Soft delete the rent operation
+            rentOperation.IsDeleted = true;
+
+            // Find the item
+            var item = await _unitOfWork.Items.FindAsync(i => i.Id == rentOperation.ItemId, disableTracking: false);
+            if (item == null)
+                return new StatusDto("Item not found.", HttpStatusCode.NotFound);
+
+            // Increase the item stock
+            item.Stock++;
+
+            try
+            {
+                _unitOfWork.Save();
+                return new StatusDto("Return accepted successfully.", HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return new StatusDto($"Return couldn't be accepted.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

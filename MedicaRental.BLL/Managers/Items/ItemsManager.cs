@@ -302,6 +302,28 @@ public class ItemsManager : IItemsManager
         catch (Exception) { return null; }
     }
 
+    public async Task<PageDto<HomeItemDto>?> GetAllAdsAsync()
+    {
+        try
+        {
+            var data = await _unitOfWork.Items.FindAllAsync
+                (
+                    predicate: i => i.Ads && i.IsListed,
+                    selector: ItemHelper.HomeDtoSelector,
+                    include: ItemHelper.HomeDtoInclude
+                );
+
+            var count = await _unitOfWork.Items.GetCountAsync
+                (
+                    i => i.Ads && i.IsListed
+                );
+
+            return new(data, count);
+
+        }
+        catch (Exception) { return null; }
+    }
+
     public async Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy, string? searchText)
     {
         try
@@ -377,6 +399,30 @@ public class ItemsManager : IItemsManager
         catch (Exception) { return null; }
     }
 
+
+
+
+    #region AdminRent 
+
+
+    public async Task<IEnumerable<HomeItemDto>?> GetAllItemsBySellerAsync(string sellerId, string? orderBy = null, string? searchText = null)
+    {
+        try
+        {
+            var orderByQuery = ItemHelper.GetOrderByQuery(orderBy, searchText);
+            var data = await _unitOfWork.Items.FindAllAsync
+                (
+                    orderBy: orderByQuery,
+                    selector: ItemHelper.HomeDtoSelector,
+                    predicate: i => i.IsListed && sellerId == i.SellerId && (searchText == null || MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                    include: ItemHelper.HomeDtoInclude
+                );
+
+            return data;
+        }
+        catch (Exception) { return null; }
+    }
+    #endregion
     #region May be removed
     public async Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy)
     {
@@ -535,6 +581,7 @@ public class ItemsManager : IItemsManager
     }
 
     #endregion
+    
     public async Task<StatusDto> DeleteItemByAdmin(Guid itemId)
     {
         var item = await _unitOfWork.Items.FindAsync(predicate: i => i.Id == itemId, disableTracking: false);
@@ -555,5 +602,18 @@ public class ItemsManager : IItemsManager
         {
             return new StatusDto($"Item couldn't be deleted.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
         }
+    }
+
+    public async Task<IEnumerable<ItemMinimalDto>?> GetItemsBySellerMinimal(string sellerId)
+    {
+        var items = await _unitOfWork.Items.FindAllAsync
+            (
+                predicate: i => i.SellerId == sellerId,
+                selector: i => new ItemMinimalDto(i.Id, i.Name, i.Price),
+                orderBy: q => q.OrderBy(i=>i.Name)
+           );
+
+        if (items is null) return null;
+        return items;
     }
 }

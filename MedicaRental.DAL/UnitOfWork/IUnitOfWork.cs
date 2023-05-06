@@ -22,6 +22,8 @@ public interface IUnitOfWork : IDisposable
     IEntityRepo<Brand> Brands { get; }
     IEntityRepo<RentOperation> RentOperations { get; }
     IEntityRepo<ReportAction> ReportActions { get; }
+    IEntityRepo<CartItem> CartItems { get; }
+    IEntityRepo<AdPrice> AdPrices { get; }
 
     IEntityRepo<RefreshToken> RefreshToken { get; }
 

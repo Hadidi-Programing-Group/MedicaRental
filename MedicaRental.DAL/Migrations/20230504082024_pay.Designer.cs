@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
+<<<<<<<< HEAD:MedicaRental.DAL/Migrations/20230504082024_pay.Designer.cs
     [Migration("20230504082024_pay")]
     partial class pay
+========
+    [Migration("20230504123426_OneMigr")]
+    partial class OneMigr
+>>>>>>>> master:MedicaRental.DAL/Migrations/20230504123426_OneMigr.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -97,6 +102,24 @@ namespace MedicaRental.DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.AdPrice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("money");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdPrices");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Brand", b =>
                 {
                     b.Property<Guid>("Id")
@@ -119,6 +142,31 @@ namespace MedicaRental.DAL.Migrations
                     b.ToTable("Brand");
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.CartItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("NumberOfDays")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("MedicaRental.DAL.Models.Category", b =>
                 {
                     b.Property<Guid>("Id")
@@ -131,9 +179,12 @@ namespace MedicaRental.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -516,11 +567,14 @@ namespace MedicaRental.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("SubCategories");
                 });
@@ -685,6 +739,25 @@ namespace MedicaRental.DAL.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.CartItem", b =>
+                {
+                    b.HasOne("MedicaRental.DAL.Models.Client", "Client")
+                        .WithMany("CartItems")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MedicaRental.DAL.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
@@ -975,6 +1048,8 @@ namespace MedicaRental.DAL.Migrations
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Client", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("ItemsForRent");
 
                     b.Navigation("ReceivedMessages");

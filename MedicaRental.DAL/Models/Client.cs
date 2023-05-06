@@ -33,6 +33,8 @@ namespace MedicaRental.DAL.Models
 
         public ICollection<RentOperation> RentOperations { get; set; } = new List<RentOperation>();
 
+        public ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();
+
         public AppUser? User { get; set; }
 
         [Range(0, 5)]

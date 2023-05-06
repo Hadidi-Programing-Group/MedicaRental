@@ -41,8 +41,8 @@ public class ClientsManager : IClientsManager
             selector: c => new UserApprovalInfoWithIdDto(
                 c.Id,
                 c.Ssn,
-                c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
-                c.UnionCardImage ?? SharedHelper.CardPlaceHolder
+         SharedHelper.GetMimeFromBase64(Convert.ToBase64String(c.NationalIdImage ?? SharedHelper.CardPlaceHolder)),
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(c.UnionCardImage ?? SharedHelper.CardPlaceHolder))
                 ));
     }
 
@@ -73,8 +73,8 @@ public class ClientsManager : IClientsManager
 
         var approvalInfoList = clients.Select(c => new UserApprovalInfoDto(
             c.Ssn,
-            c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
-            c.UnionCardImage ?? SharedHelper.CardPlaceHolder
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(c.NationalIdImage ?? SharedHelper.CardPlaceHolder)),
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(c.UnionCardImage ?? SharedHelper.CardPlaceHolder))
         )).ToList();
 
         return approvalInfoList;
@@ -168,8 +168,8 @@ public class ClientsManager : IClientsManager
             predicate: c => c.Id == userId,
             selector: c => new UserApprovalInfoDto(
                 c.Ssn,
-                c.NationalIdImage ?? SharedHelper.CardPlaceHolder,
-                c.UnionCardImage ?? SharedHelper.CardPlaceHolder
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String( c.NationalIdImage ?? SharedHelper.CardPlaceHolder)),
+                SharedHelper.GetMimeFromBase64(Convert.ToBase64String( c.UnionCardImage ?? SharedHelper.CardPlaceHolder))
                 ));
     }
     public async Task<UserProfileInfoDto?> GetClientInfoAsync(string userId)
@@ -282,5 +282,18 @@ public class ClientsManager : IClientsManager
         return new StatusDto("User has been updated successully", System.Net.HttpStatusCode.OK);
     }
 
-   
+    public async Task<UserBasicInfoDto?> GetClientInfoByEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if(user is null) return null;
+        
+        var client = await _unitOfWork.Clients.FindAsync(c => c.Id == user.Id);
+
+        if (client is null) return null;
+
+        return new(user.Id, user.Name, client.Ssn, user.LockoutEnd > DateTimeOffset.Now);
+    }
+
+
 }

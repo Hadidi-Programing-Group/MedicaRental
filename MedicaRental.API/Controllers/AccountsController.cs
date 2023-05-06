@@ -34,7 +34,7 @@ namespace MedicaRental.API.Controllers
             _accountsManager = accountsManager;
             this._authManger = authManger;
         }
-
+            
         [HttpPost]
         [Route("/Register")]
         public async Task<ActionResult> RegisterAsync(ClientRegisterInfoDto clientRegisterInfoDto)
@@ -44,6 +44,20 @@ namespace MedicaRental.API.Controllers
 
             if (!clientRegisterStatus.isCreated)
                 return BadRequest(clientRegisterStatus.RegisterMessage);
+
+            return Ok( /*clientRegisterStatus.RegisterMessage*/
+            );
+        }
+
+        [HttpPost]
+        [Route("/RegisterAdminMod")]
+        public async Task<ActionResult> RegisterAdminModAsync(BaseUserRegisterInfoDto BaseUserRegisterInfoDto)
+        {
+            BaseUserRegisterStatusDto BaseUserRegisterStatus =
+                await _accountsManager.RegisterNewUserAsync(BaseUserRegisterInfoDto);
+
+            if (!BaseUserRegisterStatus.isCreated)
+                return BadRequest(BaseUserRegisterStatus.RegisterMessage);
 
             return Ok( /*clientRegisterStatus.RegisterMessage*/
             );
@@ -67,6 +81,18 @@ namespace MedicaRental.API.Controllers
 
             return StatusCode((int)loginStatus.StatusCode, loginStatus);
         }
+
+
+        [HttpGet("basicInfo")]
+        public async Task<ActionResult<UserBasicInfoDto>> GetInfoByEmail(string email)
+        {
+            var res = await _clientsManager.GetClientInfoByEmailAsync(email);
+
+            if (res == null) return BadRequest();
+
+            return Ok(res);
+        }
+
 
         #region Authentication & RefreshToken
 

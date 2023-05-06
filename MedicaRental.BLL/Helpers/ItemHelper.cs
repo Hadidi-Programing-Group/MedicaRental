@@ -22,7 +22,8 @@ namespace MedicaRental.BLL.Helpers
             i.SellerId,
             i.Seller!.Name,
             i.Brand!.Name,
-            Convert.ToBase64String(i.Image!)
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!)),
+            i.Ads
          );
 
         public static Expression<Func<Item, SellerItemDto>> SellerDtoSelector = i => new
@@ -39,7 +40,7 @@ namespace MedicaRental.BLL.Helpers
             new(i.Category!.Id, i.Category.Name),
             new(i.SubCategory!.Id, i.SubCategory.Name),
             i.Reviews.Select(r => new ReviewBaseDto(r.Id, r.Rating, r.ClientReview, r.Client!.Name)),
-            Convert.ToBase64String(i.Image!)
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!))
          );
 
         public static Expression<Func<Item, RenterItemDto>> RenterDtoSelector = i => new
@@ -57,7 +58,7 @@ namespace MedicaRental.BLL.Helpers
             new(i.SubCategory!.Id, i.SubCategory.Name),
             new(i.Seller!.Id, i.Seller.Name, i.Seller.Rating),
             i.Reviews.Select(r => new ReviewBaseDto(r.Id, r.Rating, r.ClientReview, r.Client!.Name)),
-            Convert.ToBase64String(i.Image!)
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!))
          );
 
         public static Expression<Func<Item, ListItemDto>> ListedDtoSelector = i => new
@@ -92,25 +93,25 @@ namespace MedicaRental.BLL.Helpers
             if (searchText is null)
                 return orderBy switch
                 {
-                    null => null,
-                    SharedHelper.HighToLow => new(q => q.OrderBy(i => i.Ads==true).ThenByDescending(i => i.Price)),
-                    SharedHelper.LowToHigh => new(q => q.OrderBy(i => i.Ads == true).ThenBy(i => i.Price)),
-                    SharedHelper.RateDesc => new(q => q.OrderBy(i => i.Ads == true).ThenByDescending(i => i.Rating)),
-                    SharedHelper.RateAsc => new(q => q.OrderBy(i => i.Ads == true).ThenBy(i => i.Rating)),
-                    DateCreatedDesc => new(q => q.OrderBy(i => i.Ads == true).ThenByDescending(i => i.CreationDate)),
-                    DateCreatedAsc => new(q => q.OrderBy(i => i.Ads == true).ThenBy(i => i.CreationDate)),
+                    null => new(q => q.OrderByDescending(i => i.Ads == true)),
+                    SharedHelper.HighToLow => new(q => q.OrderByDescending(i => i.Ads==true).ThenByDescending(i => i.Price)),
+                    SharedHelper.LowToHigh => new(q => q.OrderByDescending(i => i.Ads == true).ThenBy(i => i.Price)),
+                    SharedHelper.RateDesc => new(q => q.OrderByDescending(i => i.Ads == true).ThenByDescending(i => i.Rating)),
+                    SharedHelper.RateAsc => new(q => q.OrderByDescending(i => i.Ads == true).ThenBy(i => i.Rating)),
+                    DateCreatedDesc => new(q => q.OrderByDescending(i => i.Ads == true).ThenByDescending(i => i.CreationDate)),
+                    DateCreatedAsc => new(q => q.OrderByDescending(i => i.Ads == true).ThenBy(i => i.CreationDate)),
                     _ => throw new ArgumentException()
                 };
 
             return orderBy switch
             {
-                null => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance))),
-                SharedHelper.HighToLow => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i=>i.Ads==true).ThenByDescending(i => i.Price)),
-                SharedHelper.LowToHigh => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i => i.Ads==true).ThenBy(i => i.Price)),
-                SharedHelper.RateDesc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i => i.Ads == true).ThenByDescending(i => i.Rating)),
-                SharedHelper.RateAsc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i => i.Ads == true).ThenBy(i => i.Rating)),
-                DateCreatedDesc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i => i.Ads == true).ThenByDescending(i => i.CreationDate)),
-                DateCreatedAsc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenBy(i => i.Ads == true).ThenBy(i => i.CreationDate)),
+                null => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.Ads == true)),
+                SharedHelper.HighToLow => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i=>i.Ads==true).ThenByDescending(i => i.Price)),
+                SharedHelper.LowToHigh => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.Ads==true).ThenBy(i => i.Price)),
+                SharedHelper.RateDesc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.Ads == true).ThenByDescending(i => i.Rating)),
+                SharedHelper.RateAsc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.Ads == true).ThenBy(i => i.Rating)),
+                DateCreatedDesc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.Ads == true).ThenByDescending(i => i.CreationDate)),
+                DateCreatedAsc => new(q => q.OrderBy(i => MedicaRentalDbContext.LevDist(i.Name, searchText, SharedHelper.SearchMaxDistance)).ThenByDescending(i => i.Ads == true).ThenBy(i => i.CreationDate)),
                 _ => throw new ArgumentException()
             };
         }
@@ -119,18 +120,18 @@ namespace MedicaRental.BLL.Helpers
         {
             return new()
             {
-                Name = item.Name,
-                Description = item.Description,
-                Serial = item.Serial,
-                Model = item.Model,
-                Stock = item.Stock,
-                Price = item.Price,
-                Image = Convert.FromBase64String(item.Image),
-                IsListed = item.IsListed,
-                BrandId = item.BrandId,
-                CategoryId = item.CategoryId,
-                SubCategoryId = item.SubCategoryId,
-                SellerId = item.SellerId
+                Name = item?.Name??"",
+                Description = item?.Description??"",
+                Serial = item?.Serial??"",
+                Model = item?.Model ?? "",
+                Stock = item?.Stock??0,
+                Price = item?.Price??0,
+                Image = Convert.FromBase64String(item?.Image??""),
+                IsListed = item?.IsListed??true,
+                BrandId = item?.BrandId??Guid.Empty,
+                CategoryId = item?.CategoryId ?? Guid.Empty,
+                SubCategoryId = item?.SubCategoryId ?? Guid.Empty,
+                SellerId = item?.SellerId ?? ""
             };
         }
 

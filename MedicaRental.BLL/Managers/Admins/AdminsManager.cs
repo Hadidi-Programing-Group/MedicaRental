@@ -5,6 +5,7 @@ using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -164,7 +165,87 @@ public class AdminsManager : IAdminsManager
     }
 
 
+    #region ByRaouf => For AdminPanel
 
+
+    public async Task<IEnumerable<RoleMangerUserInfoDto>> GetAllAdminMod()
+    {
+        var adminUsers = await _userManager.GetUsersForClaimAsync(new Claim(ClaimTypes.Role, "admin"));
+        var modUsers = await _userManager.GetUsersForClaimAsync(new Claim(ClaimTypes.Role, "Moderator"));
+
+        var adminModlist = new List<RoleMangerUserInfoDto>();
+
+        foreach (var user in adminUsers)
+        {
+            var temp = new RoleMangerUserInfoDto()
+            {
+                Id = user.Id,
+                FullName = $"{user.FirstName} {user.LastName}",
+                Email= user.Email,
+                Role = UserRoles.Admin.ToString()
+            };
+
+            adminModlist.Add(temp);    
+        }
+
+        foreach (var user in modUsers)
+        {
+            var temp = new RoleMangerUserInfoDto()
+            {
+                Id = user.Id,
+                FullName = $"{user.FirstName} {user.LastName}",
+                Email = user.Email,
+                Role = UserRoles.Moderator.ToString()
+            };
+
+            adminModlist.Add(temp);
+        }
+
+        var orderedAdminModlist = adminModlist.OrderByDescending(user => user.Role == "admin" ? 0 : 1).ToList();
+
+        return orderedAdminModlist;
+    }
+
+
+
+    public async Task<StatusDto> DeleteAdminMod(string id)
+    {
+
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return new StatusDto(
+
+               StatusCode: System.Net.HttpStatusCode.NotFound,
+       StatusMessage: $"User with id {id} cannot be found");
+        }
+
+        // Prevents the deletion of OwnerAccount.
+        if (user.Email == "admin@admin.com")
+        {
+            return new StatusDto(
+
+               StatusCode: System.Net.HttpStatusCode.BadRequest,
+       StatusMessage: $"Failed to delete User {user.Email} ");
+        }
+
+
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            return new StatusDto(
+
+               StatusCode: System.Net.HttpStatusCode.BadRequest,
+       StatusMessage: $"Failed to delete User {user.Email} ");
+        }
+
+        return new StatusDto (
+
+                StatusCode: System.Net.HttpStatusCode.OK,
+        StatusMessage: $"User {user.Email} has been deleted");
+
+    }
+    #endregion
 
 
 }

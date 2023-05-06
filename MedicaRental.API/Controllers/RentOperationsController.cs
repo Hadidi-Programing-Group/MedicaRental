@@ -11,7 +11,7 @@ namespace MedicaRental.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+
     public class RentOperationsController : ControllerBase
     {
         private readonly IRentOperationsManager _rentOperationsManager;
@@ -81,6 +81,39 @@ namespace MedicaRental.API.Controllers
                 return new ItemHasBeenRentedToUserDto(false);
             var IsReturned = await _rentOperationsManager.GetRentingStatus(userId, itemId);
             return IsReturned;
+        }
+
+
+        [HttpPost]  
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+
+        public async Task<ActionResult<ItemHasBeenRentedToUserDto>> InsertRentOperation(InsertRentOperationDto rentOperationDto)
+        {
+            var id = await _rentOperationsManager.AddRentOperation(rentOperationDto);
+
+            if(id  is null) return BadRequest();
+
+            return NoContent();
+        }
+
+        [HttpGet("GetRentedItems")]
+        public async Task<IActionResult> GetRentedItems()
+        {
+            var data = await _rentOperationsManager.GetRentedItemsAsync();
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(data);
+        }
+
+        [HttpPut("acceptReturn/{rentOperationId}")]
+        public async Task<IActionResult> AcceptReturn(Guid rentOperationId)
+        {
+            var result = await _rentOperationsManager.AcceptReturnAsync(rentOperationId);
+            //return StatusCode((int)result.StatusCode, result.StatusMessage);
+            return Ok(new { message = result.StatusMessage });
         }
     }
 }

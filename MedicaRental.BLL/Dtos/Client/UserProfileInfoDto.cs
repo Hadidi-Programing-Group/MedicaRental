@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
 
+public record UserBasicInfoDto(string Id, string Name, string Ssn, bool IsBlocked);
+
 public record UserProfileInfoDto(string Name, string FirstName, string LastName, string PhoneNumber, string Address, string Email, bool IsGrantedRent);
 
 public record UpdateProfileInfoDto(string FirstName, string LastName, string PhoneNumber, string Address, string Email);
 
-public record UserApprovalInfoDto(string NationalId, byte[] NationalImage, byte[] UnionImage);
+public record UserApprovalInfoDto(string NationalId, string NationalImage, string UnionImage);
 
 public record UpdateApprovalInfoDto
 {

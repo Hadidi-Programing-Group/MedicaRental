@@ -16,19 +16,40 @@ namespace MedicaRental.API.Controllers
             _categoriesManager = categoriesManager;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<CategoryWithSubCategoriesDto>>> GetAll()
+        [HttpGet("withsub")]
+        public async Task<ActionResult<IEnumerable<CategoryWithSubCategoriesDto>>> GetAllWithSubCategories()
         {
-            List<CategoryWithSubCategoriesDto> Categories = (await _categoriesManager.GetAllAsyc()).ToList();
+            IEnumerable<CategoryWithSubCategoriesDto> Categories = await _categoriesManager.GetAllWithSubCategoriesAsync();
 
             if (Categories is null) return BadRequest();
 
-            return Categories;
+            return Ok(Categories);
+        }
+
+        [HttpGet("paged")]
+        public async Task<ActionResult<PageDto<CategoryDto>>> GetAll(int page, string? searchText)
+        {
+            var categories = await _categoriesManager.GetAllAsync(page, searchText);
+
+            if (categories is null) return BadRequest();
+
+            return Ok(categories);
         }
 
         [HttpGet]
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll()
+        {
+            var categories = await _categoriesManager.GetAllAsync();
+
+            if (categories is null) return BadRequest();
+
+            return Ok(categories);
+        }
+
+
+        [HttpGet]
         [Route("{Id}")]
-        public async Task<ActionResult<CategoryWithSubCategoriesDto>> GetAllWithSubCategories(Guid Id)
+        public async Task<ActionResult<CategoryWithSubCategoriesDto>> GetCategoryWithSubCategories(Guid Id)
         {
             CategoryWithSubCategoriesDto? categoryWithSubCategories = await _categoriesManager.GetCategoryWithSubCategories(Id);
             if (categoryWithSubCategories is null) 
@@ -53,19 +74,14 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPut]
-        [Route("{Id}")]
-        public async Task<ActionResult> UpdateCategory(Guid Id, UpdateCategoryDto updateCategoryDto)
+        public async Task<ActionResult> UpdateCategory(UpdateCategoryDto updateCategoryDto)
         {
-            UpdateCategoryStatusDto updateCategoryStatus = await _categoriesManager.UpdateNewCategory(Id, updateCategoryDto);
+            UpdateCategoryStatusDto updateCategoryStatus = await _categoriesManager.UpdateNewCategory(updateCategoryDto);
 
             if (!updateCategoryStatus.isUpdated)
                 return BadRequest(updateCategoryStatus.StatusMessage);
 
-            return CreatedAtAction(
-                actionName: nameof(GetAllWithSubCategories),
-                routeValues: new { Id = updateCategoryStatus.Id },
-                value: new { Message = updateCategoryStatus.StatusMessage }
-                );
+            return NoContent();
         }
 
         [HttpDelete]

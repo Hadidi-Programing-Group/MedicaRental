@@ -5,6 +5,7 @@ using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using MedicaRental.BLL.Managers.Authentication;
 using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Repositories;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -157,6 +158,8 @@ builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
 builder.Services.AddScoped<IRentOperationsManager, RentOperationsManager>();
 builder.Services.AddScoped<IReportActionManager, ReportActionManager>();
+builder.Services.AddScoped<ICartItemsManager, CartItemsManager>();
+
 builder.Services.AddScoped<IAuthManger, AuthManger>();
 builder.Services.AddScoped<ITransactionsManager, TransactionsManager>();
 

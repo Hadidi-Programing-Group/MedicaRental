@@ -1,4 +1,5 @@
-﻿using MedicaRental.BLL.Dtos.Admin;
+﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -37,23 +38,42 @@ namespace MedicaRental.API.Controllers
         {
             var result = await _adminManger.UpdateUserRoleAsync(userRoleUpdateDto);
 
-            // StatuesCode, and the full DTO object. 
+            // StatuesCode, and the full DTO object.
             return StatusCode((int)result.StatusCode, result);
         }
 
         [HttpPost]
         [Route("UpdateReportStatus")]
         public async Task<ActionResult<ReportUpdateStatusDto>> UpdateReportStatusAsync(
-           ReportUpdateDto reportUpdateDto
-       )
+            ReportUpdateDto reportUpdateDto
+        )
         {
             var result = await _adminManger.UpdateReportStatus(reportUpdateDto);
 
-            // StatuesCode, and the full DTO object. 
+            // StatuesCode, and the full DTO object.
             return StatusCode((int)result.StatusCode, result);
         }
 
+        [HttpGet]
+        [Route("GetAllAdminMod")]
+        public async Task<ActionResult<IEnumerable<RoleMangerUserInfoDto>>> GetAllAdminMod()
+        {
+            var result = await _adminManger.GetAllAdminMod();
 
+            // StatuesCode, and the full DTO object.
+            return Ok(result);
+        }
 
+        [HttpPost]
+        [Route("DeleteAdminMod")]
+        public async Task<ActionResult<StatusDto>> DeleteAdminMod(
+         string id
+     )
+        {
+            var result = await _adminManger.DeleteAdminMod(id);
+
+            // StatuesCode, and the full DTO object.
+            return StatusCode((int)result.StatusCode, result);
+        }
     }
 }

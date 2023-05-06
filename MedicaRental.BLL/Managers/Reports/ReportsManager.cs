@@ -67,8 +67,8 @@ public class ReportsManager : IReportsManager
             Name = report.Name,
             Statement = report.Statement,
             IsSolved = report.IsSolved,
-            CreatedDate = report.CreatedDate.ToString("o"),
-            SolveDate = report.SolveDate?.ToString("o") ?? "",
+            CreatedDate = report.CreatedDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+            SolveDate = report.SolveDate?.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") ?? "",
             ReportedId = report.ReportedId,
             ReporterId = report.ReporterId,
             ReportedName = report.Reported.Name,
@@ -91,7 +91,7 @@ public class ReportsManager : IReportsManager
             detailedReportDto.ContentId = message.Id;
             detailedReportDto.IsContentDeleted = message.IsDeleted;
             detailedReportDto.Content = message.Content;
-            detailedReportDto.ContentTimeStamp = message.Timestamp.ToString("o");
+            detailedReportDto.ContentTimeStamp = message.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             detailedReportDto.ReportCategory = ReportCategory.Chats.ToString();
         }
 
@@ -108,7 +108,7 @@ public class ReportsManager : IReportsManager
             detailedReportDto.ContentId = item.Id;
             detailedReportDto.Content = item.Name;
             detailedReportDto.IsContentDeleted = item.IsDeleted;
-            detailedReportDto.ContentTimeStamp = item.CreationDate.ToString("o");
+            detailedReportDto.ContentTimeStamp = item.CreationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             detailedReportDto.ReportCategory = ReportCategory.Items.ToString();
         }
 
@@ -124,7 +124,7 @@ public class ReportsManager : IReportsManager
             detailedReportDto.ContentId = review.Id;
             detailedReportDto.Content = review.ClientReview;
             detailedReportDto.IsContentDeleted = review.IsDeleted;
-            detailedReportDto.ContentTimeStamp = review.CreateDate.ToString("o");
+            detailedReportDto.ContentTimeStamp = review.CreateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             detailedReportDto.ReportCategory = ReportCategory.Reviews.ToString();
         }
         return detailedReportDto;
