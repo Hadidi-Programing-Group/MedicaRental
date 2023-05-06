@@ -218,7 +218,20 @@ namespace MedicaRental.API.Controllers
         {
             StatusDto blockingStatus = await _clientsManager.ApproveUserAsync(Email);
             return StatusCode((int)blockingStatus.StatusCode, new { blockingStatus.StatusMessage });
-        } 
+        }
         #endregion
+
+
+        [HttpGet("isApproved")]
+        public async Task<ActionResult<bool>> IsApproved()
+        {
+            var id = _userManager.GetUserId(User);
+            var approved = await _clientsManager.IsApproved(id);
+
+            if (approved is null) 
+                return NotFound();
+
+            return Ok(approved);
+        }
     }
 }
