@@ -29,7 +29,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllChatsReports")]
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<PageDto<ReportDto>?>> GetAllChatsReports(int page)
         {
             var reports = (await _reportsManager.GetChatReportsAsync(page));
@@ -41,7 +41,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllReviewReports")]
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<PageDto<ReportDto>?>> GetAllReviewsReports(int page)
         {
             var reports = (await _reportsManager.GetReviewReportsAsync(page));
@@ -54,7 +54,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("AllItemsReports")]
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<PageDto<ReportDto>?>> GetAllItemsReports(int page)
         {
             var reports = (await _reportsManager.GetItemReportsAsync(page));
@@ -67,6 +67,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("{Id}")]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<DetailedReportDto>> GetById(Guid Id)
         {
             DetailedReportDto? report = await _reportsManager.GetByIdAsync(Id);
@@ -77,7 +78,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("MarkAsSolved/{Id}")]
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<DetailedReportDto>> MarkAsSolved(Guid Id)
         {
             var userId = _userManager.GetUserId(User);
@@ -97,6 +98,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("InsertReport")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult> InsertReport(InsertReportDtos insertReportDtos)
         {
             var reporteeId = _userManager.GetUserId(User); 
@@ -115,6 +117,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpDelete]
         [Route("{Id}")]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult> DeleteReportAsync(Guid Id)
         {
             DeleteReportStatusDto deleteReportStatusDto = await _reportsManager.DeleteByIdAsync(Id);

@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Authentication;
 using MedicaRental.BLL.Managers;
 using MedicaRental.BLL.Managers.Authentication;
@@ -51,6 +52,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("/RegisterAdminMod")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult> RegisterAdminModAsync(BaseUserRegisterInfoDto BaseUserRegisterInfoDto)
         {
             BaseUserRegisterStatusDto BaseUserRegisterStatus =
@@ -84,6 +86,7 @@ namespace MedicaRental.API.Controllers
 
 
         [HttpGet("basicInfo")]
+        [Authorize]
         public async Task<ActionResult<UserBasicInfoDto>> GetInfoByEmail(string email)
         {
             var res = await _clientsManager.GetClientInfoByEmailAsync(email);

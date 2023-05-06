@@ -1,4 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Report;
 using MedicaRental.BLL.Dtos.Review;
 using MedicaRental.BLL.Dtos.SubCategory;
@@ -53,6 +54,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult> InsertReview(InsertReviewForClientDto reviewDto)
         {
             var userId = _userManager.GetUserId(User);

@@ -123,7 +123,7 @@ var _adminPolicy = new AuthorizationPolicyBuilder()
     .Build();
 
 var _moderatorPolicy = new AuthorizationPolicyBuilder()
-    .RequireClaim(ClaimTypes.Role, UserRoles.Moderator.ToString())
+    .RequireClaim(ClaimTypes.Role, UserRoles.Moderator.ToString(), UserRoles.Admin.ToString())
     .Build();
 
 var _clientPolicy = new AuthorizationPolicyBuilder()
