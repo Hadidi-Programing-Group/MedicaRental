@@ -3,6 +3,8 @@ using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Managers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using MedicaRental.BLL.Dtos.Admin;
 
 namespace MedicaRental.API.Controllers
 {
@@ -36,6 +38,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult> InsertSubCategory(InsertSubCategoryDto SubCat)
         {
             InsertSubCategoryStatusDto InsertStatus = await subCategoriesManager.InsertSubCategory(SubCat);
@@ -48,6 +51,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult> UpdateSubCategory(UpdateSubCategoryDto SubCategory)
         {
             UpdateSubCategoryStatusDto UpdateStatus = await subCategoriesManager.UpdateSubCategory(SubCategory);
@@ -61,6 +65,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult> DeleteSubCategory(Guid id)
         {
             DeleteSubCategoryStatusDto DeleteStatus = await subCategoriesManager.DeleteByIdAsync(id);

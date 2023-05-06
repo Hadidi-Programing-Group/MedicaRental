@@ -24,6 +24,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("onrent")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItems(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
@@ -36,6 +37,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("onrent/history")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<PageDto<RentOperationDto>?>> GetOnRentItemsHistory(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
@@ -48,6 +50,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("rented")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItems(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
@@ -60,6 +63,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("rented/history")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<PageDto<RentOperationDto>?>> GetRentedItemsHistory(int page, string? orderBy, string? searchText)
         {
             var userId = _userManager.GetUserId(User);
@@ -85,8 +89,7 @@ namespace MedicaRental.API.Controllers
 
 
         [HttpPost]  
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
-
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<ItemHasBeenRentedToUserDto>> InsertRentOperation(InsertRentOperationDto rentOperationDto)
         {
             var id = await _rentOperationsManager.AddRentOperation(rentOperationDto);
@@ -97,6 +100,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("GetRentedItems")]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<IActionResult> GetRentedItems()
         {
             var data = await _rentOperationsManager.GetRentedItemsAsync();
@@ -109,6 +113,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPut("acceptReturn/{rentOperationId}")]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<IActionResult> AcceptReturn(Guid rentOperationId)
         {
             var result = await _rentOperationsManager.AcceptReturnAsync(rentOperationId);

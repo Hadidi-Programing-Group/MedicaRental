@@ -98,65 +98,65 @@ namespace MedicaRental.API.Controllers
         }
 
         #region To be removed
-        [HttpGet("category/{categoryId}")]
-        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsByCategory(Guid categoryId, int page, string? orderBy)
-        {
-            var items = await _itemsManager.GetItemsByCategoryAsync(categoryId, page, orderBy);
+        //[HttpGet("category/{categoryId}")]
+        //public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsByCategory(Guid categoryId, int page, string? orderBy)
+        //{
+        //    var items = await _itemsManager.GetItemsByCategoryAsync(categoryId, page, orderBy);
 
-            if (items is null) return BadRequest();
+        //    if (items is null) return BadRequest();
 
-            return Ok(items);
-        }
+        //    return Ok(items);
+        //}
 
-        [HttpGet("subcategory/{subcategoryId}")]
-        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySubCategory(Guid subcategoryId, int page, string? orderBy)
-        {
-            var items = await _itemsManager.GetItemsBySubCategoryAsync(subcategoryId, page, orderBy);
+        //[HttpGet("subcategory/{subcategoryId}")]
+        //public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySubCategory(Guid subcategoryId, int page, string? orderBy)
+        //{
+        //    var items = await _itemsManager.GetItemsBySubCategoryAsync(subcategoryId, page, orderBy);
 
-            if (items is null) return BadRequest();
+        //    if (items is null) return BadRequest();
 
-            return Ok(items);
-        }
+        //    return Ok(items);
+        //}
 
-        [HttpGet("categories")]
-        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsByCategories([FromQuery] IEnumerable<Guid> categoryIds, int page, string? orderBy)
-        {
-            var items = await _itemsManager.GetItemsByCategoriesAsync(categoryIds, page, orderBy);
+        //[HttpGet("categories")]
+        //public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsByCategories([FromQuery] IEnumerable<Guid> categoryIds, int page, string? orderBy)
+        //{
+        //    var items = await _itemsManager.GetItemsByCategoriesAsync(categoryIds, page, orderBy);
 
-            if (items is null) return BadRequest();
+        //    if (items is null) return BadRequest();
 
-            return Ok(items);
-        }
+        //    return Ok(items);
+        //}
 
-        [HttpGet("subcategories")]
-        public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySubCategories([FromQuery] IEnumerable<Guid> subcategoryIds, int page, string? orderBy)
-        {
-            var items = await _itemsManager.GetItemsBySubCategoriesAsync(subcategoryIds, page, orderBy);
+        //[HttpGet("subcategories")]
+        //public async Task<ActionResult<PageDto<HomeItemDto>>> GetItemsBySubCategories([FromQuery] IEnumerable<Guid> subcategoryIds, int page, string? orderBy)
+        //{
+        //    var items = await _itemsManager.GetItemsBySubCategoriesAsync(subcategoryIds, page, orderBy);
 
-            if (items is null) return BadRequest();
+        //    if (items is null) return BadRequest();
 
-            return Ok(items);
-        }
+        //    return Ok(items);
+        //}
 
-        [HttpGet("forseller")]
-        public async Task<ActionResult<PageDto<SellerItemDto>>> GetAllItemsForSeller(int page, string? orderBy)
-        {
-            var items = await _itemsManager.GetAllItemsForSellerAsync(page, orderBy);
+        //[HttpGet("forseller")]
+        //public async Task<ActionResult<PageDto<SellerItemDto>>> GetAllItemsForSeller(int page, string? orderBy)
+        //{
+        //    var items = await _itemsManager.GetAllItemsForSellerAsync(page, orderBy);
 
-            if (items is null) return BadRequest();
+        //    if (items is null) return BadRequest();
 
-            return Ok(items);
-        }
+        //    return Ok(items);
+        //}
 
-        [HttpGet("forrenter")]
-        public async Task<ActionResult<PageDto<RenterItemDto>>> GetAllItemsForRenter(int page, string? orderBy)
-        {
-            var items = await _itemsManager.GetAllItemsForRenterAsync(page, orderBy);
+        //[HttpGet("forrenter")]
+        //public async Task<ActionResult<PageDto<RenterItemDto>>> GetAllItemsForRenter(int page, string? orderBy)
+        //{
+        //    var items = await _itemsManager.GetAllItemsForRenterAsync(page, orderBy);
 
-            if (items is null) return BadRequest();
+        //    if (items is null) return BadRequest();
 
-            return Ok(items);
-        }
+        //    return Ok(items);
+        //}
         #endregion
 
         #region Single Item
@@ -193,6 +193,7 @@ namespace MedicaRental.API.Controllers
 
         #region CUD
         [HttpPost("one")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<StatusDto>> AddItem(AddItemDto item)
         {
             var userId = _userManager.GetUserId(User);
@@ -201,42 +202,49 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost("many")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<StatusDto>> AddItems(IEnumerable<AddItemDto> items)
         {
             return await _itemsManager.AddItemsAsync(items);
         }
 
         [HttpPut("one")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<StatusDto>> UpdateItem(UpdateItemDto item)
         {
             return await _itemsManager.UpdateItem(item);
         }
 
         [HttpPut("many")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<StatusDto>> UpdateItems(IEnumerable<UpdateItemDto> items)
         {
             return await _itemsManager.UpdateItems(items);
         }
 
         [HttpDelete("one")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<StatusDto>> DeleteItem(Guid id)
         {
             return await _itemsManager.DeleteItem(id);
         }
 
         [HttpDelete("many")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<StatusDto>> DeleteItems(IEnumerable<Guid> ids)
         {
             return await _itemsManager.DeleteItems(ids);
         }
 
         [HttpPut("unlist/{itemId}")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<StatusDto>> UnListItem(Guid itemId)
         {
             return await _itemsManager.UnListItem(itemId);
         }
 
         [HttpPut("relist/{itemId}")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<StatusDto>> ReListItem(Guid itemId)
         {
             return await _itemsManager.ReListItem(itemId);
@@ -254,7 +262,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("DeleteByAdmin")]
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<StatusDto>> DeleteItemByAdmin(DeleteItemAdminRequestDto deleteItemAdminRequest)
         {
             var adminId = _userManager.GetUserId(User);

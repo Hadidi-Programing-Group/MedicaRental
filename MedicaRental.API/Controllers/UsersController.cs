@@ -33,6 +33,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("allClients")]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<List<UserProfileInfoDto>>> GetAllClients()
         {
             var clients = await _clientsManager.GetAllClientsAsync();
@@ -44,7 +45,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("GetAllClientsApprovalInfo")]
-        //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<List<UserApprovalInfoDto>>> GetAllClientsApprovalInfo()
         {
             var approvalInfoList = await _clientsManager.GetAllClientsApprovalInfoAsync();
@@ -58,7 +59,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("clientsNeedingApproval")]
-        //[Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<IEnumerable<UserProfileInfoDto>>> GetClientsNeedingApproval()
         {
             var clients = await _clientsManager.GetClientsNeedingApprovalAsync();
@@ -185,7 +186,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("BlockUser")]
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult<StatusDto>> BlockUserAsync(BlockUserInfoDto blockUserInfo)
         {
             var userId =  _userManager.GetUserId(User);
@@ -204,7 +205,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("UnBlockUser/{Email}")]
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         
         public async Task<ActionResult<StatusDto>> UnBlockUserAsync(string Email)
         {
