@@ -35,7 +35,7 @@ public class AccountsManager : IAccountsManager
         _unitOfWork = unitOfWork;
     }
 
-   
+
 
 
 
@@ -57,10 +57,29 @@ public class AccountsManager : IAccountsManager
         var lockDate = await _userManager.SetLockoutEndDateAsync(user, blockUserInfo.EndDate);
 
         if (lockDate.Succeeded)
-            return new StatusDto(
-                StatusCode: System.Net.HttpStatusCode.OK,
-                StatusMessage: $"User {user.Email} is blocked untill {blockUserInfo.EndDate}"
+        {
+            var items = await _unitOfWork.Items.FindAllAsync(predicate: i => i.SellerId == user.Id);
+            try
+            {
+                _unitOfWork.Items.DeleteRange(items);
+                _unitOfWork.Save();
+                return new StatusDto(
+                       StatusCode: System.Net.HttpStatusCode.OK,
+                       StatusMessage: $"User {user.Email} is blocked untill {blockUserInfo.EndDate}"
+                   );
+            }
+            catch
+            {
+                return new StatusDto(
+                StatusMessage: $"User {user.Email} items coudn't be deleted",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
             );
+            }
+
+
+
+
+        }
         else
             return new StatusDto(
                 StatusMessage: $"User {user.Email} coudn't be blocked",
@@ -227,10 +246,31 @@ public class AccountsManager : IAccountsManager
         var lockDate = await _userManager.SetLockoutEndDateAsync(user, null);
 
         if (lockDate.Succeeded)
-            return new StatusDto(
-                StatusCode: System.Net.HttpStatusCode.OK,
-                StatusMessage: $"User {email} is unblocked"
+        {
+            var items = await _unitOfWork.Items.FindAllAsync(predicate: i => i.SellerId == user.Id, ignoreQueryFilter: true);
+            foreach (var item in items)
+            {
+                item.IsDeleted = false;
+            }
+            try
+            {
+                _unitOfWork.Items.UpdateRange(items);
+                _unitOfWork.Save();
+                return new StatusDto(
+                   StatusCode: System.Net.HttpStatusCode.OK,
+                   StatusMessage: $"User {email} is unblocked"
+               );
+            }
+            catch
+            {
+                return new StatusDto(
+                StatusMessage: $"User {user.Email} items coudn't be restored",
+                StatusCode: System.Net.HttpStatusCode.BadRequest
             );
+            }
+
+
+        }
         else
             return new StatusDto(
                 StatusMessage: $"User {email} coudn't be unblocked",
