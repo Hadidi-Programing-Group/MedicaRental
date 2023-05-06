@@ -24,10 +24,9 @@ public interface IUnitOfWork : IDisposable
     IEntityRepo<ReportAction> ReportActions { get; }
     IEntityRepo<CartItem> CartItems { get; }
     IEntityRepo<AdPrice> AdPrices { get; }
-
     IEntityRepo<RefreshToken> RefreshToken { get; }
-
     IEntityRepo<Transaction> Trasactions { get; }
+    IEntityRepo<TransactionItem> TrasactionItems { get; }
 
     int Save();
 }

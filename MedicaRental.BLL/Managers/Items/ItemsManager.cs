@@ -616,4 +616,9 @@ public class ItemsManager : IItemsManager
         if (items is null) return null;
         return items;
     }
+
+    public decimal GetTotalPrice(IEnumerable<Guid> itemIds)
+    {
+        return ((IItemsRepo)_unitOfWork.Items).ItemsTotalPrice(itemIds);
+    }
 }

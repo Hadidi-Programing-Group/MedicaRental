@@ -5,5 +5,5 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
-public record InsertTransactionStatusDto(bool isCreated, int? Id, string StatusMessage);
+public record InsertTransactionStatusDto(bool isCreated, Guid Id, string StatusMessage);
 

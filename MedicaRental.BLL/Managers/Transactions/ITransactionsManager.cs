@@ -1,5 +1,4 @@
 ﻿using MedicaRental.BLL.Dtos;
-using MedicaRental.BLL.Dtos.Transactions;
 using MedicaRental.DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace MedicaRental.BLL.Managers
     public interface ITransactionsManager
     {
         Task<TransactionDto?> GetByPaymentIdAsync(string? id);
-        Task<InsertTransactionStatusDto> UpdateTransaction(UpdateTransactionStatusDto updatetransactionDto);
-        Task<InsertTransactionStatusDto> InsertTransaction(TransactionDto addedTransaction);
+        Task<bool> UpdateTransaction(UpdateTransactionStatusDto updatetransactionDto);
+        Task<Guid?> InsertTransaction(TransactionDto addedTransaction);
     }
 }

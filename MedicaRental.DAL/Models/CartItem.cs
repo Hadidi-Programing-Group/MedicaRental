@@ -8,6 +8,15 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Models;
 
+/*
+ cart item item in cart not submitted
+transacion, transactionItem on submit 
+ */
+
+
+
+
+
 public class CartItem
 {
     public Guid Id { get; set; }

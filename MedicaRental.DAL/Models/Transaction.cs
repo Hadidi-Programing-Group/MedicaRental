@@ -9,20 +9,27 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Models
 {
-    public class Transaction
-    {
-        [Key]
-        public int Id { get; set; }
-        [ForeignKey(nameof(User))]
-        public string UserId { get; set; } = string.Empty;
-        public string PyamentId { get; set; } = string.Empty;
-        public AppUser? User { get; set; }
-        public decimal Amount { get; set; }
-        [EnumDataType(typeof(TransactionStatus))]
-        public TransactionStatus Status { get; set; } = TransactionStatus.Pending;
-    }
     public enum TransactionStatus
     {
         Success, Pending, Failed
+    }
+
+    public class Transaction
+    {
+        [Key]
+        public Guid Id { get; set; }
+
+        public DateTime Date { get; set; } = DateTime.UtcNow;
+
+        [ForeignKey(nameof(Client))]
+        public string ClientId { get; set; } = string.Empty;
+        public Client? Client { get; set; }
+        
+        public string StripePyamentId { get; set; } = string.Empty;
+        
+        public decimal Amount { get; set; }
+        
+        [EnumDataType(typeof(TransactionStatus))]
+        public TransactionStatus Status { get; set; } = TransactionStatus.Pending;
     }
 }

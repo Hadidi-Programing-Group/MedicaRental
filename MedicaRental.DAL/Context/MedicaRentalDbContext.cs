@@ -28,6 +28,7 @@ namespace MedicaRental.DAL.Context
         public DbSet<Transaction> Transactions => Set<Transaction>();
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<AdPrice> AdPrices => Set<AdPrice>();
+        public DbSet<TransactionItem> TransactionItems => Set<TransactionItem>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicaRental.BLL.Dtos.Transactions
+namespace MedicaRental.BLL.Dtos
 {
 
     public record UpdateTransactionStatusDto(string PaymentId, TransactionStatus Status);

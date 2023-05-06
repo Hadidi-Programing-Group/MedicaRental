@@ -24,6 +24,8 @@ public interface IItemsManager
 
     public Task<PageDto<SellerItemDto>?> GetAllItemsForSellerAsync(int page, string? orderBy);
     public Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy);
+    
+    public decimal GetTotalPrice(IEnumerable<Guid> itemIds);
 
     public Task<IEnumerable<ItemMinimalDto>?> GetItemsBySellerMinimal(string sellerId);
 

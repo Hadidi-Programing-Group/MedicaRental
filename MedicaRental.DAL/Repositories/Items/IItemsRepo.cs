@@ -8,4 +8,5 @@ public interface IItemsRepo
 {
     public bool HasRenters(Item item);
     public bool HasRenters(IEnumerable<Item> items);
+    public decimal ItemsTotalPrice(IEnumerable<Guid> itemIds);
 }

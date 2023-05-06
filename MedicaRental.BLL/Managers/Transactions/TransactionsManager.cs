@@ -1,5 +1,4 @@
 ﻿using MedicaRental.BLL.Dtos;
-using MedicaRental.BLL.Dtos.Transactions;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 
@@ -16,7 +15,7 @@ namespace MedicaRental.BLL.Managers
 
         public async Task<TransactionDto?> GetByPaymentIdAsync(string? id)
         {
-            Transaction? t = await _unitOfWork.Trasactions.FindAsync(t => t.PyamentId == id);
+            Transaction? t = await _unitOfWork.Trasactions.FindAsync(t => t.StripePyamentId == id);
             if (t is null)
             {
                 return null;
@@ -24,20 +23,17 @@ namespace MedicaRental.BLL.Managers
             return new TransactionDto()
             {
                 Ammount = t.Amount,
-                PaymentId = t.PyamentId,
-                UserId = t.UserId,
+                PaymentId = t.StripePyamentId,
+                ClientId = t.ClientId,
                 Status = t.Status
             };
         }
-        public async Task<InsertTransactionStatusDto> UpdateTransaction(UpdateTransactionStatusDto updatetransactionDto)
+        public async Task<bool> UpdateTransaction(UpdateTransactionStatusDto updatetransactionDto)
         {
-            Transaction? t = await _unitOfWork.Trasactions.FindAsync(t => t.PyamentId == updatetransactionDto.PaymentId, disableTracking: false);
+            Transaction? t = await _unitOfWork.Trasactions.FindAsync(t => t.StripePyamentId == updatetransactionDto.PaymentId, disableTracking: false);
             if (t is null)
             {
-                return new InsertTransactionStatusDto(
-                  isCreated: false,
-                  Id: null,
-                  StatusMessage: "Can't to find Transaction!");
+                return false;
             }
 
             t.Status = updatetransactionDto.Status;
@@ -47,28 +43,20 @@ namespace MedicaRental.BLL.Managers
             try
             {
                 _unitOfWork.Save();
-                return new InsertTransactionStatusDto(
-                    isCreated: true,
-                    Id: t.Id,
-                    StatusMessage: "Transaction has been Updated successfully.");
+                return true;
             }
 
             catch
             {
-                return new InsertTransactionStatusDto(
-                    isCreated: false,
-                    Id: null,
-                    StatusMessage: "Failed to update Transaction!");
+                return false;
             }
         }
-        public async Task<InsertTransactionStatusDto> InsertTransaction(TransactionDto addedTransaction)
+        public async Task<Guid?> InsertTransaction(TransactionDto addedTransaction)
         {
-
-
             Transaction transaction = new()
             {
-                UserId = addedTransaction.UserId,
-                PyamentId = addedTransaction.PaymentId,
+                ClientId = addedTransaction.ClientId,
+                StripePyamentId = addedTransaction.PaymentId,
                 Amount = addedTransaction.Ammount
             };
 
@@ -77,21 +65,13 @@ namespace MedicaRental.BLL.Managers
             {
                 _unitOfWork.Save();
                 await Console.Out.WriteLineAsync("Tranasction Saved");
-                return new InsertTransactionStatusDto(
-                    isCreated: true,
-                    Id: transaction.Id,
-                    StatusMessage: "Transaction has been created successfully.");
+                return transaction.Id;
             }
 
             catch
             {
-                return new InsertTransactionStatusDto(
-                    isCreated: false,
-                    Id: null,
-                    StatusMessage: "Failed to insert Transaction!");
+                return null;
             }
-
-
         }
     }
 }

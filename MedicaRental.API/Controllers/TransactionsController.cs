@@ -1,5 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
-using MedicaRental.BLL.Dtos.Transactions;
+using MedicaRental.BLL.Dtos.CartItem;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
@@ -20,43 +20,61 @@ namespace MedicaRental.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentsController : ControllerBase
+    public class TransactionsController : ControllerBase
     {
         private readonly ITransactionsManager _transactionsManager;
+        private readonly ITransactionItemsManager _transactionItemsManager;
+        private readonly IItemsManager _itemsManager;
         private readonly UserManager<AppUser> _userManager;
 
-        public PaymentsController(ITransactionsManager transactionsManager, UserManager<AppUser> userManager)
+        public TransactionsController(ITransactionsManager transactionsManager, ITransactionItemsManager transactionItemsManager, IItemsManager itemsManager, UserManager<AppUser> userManager)
         {
-            this._transactionsManager = transactionsManager;
-            this._userManager = userManager;
+            _transactionsManager = transactionsManager;
+            _transactionItemsManager = transactionItemsManager;
+            _userManager = userManager;
+            _itemsManager = itemsManager;
         }
+
         [Authorize]
         [HttpPost("create-payment-intent")]
-        public ActionResult<PaymentIntent> Create([FromBody] payment payment)
+        public async Task<ActionResult<PaymentIntent>> CreateStripePaymentIntent(IEnumerable<CartItemMinimalDto> items)
         {
-            Console.WriteLine(payment.Amount);
+            var amount = _itemsManager.GetTotalPrice(items.Select(i => i.ItemId));
+
             var paymentIntentService = new PaymentIntentService();
             var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
             {
-                Amount = payment.Amount,
-                Currency = "usd",
+                Amount = decimal.ToInt64(amount),
+                Currency = "egp",
                 AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
                 {
                     Enabled = true,
                 },
             });
+
+            if (paymentIntent is null) return StatusCode(StatusCodes.Status503ServiceUnavailable);
+
             Console.WriteLine($"Client Sercre {paymentIntent.ClientSecret}");
 
-            _transactionsManager.InsertTransaction(new TransactionDto()
+            var transactionId = await _transactionsManager.InsertTransaction(new()
             {
                 Ammount = paymentIntent.Amount / 100,
                 PaymentId = paymentIntent.Id,
-                UserId = _userManager.GetUserId(User)
-
+                ClientId = _userManager.GetUserId(User)
             });
-            //return Ok(new { client_secret = paymentIntent.ClientSecret });
+
+            if (transactionId is null) 
+                return StatusCode(StatusCodes.Status500InternalServerError);
+
+            var inserted = await _transactionItemsManager.InsertTransactionItems(items, (Guid)transactionId);
+
+            if(!inserted)
+                return StatusCode(StatusCodes.Status500InternalServerError);
+
+
             return Ok(paymentIntent.ToJson());
         }
+
         [HttpPost("webhook")]
         public async Task<IActionResult> Index()
         {
@@ -105,10 +123,6 @@ namespace MedicaRental.API.Controllers
             }
 
         }
-    }
-    public class payment
-    {
-        public int Amount { get; set; }
     }
 }
 
