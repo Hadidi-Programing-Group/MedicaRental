@@ -68,7 +68,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]  
-        public async Task<ActionResult<StatusDto>> DeleteMessageِSuper(DeleteMessageRequestDto deleteMessageRequestDto)
+        public async Task<ActionResult<StatusDto>> DeleteMessageSuper(DeleteMessageRequestDto deleteMessageRequestDto)
         {
             StatusDto deleteMessageResult = await _messagesManager.DeleteMessage(deleteMessageRequestDto.MessageId);
             
