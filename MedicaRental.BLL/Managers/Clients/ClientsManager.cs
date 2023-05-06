@@ -295,5 +295,11 @@ public class ClientsManager : IClientsManager
         return new(user.Id, user.Name, client.Ssn, user.LockoutEnd > DateTimeOffset.Now);
     }
 
+    public async Task<bool?> IsApproved(string userId)
+    {
+        var client = await _unitOfWork.Clients.FindAsync(predicate: c => c.Id == userId);
+        if(client is null) return null;
 
+        return client.IsGrantedRent;
+    }
 }

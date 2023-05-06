@@ -27,4 +27,5 @@ public interface IClientsManager
 
     Task<StatusDto> UpdateApprovalInfoRejectAsync(string userId, UpdateApprovalInfoRejectDto updateProfileInfoDto);
 
+    Task<bool?> IsApproved(string userId);
 }
