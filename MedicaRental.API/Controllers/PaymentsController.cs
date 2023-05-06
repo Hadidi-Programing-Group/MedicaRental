@@ -79,8 +79,8 @@ namespace MedicaRental.API.Controllers
                     {
                         await Console.Out.WriteLineAsync("payment was not saved to DB");
                     }
-                    _ = _transactionsManager
-                        .UpdateTransaction(new UpdateTransactionStatusDto(paymentIntent.Id, TransactionStatus.Success));
+                    _ = await _transactionsManager
+                         .UpdateTransaction(new UpdateTransactionStatusDto(paymentIntent.Id, TransactionStatus.Success));
                 }
                 else if (stripeEvent.Type == Events.PaymentMethodAttached)
                 {
