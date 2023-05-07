@@ -28,6 +28,7 @@ namespace MedicaRental.API.Controllers
         [HttpGet]
         public async Task<ActionResult<PageDto<HomeItemDto>>> GetAllItems(int page, string? orderBy, string? searchText, [FromQuery] IEnumerable<Guid> categories, [FromQuery] IEnumerable<Guid> subCategories, [FromQuery] IEnumerable<Guid> brands)
         {
+       
             var items = await _itemsManager.GetAllItemsAsync(page, orderBy, searchText, categories, subCategories, brands);
 
             if (items is null) return BadRequest();
