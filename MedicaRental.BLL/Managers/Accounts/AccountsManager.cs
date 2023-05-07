@@ -110,8 +110,8 @@ public class AccountsManager : IAccountsManager
             {"email", forgotPasswordDto.Email }
         };
         var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURI, param);
-        var message = new EmailMessage(new string[] { user.Email }, "Reset password token", callback);
-        _emailSender.SendEmail(message);
+        var message = new EmailMessage(new string[] { user.Email }, "Reset Password", callback);
+        await _emailSender.SendEmailAsync(message);
 
         return new StatusDto("Reset info was sent to you email", System.Net.HttpStatusCode.OK);
     }
