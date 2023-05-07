@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Configuration;
 using System.Security.Claims;
 using System.Text;
 
@@ -163,14 +164,15 @@ builder.Services.AddScoped<IAuthManger, AuthManger>();
 #endregion
 
 #region CORS Services
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .SetIsOriginAllowed((host) => true)
-                          .AllowCredentials());
-});
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin",
+//        builder => builder.AllowAnyHeader()
+//                          .AllowAnyMethod()
+//                          .SetIsOriginAllowed((host) => true)
+//                          .AllowCredentials());
+//});
+builder.Services.AddCors();
 #endregion
 
 
@@ -201,7 +203,8 @@ using (var scope = app.Services.CreateScope())
 
 
 # region Middelwares
-app.UseCors("AllowSpecificOrigin");
+//app.UseCors("AllowSpecificOrigin");
+app.UseCors(options => options.WithOrigins(builder.Configuration.GetSection("Cors:AllowedSite").Get<string[]>()).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 
 app.UseHttpsRedirection();
 
