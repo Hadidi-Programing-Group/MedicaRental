@@ -1,19 +1,13 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Account;
 using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Authentication;
 using MedicaRental.BLL.Managers;
 using MedicaRental.BLL.Managers.Authentication;
-using MedicaRental.DAL.Context;
-using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Text;
 
 namespace MedicaRental.API.Controllers
 {
@@ -35,7 +29,23 @@ namespace MedicaRental.API.Controllers
             _accountsManager = accountsManager;
             this._authManger = authManger;
         }
-            
+
+        [HttpPost("/ForgotPassword")]
+        public async Task<ActionResult<StatusDto>> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
+            StatusDto result = await _accountsManager.ForgetPassword(forgotPasswordDto);
+            return StatusCode((int)result.StatusCode, result);
+        }
+
+        [HttpPost("/ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            StatusDto result = await _accountsManager.ResetPassword(resetPasswordDto);
+            return StatusCode((int)result.StatusCode, result);
+
+        
+        }
+
         [HttpPost]
         [Route("/Register")]
         public async Task<ActionResult> RegisterAsync(ClientRegisterInfoDto clientRegisterInfoDto)

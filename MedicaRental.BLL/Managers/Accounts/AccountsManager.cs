@@ -1,10 +1,13 @@
-﻿using MedicaRental.BLL.Dtos;
+﻿using MedicaRental.BL.MailService;
+using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Account;
 using MedicaRental.BLL.Dtos.Authentication;
 using MedicaRental.BLL.Managers.Authentication;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
@@ -23,16 +26,19 @@ public class AccountsManager : IAccountsManager
     private readonly UserManager<AppUser> _userManager;
     private readonly IAuthManger _authManger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailSender _emailSender;
 
     public AccountsManager(
         UserManager<AppUser> userManager,
         IAuthManger authManger,
-        IUnitOfWork unitOfWork
+        IUnitOfWork unitOfWork,
+        IEmailSender emailSender
     )
     {
         _userManager = userManager;
         this._authManger = authManger;
         _unitOfWork = unitOfWork;
+        _emailSender = emailSender;
     }
 
 
@@ -90,6 +96,24 @@ public class AccountsManager : IAccountsManager
     public Task DeleteAsync(AppUser newUser)
     {
         return _userManager.DeleteAsync(newUser);
+    }
+
+    public async Task<StatusDto> ForgetPassword(ForgotPasswordDto forgotPasswordDto)
+    {
+        var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
+        if (user == null)
+            return new StatusDto("Invalid Email", System.Net.HttpStatusCode.BadRequest);
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var param = new Dictionary<string, string?>
+        {
+            {"token", token },
+            {"email", forgotPasswordDto.Email }
+        };
+        var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURI, param);
+        var message = new EmailMessage(new string[] { user.Email }, "Reset password token", callback);
+        _emailSender.SendEmail(message);
+
+        return new StatusDto("Reset info was sent to you email", System.Net.HttpStatusCode.OK);
     }
 
     public async Task<LoginStatusWithTokenDto> LoginAsync(LoginInfoDto loginInfoDto)
@@ -232,6 +256,23 @@ public class AccountsManager : IAccountsManager
             RegisterMessage: "User Created Successfully",
             NewUser: newUser
         );
+    }
+
+    public async Task<StatusDto> ResetPassword(ResetPasswordDto resetPasswordDto)
+    {
+        var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+        if (user == null)
+            return new("Invalid Request", System.Net.HttpStatusCode.BadRequest);
+
+        var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
+        if (!resetPassResult.Succeeded)
+        {
+            var errors = resetPassResult.Errors.Select(e => e.Description);
+
+            return new(errors.FirstOrDefault() ?? "Can't Reset Password", System.Net.HttpStatusCode.BadRequest);
+        }
+
+        return new("Password Changed", System.Net.HttpStatusCode.OK);
     }
 
     public async Task<StatusDto> UnBlockUserAsync(string email)

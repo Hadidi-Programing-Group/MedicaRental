@@ -1,6 +1,7 @@
 using MedicaRental.API;
 using MedicaRental.API.DataSeeding;
 using MedicaRental.API.Services;
+using MedicaRental.BL.MailService;
 using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using MedicaRental.BLL.Managers.Authentication;
@@ -66,7 +67,10 @@ builder.Services
 
         options.User.RequireUniqueEmail = true;
     })
-    .AddEntityFrameworkStores<MedicaRentalDbContext>();
+    .AddEntityFrameworkStores<MedicaRentalDbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+    opt.TokenLifespan = TimeSpan.FromHours(2)); ;
 #endregion
 
 #region RefreshToken 
@@ -175,6 +179,13 @@ builder.Services.AddScoped<IAuthManger, AuthManger>();
 builder.Services.AddCors();
 #endregion
 
+#region Email Services
+var emailConfig = builder.Configuration
+    .GetSection("EmailConfiguration")
+    .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+#endregion
 
 builder.Services.AddHostedService<DailyRatingCalculationService>();
 builder.Services.AddHostedService<DailyClearTokenService>();
