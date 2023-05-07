@@ -166,9 +166,9 @@ builder.Services.AddScoped<IAuthManger, AuthManger>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200", "https://medicarental.com")
-                          .AllowAnyHeader()
+        builder => builder.AllowAnyHeader()
                           .AllowAnyMethod()
+                          .SetIsOriginAllowed((host) => true)
                           .AllowCredentials());
 });
 #endregion
