@@ -63,7 +63,8 @@ namespace MedicaRental.API.Controllers
         public async Task<ActionResult<StatusDto>> DeleteMessage(Guid messageId)
         {
             var currentUserId = _userManager.GetUserId(User);
-            return await _messagesManager.DeleteMessage(messageId, currentUserId);
+            var result =  await _messagesManager.DeleteMessage(messageId, currentUserId);
+            return StatusCode((int)result.StatusCode, result);
         }
 
         [HttpPost]
