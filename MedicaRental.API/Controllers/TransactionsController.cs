@@ -111,7 +111,6 @@ namespace MedicaRental.API.Controllers
             {
                 Console.WriteLine("Error: {0}", e.Message);
                 Console.WriteLine("endpointSecret: {0}", endpointSecret);
-
                 return BadRequest();
             }
             catch (Exception e)
