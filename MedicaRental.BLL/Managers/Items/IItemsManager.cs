@@ -10,7 +10,6 @@ namespace MedicaRental.BLL.Managers;
 
 public interface IItemsManager
 {
-    public Task<PageDto<HomeItemDto>?> GetAllAdsAsync();
     public Task<PageDto<HomeItemDto>?> GetAllItemsAsync(int page, string? orderBy, string? searchText, IEnumerable<Guid> categories, IEnumerable<Guid> subCategories, IEnumerable<Guid> brands);
     public Task<PageDto<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, int page, string? orderBy, string? searchText);
     public Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy, string? searchText);
@@ -24,10 +23,6 @@ public interface IItemsManager
 
     public Task<PageDto<SellerItemDto>?> GetAllItemsForSellerAsync(int page, string? orderBy);
     public Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy);
-    
-    public decimal GetTotalPrice(IEnumerable<Guid> itemIds);
-
-    public Task<IEnumerable<ItemMinimalDto>?> GetItemsBySellerMinimal(string sellerId);
 
     public Task<HomeItemDto?> FindItemAsync(Guid id);
     public Task<SellerItemDto?> FindItemForSellerAsync(Guid id);
@@ -46,11 +41,5 @@ public interface IItemsManager
     public Task<StatusDto> ReListItem(Guid id);
     public Task<ItemOwnerStatusDto> GetItemOwnerStatus(string usreId, Guid ItemId);
     Task<StatusDto> DeleteItemByAdmin(Guid itemId);
-
-
-    #region Admin rent
-
-    Task<IEnumerable<HomeItemDto>?> GetAllItemsBySellerAsync(string sellerId, string? orderBy = null, string? searchText = null);
-    #endregion
-
+    Task<StatusDto> changeToAds(string id);
 }

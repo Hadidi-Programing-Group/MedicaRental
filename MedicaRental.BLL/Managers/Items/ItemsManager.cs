@@ -621,4 +621,8 @@ public class ItemsManager : IItemsManager
     {
         return ((IItemsRepo)_unitOfWork.Items).ItemsTotalPrice(itemIds);
     }
+
+    public Task<StatusDto> changeToAds(string id)
+    {
+    }
 }

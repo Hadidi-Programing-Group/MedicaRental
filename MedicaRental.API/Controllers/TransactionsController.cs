@@ -109,6 +109,8 @@ namespace MedicaRental.API.Controllers
                          .UpdateTransaction(
                         new UpdateTransactionStatusDto(paymentIntent.Id, TransactionStatus.Success));
 
+                    StatusDto result = await _itemsManager.changeToAds(paymentIntent.Id);
+
                 }
                 return Ok();
             }
