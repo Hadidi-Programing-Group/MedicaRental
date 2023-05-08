@@ -622,7 +622,30 @@ public class ItemsManager : IItemsManager
         return ((IItemsRepo)_unitOfWork.Items).ItemsTotalPrice(itemIds);
     }
 
-    public Task<StatusDto> changeToAds(string id)
+    public async Task<StatusDto> changeToAds(string id)
     {
+        var itemsToBeAds = await _unitOfWork.TrasactionItems.FindAllAsync(
+            include: source => source.Include(t => t.Transaction).Include(t => t.Item),
+            predicate: t => t.Transaction.StripePyamentId == id,
+            selector: t => new { t.Item, t.NumberOfDays }
+            );
+
+        foreach (var item in itemsToBeAds)
+        {
+            item.Item.Ads = true;
+            item.Item.AdEndDate = DateTime.Now.AddDays(item.NumberOfDays);
+            _unitOfWork.Items.Update(item.Item);
+        }
+
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto("Ads Created Successfully", HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return new StatusDto($"Items couldn't be ads.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+
     }
 }

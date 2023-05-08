@@ -24,7 +24,8 @@ namespace MedicaRental.BLL.Managers
             var transItems = items.Select(i => new TransactionItem
             {
                 ItemId = i.ItemId,
-                TransactionId = transactionId
+                TransactionId = transactionId,
+                NumberOfDays = i.NumberOfDays,
             });
 
             var res = await _unitOfWork.TrasactionItems.AddRangeAsync(transItems);

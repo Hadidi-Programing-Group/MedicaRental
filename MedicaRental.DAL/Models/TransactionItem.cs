@@ -10,6 +10,8 @@ namespace MedicaRental.DAL.Models
     {
         public Guid Id { get; set; }
 
+        public int NumberOfDays { get; set; }
+
         [ForeignKey(nameof(Item))]
         public Guid ItemId { get; set; }
         public Item? Item { get; set; }
