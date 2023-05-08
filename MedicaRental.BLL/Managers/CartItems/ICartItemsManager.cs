@@ -11,7 +11,8 @@ public interface ICartItemsManager
 {
     Task<StatusDto> AddToCartAsync(AddToCartRequestDto addToCartRequest, string userId);
     Task<IEnumerable<CartItemDto>> GetCartItemsAsync(string userId);
+    Task<decimal> GetTotalPrice(string userId);
     Task<bool> IsInCartAsync(Guid itemId, string userId);
     Task<StatusDto> RemoveCartItemAsync(Guid itemId, string userId);
-    Task<StatusDto> RemoveCartItemsAsync(IEnumerable<Guid> itemsId, string userId);
+    Task<StatusDto> RemoveCartItemsAsync(string userId);
 }

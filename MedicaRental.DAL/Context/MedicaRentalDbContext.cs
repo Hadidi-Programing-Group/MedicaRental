@@ -50,6 +50,7 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new RentOperationEntityTypeConfiguration());
             builder.ApplyConfiguration(new ReportActionEntityTypeConfiguration());
             builder.ApplyConfiguration(new CartItemEntityTypeConfiguration());
+            builder.ApplyConfiguration(new TransactionItemEntitiyTypeConfiguration());
         }
 
 

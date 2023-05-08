@@ -40,47 +40,48 @@ namespace MedicaRental.API.Controllers
 
         [Authorize]
         [HttpPost("create-payment-intent")]
-        public async Task<ActionResult<PaymentIntent>> CreateStripePaymentIntent(IEnumerable<CartItemMinimalDto> items)
+        public async Task<ActionResult<PaymentIntent>> CreateStripePaymentIntent()
         {
-            var amount = _itemsManager.GetTotalPrice(items.Select(i => i.ItemId));
             var userId = _userManager.GetUserId(User);
+            var cartItems = await _cartItemsManager.GetCartItemsAsync(userId);
+            decimal amount = await _cartItemsManager.GetTotalPrice(userId);
+            var items = cartItems.Select(i => new CartItemMinimalDto(i.Id, i.ItemId, i.NumberOfDays));
+
 
             var paymentIntentService = new PaymentIntentService();
-            var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
+            try
             {
-                Amount = decimal.ToInt64(amount),
-                Currency = "egp",
-                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
                 {
-                    Enabled = true,
-                },
-            });
-
-            if (paymentIntent is null) return StatusCode(StatusCodes.Status503ServiceUnavailable);
-
-            Console.WriteLine($"Client Sercre {paymentIntent.ClientSecret}");
-
-            var transactionId = await _transactionsManager.InsertTransaction(new()
+                    Amount = decimal.ToInt64(amount) * 100,
+                    Currency = "egp",
+                    AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                    {
+                        Enabled = true,
+                    },
+                });
+                if (paymentIntent is null) return StatusCode(StatusCodes.Status503ServiceUnavailable);
+                Console.WriteLine($"Client Sercre {paymentIntent.ClientSecret}");
+                var transactionId = await _transactionsManager.InsertTransaction(new()
+                {
+                    Ammount = paymentIntent.Amount / 100,
+                    PaymentId = paymentIntent.Id,
+                    ClientId = userId
+                });
+                if (transactionId is null)
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                var inserted = await _transactionItemsManager.InsertTransactionItems(items, (Guid)transactionId);
+                if (!inserted)
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                var result = await _cartItemsManager.RemoveCartItemsAsync(userId);
+                if (result.StatusCode == HttpStatusCode.OK)
+                    return Ok(paymentIntent.ToJson());
+                return StatusCode((int)result.StatusCode);
+            }
+            catch
             {
-                Ammount = paymentIntent.Amount / 100,
-                PaymentId = paymentIntent.Id,
-                ClientId = userId
-            });
-
-            if (transactionId is null) 
-                return StatusCode(StatusCodes.Status500InternalServerError);
-
-            var inserted = await _transactionItemsManager.InsertTransactionItems(items, (Guid)transactionId);
-
-            if(!inserted)
-                return StatusCode(StatusCodes.Status500InternalServerError);
-
-            var result = await _cartItemsManager.RemoveCartItemsAsync(items.Select(i => i.Id), userId);
-
-            if(result.StatusCode == HttpStatusCode.OK)
-                return Ok(paymentIntent.ToJson());
-
-            return StatusCode((int)result.StatusCode);
+                return BadRequest("Cart is Empty");
+            }
         }
 
         [HttpPost("webhook")]
@@ -99,24 +100,15 @@ namespace MedicaRental.API.Controllers
                 if (stripeEvent.Type == Events.PaymentIntentSucceeded)
                 {
                     var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-                    Console.WriteLine("A successful payment for {0} was made.", paymentIntent.Amount);
                     TransactionDto? t = await _transactionsManager.GetByPaymentIdAsync(paymentIntent.Id);
                     if (t is null)
                     {
                         await Console.Out.WriteLineAsync("payment was not saved to DB");
                     }
                     _ = await _transactionsManager
-                         .UpdateTransaction(new UpdateTransactionStatusDto(paymentIntent.Id, TransactionStatus.Success));
-                }
-                else if (stripeEvent.Type == Events.PaymentMethodAttached)
-                {
-                    var paymentMethod = stripeEvent.Data.Object as PaymentMethod;
-                    // Then define and call a method to handle the successful attachment of a PaymentMethod.
-                    // handlePaymentMethodAttached(paymentMethod);
-                }
-                else
-                {
-                    Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+                         .UpdateTransaction(
+                        new UpdateTransactionStatusDto(paymentIntent.Id, TransactionStatus.Success));
+
                 }
                 return Ok();
             }

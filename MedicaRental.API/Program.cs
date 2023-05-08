@@ -162,6 +162,7 @@ builder.Services.AddScoped<ICartItemsManager, CartItemsManager>();
 
 builder.Services.AddScoped<IAuthManger, AuthManger>();
 builder.Services.AddScoped<ITransactionsManager, TransactionsManager>();
+builder.Services.AddScoped<ITransactionItemsManager, TransactionItemsManager>();
 
 #endregion
 

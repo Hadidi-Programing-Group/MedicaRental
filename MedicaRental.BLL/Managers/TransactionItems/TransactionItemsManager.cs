@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Managers
 {
-    public class TransactionItemsManager:ITransactionItemsManager
+    public class TransactionItemsManager : ITransactionItemsManager
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -23,7 +23,7 @@ namespace MedicaRental.BLL.Managers
 
             var transItems = items.Select(i => new TransactionItem
             {
-                ItemId = i.Id,
+                ItemId = i.ItemId,
                 TransactionId = transactionId
             });
 
