@@ -58,7 +58,8 @@ namespace MedicaRental.BLL.Helpers
             new(i.SubCategory!.Id, i.SubCategory.Name),
             new(i.Seller!.Id, i.Seller.Name, i.Seller.Rating),
             i.Reviews.Select(r => new ReviewBaseDto(r.Id, r.Rating, r.ClientReview, r.Client!.Name)),
-            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!))
+            SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!)),
+            i.AdEndDate > DateTime.Now
          );
 
         public static Expression<Func<Item, ListItemDto>> ListedDtoSelector = i => new

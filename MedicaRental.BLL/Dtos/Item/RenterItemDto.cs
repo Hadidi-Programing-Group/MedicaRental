@@ -19,6 +19,7 @@ namespace MedicaRental.BLL.Dtos
         ClientBaseDto Seller,
         IEnumerable<ReviewBaseDto> Reviews,
         [Base64StringImageValidation]
-        string Image
+        string Image,
+        bool IsAd
     );
 }
