@@ -110,6 +110,7 @@ namespace MedicaRental.API.Controllers
             catch (StripeException e)
             {
                 Console.WriteLine("Error: {0}", e.Message);
+                Console.WriteLine("endpointSecret: {0}", endpointSecret);
                 return BadRequest();
             }
             catch (Exception e)
