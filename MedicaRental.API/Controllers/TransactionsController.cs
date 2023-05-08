@@ -65,10 +65,8 @@ namespace MedicaRental.API.Controllers
                 var inserted = await _transactionItemsManager.InsertTransactionItems(items, (Guid)transactionId);
                 if (!inserted)
                     return StatusCode(StatusCodes.Status500InternalServerError);
-                var result = await _cartItemsManager.RemoveCartItemsAsync(userId);
-                if (result.StatusCode == HttpStatusCode.OK)
-                    return Ok(paymentIntent.ToJson());
-                return StatusCode((int)result.StatusCode);
+       
+                return Ok(paymentIntent.ToJson());
             }
             catch
             {
@@ -103,6 +101,14 @@ namespace MedicaRental.API.Controllers
                         new UpdateTransactionStatusDto(paymentIntent.Id, TransactionStatus.Success));
 
                     StatusDto result = await _itemsManager.changeToAds(paymentIntent.Id);
+                    if (result.StatusCode != HttpStatusCode.OK)
+                        return StatusCode((int)result.StatusCode, result);
+
+                    var resultDeleteFromCard = await _cartItemsManager.RemoveCartItemsAsync(t.ClientId);
+                    if (resultDeleteFromCard.StatusCode == HttpStatusCode.OK)
+                        return Ok(paymentIntent.ToJson());
+
+                    return StatusCode((int)resultDeleteFromCard.StatusCode, resultDeleteFromCard);
 
                 }
                 return Ok();
