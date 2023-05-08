@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230504123426_OneMigr")]
-    partial class OneMigr
+    [Migration("20230508105720_FinalMigration")]
+    partial class FinalMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -227,6 +227,9 @@ namespace MedicaRental.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("AdEndDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Ads")
                         .HasColumnType("bit");
@@ -572,6 +575,65 @@ namespace MedicaRental.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("SubCategories");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StripePyamentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.TransactionItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("NumberOfDays")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("TransactionItems");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -931,6 +993,40 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("MedicaRental.DAL.Models.Transaction", b =>
+                {
+                    b.HasOne("MedicaRental.DAL.Context.AppUser", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("AppUserId");
+
+                    b.HasOne("MedicaRental.DAL.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.TransactionItem", b =>
+                {
+                    b.HasOne("MedicaRental.DAL.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MedicaRental.DAL.Models.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -985,6 +1081,8 @@ namespace MedicaRental.DAL.Migrations
             modelBuilder.Entity("MedicaRental.DAL.Context.AppUser", b =>
                 {
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Brand", b =>

@@ -15,11 +15,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Stripe;
 using System.Configuration;
 using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+StripeConfiguration.ApiKey = "sk_test_51Mq0DEDRs2d2XncX3l5gLODG0on2gtdtEiPEXSsyB2m2TUfGwZwlanLbn5ZBZGP3LJbOjDXlsx1f5j0eTcKbKKJI00mPVX4uAc";
 
 
 #region Main Services
@@ -164,6 +166,8 @@ builder.Services.AddScoped<IReportActionManager, ReportActionManager>();
 builder.Services.AddScoped<ICartItemsManager, CartItemsManager>();
 
 builder.Services.AddScoped<IAuthManger, AuthManger>();
+builder.Services.AddScoped<ITransactionsManager, TransactionsManager>();
+builder.Services.AddScoped<ITransactionItemsManager, TransactionItemsManager>();
 
 #endregion
 
@@ -191,7 +195,8 @@ builder.Services.AddHostedService<DailyRatingCalculationService>();
 builder.Services.AddHostedService<DailyClearTokenService>();
 
 #region SignalR
-builder.Services.AddSignalR().AddJsonProtocol(options => {
+builder.Services.AddSignalR().AddJsonProtocol(options =>
+{
     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
 });
 #endregion
@@ -252,7 +257,7 @@ string GetRDSConnectionString()
 {
     var appConfig = System.Configuration.ConfigurationManager.AppSettings;
 
-    string dbname = Environment.GetEnvironmentVariable("RDS_DB_NAME")??string.Empty;
+    string dbname = Environment.GetEnvironmentVariable("RDS_DB_NAME") ?? string.Empty;
 
     if (string.IsNullOrEmpty(dbname)) return builder.Configuration.GetConnectionString("MedicaRentalDbConn");
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Linq;
 
 namespace MedicaRental.DAL.Repositories;
 
@@ -24,5 +25,10 @@ public class ItemsRepo : EntityRepo<Item>, IItemsRepo
     public bool HasRenters(IEnumerable<Item> items)
     {
         return items.Any(i => i.ItemRenters.Any(r => r.ReturnDate > DateTime.UtcNow));
+    }
+
+    public decimal ItemsTotalPrice(IEnumerable<Guid> itemIds)
+    {
+        return _context.Items.Where(i => itemIds.Contains(i.Id)).Sum(i => i.Price);
     }
 }

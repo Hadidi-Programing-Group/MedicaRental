@@ -1,11 +1,11 @@
-﻿using MedicaRental.DAL.UnitOfWork;
-using MedicaRental.BLL.Dtos;
-using MedicaRental.DAL.Models;
-using System.Net;
+﻿using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Helpers;
-using Microsoft.EntityFrameworkCore;
-using MedicaRental.DAL.Repositories;
 using MedicaRental.DAL.Context;
+using MedicaRental.DAL.Models;
+using MedicaRental.DAL.Repositories;
+using MedicaRental.DAL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace MedicaRental.BLL.Managers;
 
@@ -308,14 +308,14 @@ public class ItemsManager : IItemsManager
         {
             var data = await _unitOfWork.Items.FindAllAsync
                 (
-                    predicate: i => i.Ads && i.IsListed,
+                    predicate: i => i.AdEndDate > DateTime.Now && i.IsListed,
                     selector: ItemHelper.HomeDtoSelector,
                     include: ItemHelper.HomeDtoInclude
                 );
 
             var count = await _unitOfWork.Items.GetCountAsync
                 (
-                    i => i.Ads && i.IsListed
+                    i => i.AdEndDate > DateTime.Now && i.IsListed
                 );
 
             return new(data, count);
@@ -571,7 +571,7 @@ public class ItemsManager : IItemsManager
     public async Task<ItemOwnerStatusDto> GetItemOwnerStatus(string usreId, Guid ItemId)
     {
         var items = await _unitOfWork.Items.FindAllAsync(predicate: u => u.SellerId == usreId);
-        foreach(var item in items)
+        foreach (var item in items)
         {
             if (item.Id == ItemId)
                 return new ItemOwnerStatusDto(true);
@@ -581,7 +581,7 @@ public class ItemsManager : IItemsManager
     }
 
     #endregion
-    
+
     public async Task<StatusDto> DeleteItemByAdmin(Guid itemId)
     {
         var item = await _unitOfWork.Items.FindAsync(predicate: i => i.Id == itemId, disableTracking: false);
@@ -610,10 +610,42 @@ public class ItemsManager : IItemsManager
             (
                 predicate: i => i.SellerId == sellerId,
                 selector: i => new ItemMinimalDto(i.Id, i.Name, i.Price),
-                orderBy: q => q.OrderBy(i=>i.Name)
+                orderBy: q => q.OrderBy(i => i.Name)
            );
 
         if (items is null) return null;
         return items;
+    }
+
+    public decimal GetTotalPrice(IEnumerable<Guid> itemIds)
+    {
+        return ((IItemsRepo)_unitOfWork.Items).ItemsTotalPrice(itemIds);
+    }
+
+    public async Task<StatusDto> changeToAds(string id)
+    {
+        var itemsToBeAds = await _unitOfWork.TrasactionItems.FindAllAsync(
+            include: source => source.Include(t => t.Transaction).Include(t => t.Item),
+            predicate: t => t.Transaction.StripePyamentId == id,
+            selector: t => new { t.Item, t.NumberOfDays }
+            );
+
+        foreach (var item in itemsToBeAds)
+        {
+            item.Item.Ads = true;
+            item.Item.AdEndDate = DateTime.Now.AddDays(item.NumberOfDays);
+            _unitOfWork.Items.Update(item.Item);
+        }
+
+        try
+        {
+            _unitOfWork.Save();
+            return new StatusDto("Ads Created Successfully", HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return new StatusDto($"Items couldn't be ads.\nCause: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+
     }
 }

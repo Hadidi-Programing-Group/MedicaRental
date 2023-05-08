@@ -89,7 +89,7 @@ public class CartItemsManager : ICartItemsManager
     {
         var cartItem = await _unitOfWork.CartItems.FindAsync(ca => ca.ItemId == itemId && ca.ClientId == userId);
         if (cartItem is null)
-             return new StatusDto("Item is not found", System.Net.HttpStatusCode.NotFound);
+            return new StatusDto("Item is not found", System.Net.HttpStatusCode.NotFound);
 
         try
         {
@@ -102,4 +102,36 @@ public class CartItemsManager : ICartItemsManager
             return new StatusDto("Could't remove item from cart", System.Net.HttpStatusCode.InternalServerError);
         }
     }
+
+    public async Task<StatusDto> RemoveCartItemsAsync(string userId)
+    {
+        var items = await _unitOfWork.CartItems.FindAllAsync(predicate: ca => ca.ClientId == userId);
+
+        if (items is null)
+            return new StatusDto("Items not found", System.Net.HttpStatusCode.NotFound);
+
+        try
+        {
+            _unitOfWork.CartItems.DeleteRange(items);
+            _unitOfWork.Save();
+            return new StatusDto("Items removed from cart", System.Net.HttpStatusCode.OK);
+        }
+        catch
+        {
+            return new StatusDto("Could't remove items from cart", System.Net.HttpStatusCode.InternalServerError);
+        }
+
+    }
+    public async Task<decimal> GetTotalPrice(string userId)
+    {
+        var cartItems = await _unitOfWork.CartItems.FindAllAsync(predicate: i => i.ClientId == userId);
+        var price = _unitOfWork.AdPrices.GetAllAsync().Result.FirstOrDefault()?.Price ?? 50;
+        decimal total = 0;
+        foreach (var item in cartItems)
+        {
+            total += item.NumberOfDays * price;
+        }
+        return total;
+    }
+
 }

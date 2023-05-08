@@ -25,8 +25,10 @@ namespace MedicaRental.DAL.Context
         public DbSet<RentOperation> RentOperations => Set<RentOperation>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<ReportAction> ReportActions => Set<ReportAction>();
+        public DbSet<Transaction> Transactions => Set<Transaction>();
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<AdPrice> AdPrices => Set<AdPrice>();
+        public DbSet<TransactionItem> TransactionItems => Set<TransactionItem>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
 
@@ -35,7 +37,7 @@ namespace MedicaRental.DAL.Context
         {
             base.OnModelCreating(builder);
 
-            builder.HasDbFunction(typeof(MedicaRentalDbContext).GetMethod(nameof(LevDist), new[] { typeof(string), typeof(string), typeof(int?)})!)
+            builder.HasDbFunction(typeof(MedicaRentalDbContext).GetMethod(nameof(LevDist), new[] { typeof(string), typeof(string), typeof(int?) })!)
             .HasName("LevenshteinDistance");
 
             builder.ApplyConfiguration(new ItemEntityTypeConfiguration());
@@ -48,26 +50,27 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new RentOperationEntityTypeConfiguration());
             builder.ApplyConfiguration(new ReportActionEntityTypeConfiguration());
             builder.ApplyConfiguration(new CartItemEntityTypeConfiguration());
+            builder.ApplyConfiguration(new TransactionItemEntitiyTypeConfiguration());
         }
-        
 
-        public static int LevDist (string s1, string? s2, int? maxDistance) => throw new NotSupportedException();
+
+        public static int LevDist(string s1, string? s2, int? maxDistance) => throw new NotSupportedException();
 
         public async Task UpdateDailyRatings()
         {
-           await Items.ForEachAsync(async i =>
-            {
-                i.Rating = await CalculateDailyRatingForItem(i.Id);
-            });
+            await Items.ForEachAsync(async i =>
+             {
+                 i.Rating = await CalculateDailyRatingForItem(i.Id);
+             });
 
             await SaveChangesAsync();
         }
 
         private async Task<int> CalculateDailyRatingForItem(Guid id)
         {
-            var averageRating = await  Reviews.Where(r => r.ItemId == id).AverageAsync(r => r.Rating);
+            var averageRating = await Reviews.Where(r => r.ItemId == id).AverageAsync(r => r.Rating);
 
-            return  (int)averageRating;
+            return (int)averageRating;
         }
 
         public override int SaveChanges()
