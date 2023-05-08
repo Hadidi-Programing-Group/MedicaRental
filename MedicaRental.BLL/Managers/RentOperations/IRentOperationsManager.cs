@@ -18,7 +18,7 @@ namespace MedicaRental.BLL.Managers
         
         public Task<Guid?> AddRentOperation(InsertRentOperationDto rentOperationDto);
 
-        public Task<IEnumerable<GetRentedItemsDto>?> GetRentedItemsAsync();
+        public Task<PageDto<GetRentedItemsDto>?> GetToBeReturnedItems(int page);
 
         public Task<StatusDto> AcceptReturnAsync(Guid rentOperationId);
     }

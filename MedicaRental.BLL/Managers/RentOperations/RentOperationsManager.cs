@@ -176,7 +176,7 @@ namespace MedicaRental.BLL.Managers
 
         // Return today
 
-        public async Task<IEnumerable<GetRentedItemsDto>?> GetRentedItemsAsync()
+        public async Task<PageDto<GetRentedItemsDto>?> GetToBeReturnedItems(int page)
         {
             try
             {
@@ -193,10 +193,14 @@ namespace MedicaRental.BLL.Managers
                     ),
                     predicate: ro => ro.ReturnDate.Date <= DateTime.UtcNow.Date,
                     orderBy:ro => ro.OrderByDescending(ro => ro.ReturnDate.Date == DateTime.UtcNow.Date).ThenByDescending(ro => ro.ReturnDate),
-                    include: ro => ro.Include(ro => ro.Client).ThenInclude(ro => ro!.User).Include(ro => ro.Item)
+                    include: ro => ro.Include(ro => ro.Client).ThenInclude(ro => ro!.User).Include(ro => ro.Item),
+                    skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
+                    take: SharedHelper.Take
                 );
 
-                return data;
+                var count = await _unitOfWork.RentOperations.GetCountAsync(ro => ro.ReturnDate.Date <= DateTime.UtcNow.Date);
+
+                return new(data, count);
             }
             catch (Exception)
             {
