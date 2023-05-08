@@ -632,7 +632,6 @@ public class ItemsManager : IItemsManager
 
         foreach (var item in itemsToBeAds)
         {
-            item.Item.Ads = true;
             item.Item.AdEndDate = DateTime.Now.AddDays(item.NumberOfDays);
             _unitOfWork.Items.Update(item.Item);
         }

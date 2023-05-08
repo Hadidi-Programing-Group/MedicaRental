@@ -60,8 +60,6 @@ namespace MedicaRental.DAL.Models
         [Range(0, 5)]
         public int Rating { get; set; } = 0;
 
-        public bool Ads { get; set; } = false;
-
         public DateTime AdEndDate { get; set; }
     }
 }

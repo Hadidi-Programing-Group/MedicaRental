@@ -23,7 +23,7 @@ namespace MedicaRental.BLL.Helpers
             i.Seller!.Name,
             i.Brand!.Name,
             SharedHelper.GetMimeFromBase64(Convert.ToBase64String(i.Image!)),
-            i.Ads
+            i.AdEndDate > DateTime.Now
          );
 
         public static Expression<Func<Item, SellerItemDto>> SellerDtoSelector = i => new
