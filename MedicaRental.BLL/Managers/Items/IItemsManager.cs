@@ -42,6 +42,7 @@ public interface IItemsManager
     public Task<ItemOwnerStatusDto> GetItemOwnerStatus(string usreId, Guid ItemId);
     Task<StatusDto> DeleteItemByAdmin(Guid itemId);
     Task<StatusDto> changeToAds(string id);
-  //  Task GetAllItemsBySellerAsync(string sellerId);
-  //  Task GetItemsBySellerMinimal(string sellerId);
+    Task<PageDto<HomeItemDto>?> GetAllAdsAsync();
+    //  Task GetAllItemsBySellerAsync(string sellerId);
+    //  Task GetItemsBySellerMinimal(string sellerId);
 }
