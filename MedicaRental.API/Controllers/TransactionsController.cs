@@ -3,18 +3,10 @@ using MedicaRental.BLL.Dtos.CartItem;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using Stripe;
-using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace MedicaRental.API.Controllers
@@ -88,7 +80,8 @@ namespace MedicaRental.API.Controllers
         public async Task<IActionResult> Index()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-            const string endpointSecret = "whsec_26839dec5f0f476ef9b48676d3fb0fbff6953e35133eb5e20b6eab9d9e310e54";
+            string endpointSecret = Environment.GetEnvironmentVariable("STRIPE_WEB_SEC") ??
+                "whsec_26839dec5f0f476ef9b48676d3fb0fbff6953e35133eb5e20b6eab9d9e310e54";
             try
             {
                 var stripeEvent = EventUtility.ParseEvent(json);
