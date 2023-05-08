@@ -21,17 +21,10 @@ namespace MedicaRental.API.Controllers
             _adminManger = adminManger;
         }
 
-        [HttpGet]
-        [Route("CheckAdminAcess")]
-        //[Authorize(Policy = "Admin")]
-        [Authorize]
-        public IActionResult GetData()
-        {
-            return Ok("You have access to AdminController");
-        }
 
         [HttpPost]
         [Route("UpdateUserRole")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult<UserRoleUpdateStatusDto>> UpdateUserRoleAsync(
             UserRoleUpdateDto userRoleUpdateDto
         )
@@ -44,6 +37,8 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("UpdateReportStatus")]
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
+
         public async Task<ActionResult<ReportUpdateStatusDto>> UpdateReportStatusAsync(
             ReportUpdateDto reportUpdateDto
         )
@@ -56,6 +51,8 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("GetAllAdminMod")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+
         public async Task<ActionResult<IEnumerable<RoleMangerUserInfoDto>>> GetAllAdminMod()
         {
             var result = await _adminManger.GetAllAdminMod();
@@ -66,6 +63,8 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("DeleteAdminMod")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
+
         public async Task<ActionResult<StatusDto>> DeleteAdminMod(
          string id
      )

@@ -1,18 +1,13 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Account;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Authentication;
 using MedicaRental.BLL.Managers;
 using MedicaRental.BLL.Managers.Authentication;
-using MedicaRental.DAL.Context;
-using MedicaRental.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Text;
 
 namespace MedicaRental.API.Controllers
 {
@@ -34,7 +29,23 @@ namespace MedicaRental.API.Controllers
             _accountsManager = accountsManager;
             this._authManger = authManger;
         }
-            
+
+        [HttpPost("/ForgotPassword")]
+        public async Task<ActionResult<StatusDto>> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
+            StatusDto result = await _accountsManager.ForgetPassword(forgotPasswordDto);
+            return StatusCode((int)result.StatusCode, result);
+        }
+
+        [HttpPost("/ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            StatusDto result = await _accountsManager.ResetPassword(resetPasswordDto);
+            return StatusCode((int)result.StatusCode, result);
+
+        
+        }
+
         [HttpPost]
         [Route("/Register")]
         public async Task<ActionResult> RegisterAsync(ClientRegisterInfoDto clientRegisterInfoDto)
@@ -51,6 +62,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpPost]
         [Route("/RegisterAdminMod")]
+        [Authorize(Policy = ClaimRequirement.AdminPolicy)]
         public async Task<ActionResult> RegisterAdminModAsync(BaseUserRegisterInfoDto BaseUserRegisterInfoDto)
         {
             BaseUserRegisterStatusDto BaseUserRegisterStatus =
@@ -84,6 +96,7 @@ namespace MedicaRental.API.Controllers
 
 
         [HttpGet("basicInfo")]
+        [Authorize]
         public async Task<ActionResult<UserBasicInfoDto>> GetInfoByEmail(string email)
         {
             var res = await _clientsManager.GetClientInfoByEmailAsync(email);

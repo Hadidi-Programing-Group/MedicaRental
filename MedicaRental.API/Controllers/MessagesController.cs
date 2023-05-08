@@ -35,6 +35,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("allChats")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<IEnumerable<ChatDto>>> GetUserChats(int upTo)
         {
             var userId = _userManager.GetUserId(User);
@@ -43,6 +44,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("chat")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetChat(string secondUserId, int upTo, DateTime dateOpened)
         {
             var userId = _userManager.GetUserId(User);
@@ -61,12 +63,13 @@ namespace MedicaRental.API.Controllers
         public async Task<ActionResult<StatusDto>> DeleteMessage(Guid messageId)
         {
             var currentUserId = _userManager.GetUserId(User);
-            return await _messagesManager.DeleteMessage(messageId, currentUserId);
+            var result =  await _messagesManager.DeleteMessage(messageId, currentUserId);
+            return StatusCode((int)result.StatusCode, result);
         }
 
         [HttpPost]
-        [Authorize(Policy = ClaimRequirement.AdminPolicy)]  
-        public async Task<ActionResult<StatusDto>> DeleteMessageِSuper(DeleteMessageRequestDto deleteMessageRequestDto)
+        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]  
+        public async Task<ActionResult<StatusDto>> DeleteMessageSuper(DeleteMessageRequestDto deleteMessageRequestDto)
         {
             StatusDto deleteMessageResult = await _messagesManager.DeleteMessage(deleteMessageRequestDto.MessageId);
             
@@ -81,6 +84,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("notificationCount")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<int> GetNotificationCount()
         {
             var userId = _userManager.GetUserId(User);
@@ -88,6 +92,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("notifications")]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<IEnumerable<MessageNotificationDto>> GetLastUnseenChats()
         {
             var userId = _userManager.GetUserId(User);

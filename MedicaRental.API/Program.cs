@@ -1,6 +1,7 @@
 using MedicaRental.API;
 using MedicaRental.API.DataSeeding;
 using MedicaRental.API.Services;
+using MedicaRental.BL.MailService;
 using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
 using MedicaRental.BLL.Managers.Authentication;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Stripe;
+using System.Configuration;
 using System.Security.Claims;
 using System.Text;
 
@@ -67,7 +69,10 @@ builder.Services
 
         options.User.RequireUniqueEmail = true;
     })
-    .AddEntityFrameworkStores<MedicaRentalDbContext>();
+    .AddEntityFrameworkStores<MedicaRentalDbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+    opt.TokenLifespan = TimeSpan.FromHours(2)); ;
 #endregion
 
 #region RefreshToken 
@@ -125,7 +130,7 @@ var _adminPolicy = new AuthorizationPolicyBuilder()
     .Build();
 
 var _moderatorPolicy = new AuthorizationPolicyBuilder()
-    .RequireClaim(ClaimTypes.Role, UserRoles.Moderator.ToString())
+    .RequireClaim(ClaimTypes.Role, UserRoles.Moderator.ToString(), UserRoles.Admin.ToString())
     .Build();
 
 var _clientPolicy = new AuthorizationPolicyBuilder()
@@ -167,16 +172,24 @@ builder.Services.AddScoped<ITransactionItemsManager, TransactionItemsManager>();
 #endregion
 
 #region CORS Services
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowCredentials());
-});
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin",
+//        builder => builder.AllowAnyHeader()
+//                          .AllowAnyMethod()
+//                          .SetIsOriginAllowed((host) => true)
+//                          .AllowCredentials());
+//});
+builder.Services.AddCors();
 #endregion
 
+#region Email Services
+var emailConfig = builder.Configuration
+    .GetSection("EmailConfiguration")
+    .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+#endregion
 
 builder.Services.AddHostedService<DailyRatingCalculationService>();
 builder.Services.AddHostedService<DailyClearTokenService>();
@@ -206,7 +219,8 @@ using (var scope = app.Services.CreateScope())
 
 
 # region Middelwares
-app.UseCors("AllowSpecificOrigin");
+//app.UseCors("AllowSpecificOrigin");
+app.UseCors(options => options.WithOrigins(builder.Configuration.GetSection("Cors:AllowedSite").Get<string[]>()).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 
 app.UseHttpsRedirection();
 
