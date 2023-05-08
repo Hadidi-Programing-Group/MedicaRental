@@ -99,11 +99,11 @@ namespace MedicaRental.API.Controllers
             return NoContent();
         }
 
-        [HttpGet("GetRentedItems")]
+        [HttpGet("toBeReturned")]
         [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
-        public async Task<IActionResult> GetRentedItems()
+        public async Task<IActionResult> GetToBeReturnedItems(int page)
         {
-            var data = await _rentOperationsManager.GetRentedItemsAsync();
+            var data = await _rentOperationsManager.GetToBeReturnedItems(page);
             if (data == null)
             {
                 return NotFound();
