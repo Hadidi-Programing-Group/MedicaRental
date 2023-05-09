@@ -66,10 +66,13 @@ namespace MedicaRental.API.Controllers
                 });
                 if (transactionId is null)
                     return StatusCode(StatusCodes.Status500InternalServerError);
+
+
                 var inserted = await _transactionItemsManager.InsertTransactionItems(items, (Guid)transactionId);
                 if (!inserted)
                     return StatusCode(StatusCodes.Status500InternalServerError);
-       
+
+
                 return Ok(paymentIntent.ToJson());
             }
             catch
@@ -114,7 +117,7 @@ namespace MedicaRental.API.Controllers
 
                     var user = await _userManager.FindByIdAsync(t.ClientId); 
 
-                    var callback = EmailHelpers.CreatePaymentConfirmEmail(user.Name, t.Ammount.ToString(), paymentIntent.Id, DateTime.Now);
+                    var callback = EmailHelpers.CreatePaymentConfirmEmail(user.Name, (paymentIntent.Amount / 100).ToString(), paymentIntent.Id, DateTime.Now);
 
                     var message = new EmailMessage(new string[] { user.Email }, "Payment Confirmation", callback);
                     await _emailSender.SendEmailAsync(message);
