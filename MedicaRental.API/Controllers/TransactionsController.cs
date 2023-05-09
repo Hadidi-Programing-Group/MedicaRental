@@ -112,7 +112,7 @@ namespace MedicaRental.API.Controllers
                     if (resultDeleteFromCard.StatusCode == HttpStatusCode.OK)
                         return Ok(paymentIntent.ToJson());
 
-                    var user = await _userManager.FindByIdAsync(t.ClientId);
+                    var user = await _userManager.FindByIdAsync(t.ClientId); 
 
                     var callback = EmailHelpers.CreatePaymentConfirmEmail(user.Name, t.Ammount.ToString(), paymentIntent.Id, DateTime.Now);
 
