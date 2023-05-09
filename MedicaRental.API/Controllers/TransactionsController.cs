@@ -72,14 +72,6 @@ namespace MedicaRental.API.Controllers
                 if (!inserted)
                     return StatusCode(StatusCodes.Status500InternalServerError);
 
-
-                var user = await _userManager.FindByIdAsync(userId);
-
-                var callback = EmailHelpers.CreatePaymentConfirmEmail(user.Name, (paymentIntent.Amount / 100).ToString(), paymentIntent.Id, DateTime.Now);
-
-                var message = new EmailMessage(new string[] { user.Email }, "Payment Confirmation", callback);
-                await _emailSender.SendEmailAsync(message);
-
                 return Ok(paymentIntent.ToJson());
             }
             catch
@@ -120,14 +112,17 @@ namespace MedicaRental.API.Controllers
 
                     var resultDeleteFromCard = await _cartItemsManager.RemoveCartItemsAsync(t.ClientId);
                     if (resultDeleteFromCard.StatusCode == HttpStatusCode.OK)
+                    {
+                        var user = await _userManager.FindByIdAsync(t.ClientId); 
+
+                        var callback = EmailHelpers.CreatePaymentConfirmEmail(user.Name, (paymentIntent.Amount / 100).ToString(), paymentIntent.Id, DateTime.Now);
+
+                        var message = new EmailMessage(new string[] { user.Email }, "Payment Confirmation", callback);
+                        await _emailSender.SendEmailAsync(message);
+
                         return Ok(paymentIntent.ToJson());
+                    }
 
-                    var user = await _userManager.FindByIdAsync(t.ClientId); 
-
-                    var callback = EmailHelpers.CreatePaymentConfirmEmail(user.Name, (paymentIntent.Amount / 100).ToString(), paymentIntent.Id, DateTime.Now);
-
-                    var message = new EmailMessage(new string[] { user.Email }, "Payment Confirmation", callback);
-                    await _emailSender.SendEmailAsync(message);
 
                     return StatusCode((int)resultDeleteFromCard.StatusCode, resultDeleteFromCard);
 
