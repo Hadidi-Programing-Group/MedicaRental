@@ -84,7 +84,7 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("notificationCount")]
-        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        [Authorize]
         public async Task<int> GetNotificationCount()
         {
             var userId = _userManager.GetUserId(User);
