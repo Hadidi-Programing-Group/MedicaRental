@@ -21,7 +21,7 @@ namespace MedicaRental.DAL.Models
 
         public DateTime Date { get; set; } = DateTime.UtcNow;
 
-        [ForeignKey(nameof(Client))]
+        [ForeignKey("Client")]
         public string ClientId { get; set; } = string.Empty;
         public Client? Client { get; set; }
         

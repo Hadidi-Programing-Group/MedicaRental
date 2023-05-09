@@ -2,6 +2,7 @@
 using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Dtos.Account;
 using MedicaRental.BLL.Dtos.Authentication;
+using MedicaRental.BLL.Helpers;
 using MedicaRental.BLL.Managers.Authentication;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
@@ -110,7 +111,8 @@ public class AccountsManager : IAccountsManager
             {"email", forgotPasswordDto.Email }
         };
         var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURI, param);
-        var message = new EmailMessage(new string[] { user.Email }, "Reset Password", callback);
+
+        var message = new EmailMessage(new string[] { user.Email }, "Reset Password", EmailHelpers.CreateEmailBody(callback));
         await _emailSender.SendEmailAsync(message);
 
         return new StatusDto("Reset info was sent to you email", System.Net.HttpStatusCode.OK);

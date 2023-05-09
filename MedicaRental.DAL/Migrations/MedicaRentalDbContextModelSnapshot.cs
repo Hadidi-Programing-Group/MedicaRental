@@ -995,7 +995,7 @@ namespace MedicaRental.DAL.Migrations
                         .HasForeignKey("AppUserId");
 
                     b.HasOne("MedicaRental.DAL.Models.Client", "Client")
-                        .WithMany()
+                        .WithMany("Transactions")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1107,6 +1107,8 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("SentMessages");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Item", b =>

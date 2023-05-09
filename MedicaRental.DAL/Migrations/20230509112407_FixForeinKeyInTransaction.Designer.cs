@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230508105720_FinalMigration")]
-    partial class FinalMigration
+    [Migration("20230509112407_FixForeinKeyInTransaction")]
+    partial class FixForeinKeyInTransaction
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -230,9 +230,6 @@ namespace MedicaRental.DAL.Migrations
 
                     b.Property<DateTime>("AdEndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("Ads")
-                        .HasColumnType("bit");
 
                     b.Property<Guid>("BrandId")
                         .HasColumnType("uniqueidentifier");
@@ -1000,7 +997,7 @@ namespace MedicaRental.DAL.Migrations
                         .HasForeignKey("AppUserId");
 
                     b.HasOne("MedicaRental.DAL.Models.Client", "Client")
-                        .WithMany()
+                        .WithMany("Transactions")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1112,6 +1109,8 @@ namespace MedicaRental.DAL.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("SentMessages");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MedicaRental.DAL.Models.Item", b =>

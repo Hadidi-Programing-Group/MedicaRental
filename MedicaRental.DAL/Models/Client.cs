@@ -7,6 +7,7 @@ namespace MedicaRental.DAL.Models
     public class Client
     {
         [ForeignKey("User")]
+        [Key]
         public string Id { get; set; } = string.Empty;
         
         public string Ssn { get; set; } = string.Empty;
@@ -34,6 +35,8 @@ namespace MedicaRental.DAL.Models
         public ICollection<RentOperation> RentOperations { get; set; } = new List<RentOperation>();
 
         public ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();
+
+        public ICollection<Transaction> Transactions { get; set; } = new HashSet<Transaction>();
 
         public AppUser? User { get; set; }
 

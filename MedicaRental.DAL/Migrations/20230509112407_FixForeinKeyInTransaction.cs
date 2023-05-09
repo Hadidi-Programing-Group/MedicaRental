@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class FinalMigration : Migration
+    public partial class FixForeinKeyInTransaction : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -339,7 +339,6 @@ namespace MedicaRental.DAL.Migrations
                     SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SellerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
-                    Ads = table.Column<bool>(type: "bit", nullable: false),
                     AdEndDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

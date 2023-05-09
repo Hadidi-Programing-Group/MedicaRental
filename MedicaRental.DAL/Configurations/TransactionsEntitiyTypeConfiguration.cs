@@ -9,25 +9,14 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Configurations
 {
-    public class TransactionItemEntitiyTypeConfiguration : IEntityTypeConfiguration<TransactionItem>
+    public class TransactionsEntitiyTypeConfiguration : IEntityTypeConfiguration<Transaction>
     {
-        public void Configure(EntityTypeBuilder<TransactionItem> builder)
+        public void Configure(EntityTypeBuilder<Transaction> builder)
         {
-            builder.HasOne(r => r.Transaction)
-            .WithMany()
-            .OnDelete(DeleteBehavior.Restrict);
-            /*Severity	Code	Description	Project	File	Line	Suppression State
-            Error	CS0308	The non-generic method 'ReferenceCollectionBuilder<Transaction, 
-            TransactionItem>.HasForeignKey(params string[])' 
-            cannot be used with type arguments	MedicaRental.DAL	
-           	18	Active
-            */
-            /*Introducing FOREIGN KEY constraint 'FK_TransactionItems_Transactions_TransactionId'
-             * on table 'TransactionItems' may cause cycles or multiple cascade paths. 
-             * Specify ON DELETE NO ACTION or ON UPDATE NO ACTION, or modify other FOREIGN KEY 
-             * constraints.
-            Could not create constraint or index. See previous errors.
-            */
+            builder.HasOne(r => r.Client)
+            .WithMany(c => c.Transactions)
+            .HasForeignKey(r => r.ClientId)
+            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

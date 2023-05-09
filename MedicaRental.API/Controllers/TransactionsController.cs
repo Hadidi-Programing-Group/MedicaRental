@@ -1,5 +1,7 @@
-﻿using MedicaRental.BLL.Dtos;
+﻿using MedicaRental.BL.MailService;
+using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Dtos.CartItem;
+using MedicaRental.BLL.Helpers;
 using MedicaRental.BLL.Managers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
@@ -15,14 +17,16 @@ namespace MedicaRental.API.Controllers
     [ApiController]
     public class TransactionsController : ControllerBase
     {
+        private readonly IEmailSender _emailSender;
         private readonly ITransactionsManager _transactionsManager;
         private readonly ICartItemsManager _cartItemsManager;
         private readonly ITransactionItemsManager _transactionItemsManager;
         private readonly IItemsManager _itemsManager;
         private readonly UserManager<AppUser> _userManager;
 
-        public TransactionsController(ITransactionsManager transactionsManager, ITransactionItemsManager transactionItemsManager, IItemsManager itemsManager, ICartItemsManager cartItemsManager, UserManager<AppUser> userManager)
+        public TransactionsController(IEmailSender emailSender, ITransactionsManager transactionsManager, ITransactionItemsManager transactionItemsManager, IItemsManager itemsManager, ICartItemsManager cartItemsManager, UserManager<AppUser> userManager)
         {
+            _emailSender = emailSender;
             _transactionsManager = transactionsManager;
             _transactionItemsManager = transactionItemsManager;
             _userManager = userManager;
@@ -107,6 +111,13 @@ namespace MedicaRental.API.Controllers
                     var resultDeleteFromCard = await _cartItemsManager.RemoveCartItemsAsync(t.ClientId);
                     if (resultDeleteFromCard.StatusCode == HttpStatusCode.OK)
                         return Ok(paymentIntent.ToJson());
+
+                    var user = await _userManager.FindByIdAsync(t.ClientId);
+
+                    var callback = EmailHelpers.CreatePaymentConfirmEmail(user.Name, t.Ammount.ToString(), paymentIntent.Id, DateTime.Now);
+
+                    var message = new EmailMessage(new string[] { user.Email }, "Payment Confirmation", callback);
+                    await _emailSender.SendEmailAsync(message);
 
                     return StatusCode((int)resultDeleteFromCard.StatusCode, resultDeleteFromCard);
 
