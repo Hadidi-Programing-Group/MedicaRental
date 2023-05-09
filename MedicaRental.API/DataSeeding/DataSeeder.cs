@@ -1083,7 +1083,7 @@ END
             using (var response = await client.GetAsync(url))
             {
                 byte[] imageBytes =
-                    await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    await response.Content.ReadAsByteArrayAsync();
 
                 return imageBytes;
             }
