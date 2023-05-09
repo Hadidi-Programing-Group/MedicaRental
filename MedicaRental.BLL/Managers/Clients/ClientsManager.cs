@@ -1,4 +1,5 @@
-﻿using MedicaRental.BLL.Dtos;
+﻿using MedicaRental.BL.MailService;
+using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Helpers;
 using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
@@ -20,15 +21,18 @@ public class ClientsManager : IClientsManager
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAccountsManager _accountsManager;
     private readonly UserManager<AppUser> _userManager;
+    private readonly IEmailSender _emailSender;
 
     public ClientsManager(IUnitOfWork unitOfWork,
         IAccountsManager accountsManager,
-        UserManager<AppUser> userManager
+        UserManager<AppUser> userManager,
+        IEmailSender emailSender
         )
     {
         _unitOfWork = unitOfWork;
         _accountsManager = accountsManager;
         _userManager = userManager;
+        _emailSender = emailSender;
     }
 
 
@@ -148,6 +152,12 @@ public class ClientsManager : IClientsManager
         try
         {
             _unitOfWork.Save();
+
+            var callback = EmailHelpers.CreateApprovedEmail(user.Name);
+
+            var message = new EmailMessage(new string[] { user.Email }, "You Are Approved", callback);
+            await _emailSender.SendEmailAsync(message);
+
             return new StatusDto(
                 StatusMessage: $"User {email} is approved to rent",
                 StatusCode: System.Net.HttpStatusCode.OK
