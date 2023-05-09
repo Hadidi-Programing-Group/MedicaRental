@@ -7,6 +7,7 @@ using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Policy;
 using static System.Net.WebRequestMethods;
@@ -1078,15 +1079,10 @@ END
     
     public static async Task<byte[]> GetImage(string url)
     {
-        using (var client = new HttpClient())
+        using (WebClient client = new WebClient())
         {
-            using (var response = await client.GetAsync(url))
-            {
-                byte[] imageBytes =
-                    await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-
-                return imageBytes;
-            }
+            byte[] bytes = await client.DownloadDataTaskAsync(url);
+            return bytes;
         }
     }
 }
