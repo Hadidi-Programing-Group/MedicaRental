@@ -216,7 +216,7 @@ using (var scope = app.Services.CreateScope())
     await DataSeeder.SeedAsync(services);
 }
 #endregion
-
+ 
 
 # region Middelwares
 //app.UseCors("AllowSpecificOrigin");
