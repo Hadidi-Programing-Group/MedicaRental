@@ -73,7 +73,7 @@ namespace MedicaRental.API.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError);
 
 
-                var user = await _userManager.FindByIdAsync(t.ClientId);
+                var user = await _userManager.FindByIdAsync(userId);
 
                 var callback = EmailHelpers.CreatePaymentConfirmEmail(user.Name, (paymentIntent.Amount / 100).ToString(), paymentIntent.Id, DateTime.Now);
 
