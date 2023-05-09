@@ -6,6 +6,7 @@ using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using System.Net;
 using System.Security.Claims;
 
 namespace MedicaRental.API.DataSeeding;
@@ -1242,6 +1243,14 @@ END
         }
         #endregion
     }
-
+    
+    public static async Task<byte[]> GetImage(string url)
+    {
+        using (WebClient client = new WebClient())
+        {
+            byte[] bytes = await client.DownloadDataTaskAsync(url);
+            return bytes;
+        }
+    }
 }
 
