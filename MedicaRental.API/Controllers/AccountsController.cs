@@ -4,10 +4,12 @@ using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.Authentication;
 using MedicaRental.BLL.Managers;
 using MedicaRental.BLL.Managers.Authentication;
+using MedicaRental.DAL.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace MedicaRental.API.Controllers
 {
@@ -18,16 +20,35 @@ namespace MedicaRental.API.Controllers
         private readonly IClientsManager _clientsManager;
         private readonly IAccountsManager _accountsManager;
         private readonly IAuthManger _authManger;
+        private readonly UserManager<AppUser> _userManager;
 
         public AccountsController(
             IClientsManager clientsManager,
             IAccountsManager accountsManager,
-            IAuthManger authManger
+            IAuthManger authManger,
+            UserManager<AppUser> userManager
         )
         {
             _clientsManager = clientsManager;
             _accountsManager = accountsManager;
             this._authManger = authManger;
+            _userManager = userManager;
+        }
+
+        [HttpGet("/GetRole")]
+        [Authorize]
+        public async Task<ActionResult> GetRole()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user is null) return Unauthorized();
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            var role = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            if (role is null) return NotFound();
+
+            return Ok(new { role });
         }
 
         [HttpPost("/ForgotPassword")]
