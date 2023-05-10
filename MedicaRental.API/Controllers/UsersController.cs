@@ -124,7 +124,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("GetInfo")]
-        //[Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<UserProfileInfoDto>> GetUserInfo()
         {
             var userId = _userManager.GetUserId(User);
