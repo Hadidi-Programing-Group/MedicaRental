@@ -35,7 +35,6 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("allChats")]
-        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
         public async Task<ActionResult<IEnumerable<ChatDto>>> GetUserChats(int upTo)
         {
             var userId = _userManager.GetUserId(User);
