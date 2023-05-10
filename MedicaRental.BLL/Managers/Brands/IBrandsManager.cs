@@ -12,7 +12,8 @@ public interface IBrandsManager
 {
     Task<DeleteBrandStatusDto> DeleteByIdAsync(Guid id);
     Task<IEnumerable<BrandDto>> GetAllAsyc();
+    Task<PageDto<BrandDto>> GetAllPagedAsyc(int page, string? searchText);
     Task<BrandDto> GetBrandbyId(Guid id);
     Task<InsertBrandStatusDto> InsertNewBrand(InsertBrandDto insertBrandDto);
-    Task<UpdateBrandStatusDto> UpdateNewBrand(Guid id, UpdateBrandDto updateBrandDto);
+    Task<UpdateBrandStatusDto> UpdateNewBrand(UpdateBrandDto updateBrandDto);
 }
