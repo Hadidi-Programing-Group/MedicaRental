@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos.Brand;
 
-public record UpdateBrandDto( string Name, string CountryOfOrigin, string Image);
+public record UpdateBrandDto(Guid Id, string Name, string CountryOfOrigin, string Image);
