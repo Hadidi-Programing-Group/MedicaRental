@@ -15,6 +15,7 @@ public interface IItemsManager
     public Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy, string? searchText);
     public Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy, string? searchText);
 
+    public Task<IEnumerable<ItemMinimalDto>?> GetItemsBySellerMinimal(string sellerId);
 
     public Task<PageDto<HomeItemDto>?> GetItemsByCategoryAsync(Guid categoryId, int page, string? orderBy);
     public Task<PageDto<HomeItemDto>?> GetItemsBySubCategoryAsync(Guid subcategoryId, int page, string? orderBy);
