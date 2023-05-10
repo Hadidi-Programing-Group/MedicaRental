@@ -114,7 +114,7 @@ builder.Services
                 {
 
                     // Read the token out of the query string
-                    Console.WriteLine($"Access Token : {accessToken}");
+                    //Console.WriteLine($"Access Token : {accessToken}");
                     context.Token = accessToken;
                 }
                 return Task.CompletedTask;

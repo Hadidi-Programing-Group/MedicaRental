@@ -84,7 +84,7 @@ namespace MedicaRental.API.Controllers
                     },
                 });
                 if (paymentIntent is null) return StatusCode(StatusCodes.Status503ServiceUnavailable);
-                Console.WriteLine($"Client Sercre {paymentIntent.ClientSecret}");
+                //Console.WriteLine($"Client Sercre {paymentIntent.ClientSecret}");
                 var transactionId = await _transactionsManager.InsertTransaction(new()
                 {
                     Ammount = paymentIntent.Amount / 100,
@@ -158,8 +158,8 @@ namespace MedicaRental.API.Controllers
             }
             catch (StripeException e)
             {
-                Console.WriteLine("Error: {0}", e.Message);
-                Console.WriteLine("endpointSecret: {0}", endpointSecret);
+                //Console.WriteLine("Error: {0}", e.Message);
+                //Console.WriteLine("endpointSecret: {0}", endpointSecret);
                 return BadRequest();
             }
             catch (Exception e)

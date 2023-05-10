@@ -80,6 +80,7 @@ namespace MedicaRental.BLL.Managers
         {
             var transactions = await _unitOfWork.Trasactions.FindAllAsync(
                 predicate: t => t.ClientId == userId,
+                orderBy: q => q.OrderBy(t => t.Date),
                 skip: (page - 1) * SharedHelper.Take,
                 take: SharedHelper.Take,
                 selector: t => new GetAllTransactionsDto(t.Id, t.StripePyamentId, t.Date, t.Amount, t.Status)
@@ -98,10 +99,10 @@ namespace MedicaRental.BLL.Managers
                 selector: t => new TransactionDetailsDto(
                     t.Id, 
                     t.StripePyamentId, 
-                    t.Date, 
+                    t.Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"), 
                     t.Amount, 
                     t.Status,
-                    t.TransactionItems.Select(ti => new TransactionItemDto(ti.ItemId, t.Date.AddDays(ti.NumberOfDays), ti.NumberOfDays, ti.Item.Name))
+                    t.TransactionItems.Select(ti => new TransactionItemDto(ti.ItemId, t.Date.AddDays(ti.NumberOfDays).ToString("yyyy-MM-ddTHH:mm:ss.fffZ"), ti.NumberOfDays, ti.Item.Name))
                 ));
 
             return transaction;
