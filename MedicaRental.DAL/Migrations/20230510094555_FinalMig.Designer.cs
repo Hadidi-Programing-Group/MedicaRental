@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaRental.DAL.Migrations
 {
     [DbContext(typeof(MedicaRentalDbContext))]
-    [Migration("20230509201925_FinalMigration")]
-    partial class FinalMigration
+    [Migration("20230510094555_FinalMig")]
+    partial class FinalMig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1014,7 +1014,7 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("MedicaRental.DAL.Models.Transaction", "Transaction")
-                        .WithMany()
+                        .WithMany("TransactionItems")
                         .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1133,6 +1133,11 @@ namespace MedicaRental.DAL.Migrations
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.Transaction", b =>
+                {
+                    b.Navigation("TransactionItems");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MedicaRental.DAL.Migrations
 {
-    public partial class FinalMigration : Migration
+    public partial class FinalMig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

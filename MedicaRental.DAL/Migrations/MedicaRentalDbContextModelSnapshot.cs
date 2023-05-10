@@ -1012,7 +1012,7 @@ namespace MedicaRental.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("MedicaRental.DAL.Models.Transaction", "Transaction")
-                        .WithMany()
+                        .WithMany("TransactionItems")
                         .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1131,6 +1131,11 @@ namespace MedicaRental.DAL.Migrations
             modelBuilder.Entity("MedicaRental.DAL.Models.SubCategory", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("MedicaRental.DAL.Models.Transaction", b =>
+                {
+                    b.Navigation("TransactionItems");
                 });
 #pragma warning restore 612, 618
         }

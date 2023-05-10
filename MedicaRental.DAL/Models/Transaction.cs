@@ -31,5 +31,7 @@ namespace MedicaRental.DAL.Models
         
         [EnumDataType(typeof(TransactionStatus))]
         public TransactionStatus Status { get; set; } = TransactionStatus.Pending;
+
+        public ICollection<TransactionItem> TransactionItems { get; set; } = new HashSet<TransactionItem>();    
     }
 }

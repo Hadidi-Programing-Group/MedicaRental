@@ -1,6 +1,8 @@
 ﻿using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Helpers;
 using MedicaRental.DAL.Models;
 using MedicaRental.DAL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicaRental.BLL.Managers
 {
@@ -72,6 +74,37 @@ namespace MedicaRental.BLL.Managers
             {
                 return null;
             }
+        }
+
+        public async Task<PageDto<GetAllTransactionsDto>> GetAllTransactionsAsync(string userId, int page)
+        {
+            var transactions = await _unitOfWork.Trasactions.FindAllAsync(
+                predicate: t => t.ClientId == userId,
+                skip: (page - 1) * SharedHelper.Take,
+                take: SharedHelper.Take,
+                selector: t => new GetAllTransactionsDto(t.Id, t.StripePyamentId, t.Date, t.Amount, t.Status)
+                );
+
+            var count = await _unitOfWork.Trasactions.GetCountAsync(predicate: t => t.ClientId == userId);
+
+            return new(transactions, count);
+        }
+
+        public async Task<TransactionDetailsDto?> GetTransactionDetailsAsync(Guid id, string userId)
+        {
+            var transaction = await _unitOfWork.Trasactions.FindAsync(
+                predicate: t => t.Id == id && t.ClientId == userId,
+                include: source => source.Include(t => t.TransactionItems).ThenInclude(ti => ti.Item),
+                selector: t => new TransactionDetailsDto(
+                    t.Id, 
+                    t.StripePyamentId, 
+                    t.Date, 
+                    t.Amount, 
+                    t.Status,
+                    t.TransactionItems.Select(ti => new TransactionItemDto(ti.ItemId, t.Date.AddDays(ti.NumberOfDays), ti.NumberOfDays, ti.Item.Name))
+                ));
+
+            return transaction;
         }
     }
 }
