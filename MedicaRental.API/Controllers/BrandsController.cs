@@ -29,6 +29,16 @@ namespace MedicaRental.API.Controllers
             return Brands;
         }
 
+        [HttpGet("paged")]
+        public async Task<ActionResult<PageDto<BrandDto>>> GetAllPaged(int page, string? searchText)
+        {
+            var Brands = await _brandssManager.GetAllPagedAsyc(page, searchText);
+
+            if (Brands is null) return BadRequest();
+
+            return Brands;
+        }
+
         [HttpGet]
         [Route("{Id}")]
         public async Task<ActionResult<BrandDto>> GetById(Guid Id)
@@ -59,10 +69,9 @@ namespace MedicaRental.API.Controllers
 
 
         [HttpPut]
-        [Route("{Id}")]
-        public async Task<ActionResult> UpdateBrand(Guid Id, UpdateBrandDto updateBrandDto)
+        public async Task<ActionResult> UpdateBrand(UpdateBrandDto updateBrandDto)
         {
-            UpdateBrandStatusDto updateBrandStatus = await _brandssManager.UpdateNewBrand(Id, updateBrandDto);
+            UpdateBrandStatusDto updateBrandStatus = await _brandssManager.UpdateNewBrand(updateBrandDto);
 
             if (!updateBrandStatus.isUpdated)
                 return BadRequest(updateBrandStatus.StatusMessage);
