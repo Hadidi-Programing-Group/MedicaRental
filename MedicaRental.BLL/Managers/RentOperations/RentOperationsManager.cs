@@ -24,6 +24,7 @@ namespace MedicaRental.BLL.Managers
             _unitOfWork = unitOfWork;
         }
 
+        //
         public async Task<PageDto<RentOperationDto>?> GetOnRentItemsAsync(string userId, int page, string? orderBy, string? searchText)
         {
             try
@@ -32,9 +33,9 @@ namespace MedicaRental.BLL.Managers
                 var data = await _unitOfWork.RentOperations.FindAllAsync
                     (
                         orderBy: orderByQuery,
-                        selector: RentOperationHelper.RentOperationDtoSelector_Renter,
+                        selector: RentOperationHelper.RentOperationDtoSelector_Owner,
                         predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.UtcNow && (searchText == null || MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
-                        include: RentOperationHelper.RentOperationDtoInclude_Renter,
+                        include: RentOperationHelper.RentOperationDtoInclude_Owner,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
                     );
@@ -58,9 +59,9 @@ namespace MedicaRental.BLL.Managers
                 var data = await _unitOfWork.RentOperations.FindAllAsync
                     (
                         orderBy: orderByQuery,
-                        selector: RentOperationHelper.RentOperationDtoSelector_Renter,
+                        selector: RentOperationHelper.RentOperationDtoSelector_Owner,
                         predicate: ro => userId == ro.SellerId && ro.ReturnDate < DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
-                        include: RentOperationHelper.RentOperationDtoInclude_Renter,
+                        include: RentOperationHelper.RentOperationDtoInclude_Owner,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
                     );
@@ -81,16 +82,16 @@ namespace MedicaRental.BLL.Managers
                 var data = await _unitOfWork.RentOperations.FindAllAsync
                     (
                         orderBy: orderByQuery,
-                        selector: RentOperationHelper.RentOperationDtoSelector_Owner,
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
-                        include: RentOperationHelper.RentOperationDtoInclude_Owner,
+                        selector: RentOperationHelper.RentOperationDtoSelector_Renter,
+                        predicate: ro => userId == ro.ClientId && ro.ReturnDate > DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
+                        include: RentOperationHelper.RentOperationDtoInclude_Renter,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
                     );
 
                 var count = await _unitOfWork.RentOperations.GetCountAsync
                     (
-                        predicate: ro => userId == ro.SellerId && ro.ReturnDate > DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
+                        predicate: ro => userId == ro.ClientId && ro.ReturnDate > DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance)
                     );
 
                 return new(data, count);
@@ -105,9 +106,9 @@ namespace MedicaRental.BLL.Managers
                 var data = await _unitOfWork.RentOperations.FindAllAsync
                     (
                         orderBy: orderByQuery,
-                        selector: RentOperationHelper.RentOperationDtoSelector_Owner,
+                        selector: RentOperationHelper.RentOperationDtoSelector_Renter,
                         predicate: ro => userId == ro.ClientId && ro.ReturnDate < DateTime.UtcNow && (searchText == null ||  MedicaRentalDbContext.LevDist(ro.Item!.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance),
-                        include: RentOperationHelper.RentOperationDtoInclude_Owner,
+                        include: RentOperationHelper.RentOperationDtoInclude_Renter,
                         skip: page > 1 ? SharedHelper.Take * page : null,
                         take: SharedHelper.Take
                     );
