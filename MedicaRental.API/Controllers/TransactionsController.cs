@@ -1,5 +1,6 @@
 ﻿using MedicaRental.BL.MailService;
 using MedicaRental.BLL.Dtos;
+using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Dtos.CartItem;
 using MedicaRental.BLL.Helpers;
 using MedicaRental.BLL.Managers;
@@ -33,6 +34,32 @@ namespace MedicaRental.API.Controllers
             _itemsManager = itemsManager;
             _cartItemsManager = cartItemsManager;
         }
+
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        [HttpGet]
+        public async Task<ActionResult<PageDto<GetAllTransactionsDto>>> GetAllTransactionsForClient(int page)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            PageDto<GetAllTransactionsDto> transactions = await _transactionsManager.GetAllTransactionsAsync(userId, page);
+
+            return transactions;
+        }
+
+        [Authorize(Policy = ClaimRequirement.ClientPolicy)]
+        [HttpGet("{Id}")]
+        public async Task<ActionResult<TransactionDetailsDto>> GetTransactionDetails(Guid Id)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            TransactionDetailsDto? transaction = await _transactionsManager.GetTransactionDetailsAsync(Id, userId);
+
+            if (transaction is null) return NotFound("Transaction not found");
+
+            return transaction;
+        }
+
+
 
         [Authorize]
         [HttpPost("create-payment-intent")]

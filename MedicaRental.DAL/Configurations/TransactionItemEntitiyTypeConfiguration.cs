@@ -14,7 +14,8 @@ namespace MedicaRental.DAL.Configurations
         public void Configure(EntityTypeBuilder<TransactionItem> builder)
         {
             builder.HasOne(r => r.Transaction)
-            .WithMany()
+            .WithMany(t => t.TransactionItems)
+            .HasForeignKey(r => r.TransactionId)
             .OnDelete(DeleteBehavior.Restrict);
             /*Severity	Code	Description	Project	File	Line	Suppression State
             Error	CS0308	The non-generic method 'ReferenceCollectionBuilder<Transaction, 

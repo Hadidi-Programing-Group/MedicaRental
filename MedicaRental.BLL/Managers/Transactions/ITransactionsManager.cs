@@ -13,5 +13,7 @@ namespace MedicaRental.BLL.Managers
         Task<TransactionDto?> GetByPaymentIdAsync(string? id);
         Task<bool> UpdateTransaction(UpdateTransactionStatusDto updatetransactionDto);
         Task<Guid?> InsertTransaction(TransactionDto addedTransaction);
+        Task<PageDto<GetAllTransactionsDto>> GetAllTransactionsAsync(string userId, int page);
+        Task<TransactionDetailsDto?> GetTransactionDetailsAsync(Guid id, string userId);
     }
 }
