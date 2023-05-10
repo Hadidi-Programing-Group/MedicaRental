@@ -6,16 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MedicaRental.BLL.Dtos;
-
 public record TransactionDetailsDto
 (
-    Guid Id, string PaymentId, DateTime Date, decimal Amount, TransactionStatus Status, IEnumerable<TransactionItemDto> TransactionItems
+    Guid Id, string PaymentId, string Date, decimal Amount, TransactionStatus Status, IEnumerable<TransactionItemDto> TransactionItems
 );
 
 public record TransactionItemDto
 (
     Guid ItemId,
-    DateTime EndDate,
+    string EndDate,
     int NumberOfDays,
     string ItemName
 );
