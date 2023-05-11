@@ -83,10 +83,10 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet("notificationCount")]
-        [Authorize]
         public async Task<int> GetNotificationCount()
         {
             var userId = _userManager.GetUserId(User);
+            if (userId is null) return 0;
             return await _messagesManager.GetNotificationCount(userId);
         }
 
