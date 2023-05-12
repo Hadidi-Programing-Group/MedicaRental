@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MedicaRental.API
 {
-    [Authorize]
+    [Authorize(Policy = ClaimRequirement.ClientPolicy)]
     public class ChatHub : Hub
     {
         public static Dictionary<string, string> UserIds { get; } = new();
