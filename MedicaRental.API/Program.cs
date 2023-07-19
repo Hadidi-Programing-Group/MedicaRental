@@ -98,7 +98,7 @@ builder.Services
             //ValidAudience = builder.Configuration["JWT:Audience"],
             ValidateIssuer = false,
             ValidateAudience = false,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("MED_JWT_SECRET") ?? builder.Configuration["JWT:Secret"])),
             ValidateLifetime = true, // Checks expiry date.
             ClockSkew = TimeSpan.Zero // Matches time.
         };
@@ -203,11 +203,11 @@ builder.Services.AddSignalR().AddJsonProtocol(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI();
+//}
 
 #region SeedingIdentity
 using (var scope = app.Services.CreateScope())
@@ -216,9 +216,9 @@ using (var scope = app.Services.CreateScope())
     await DataSeeder.SeedAsync(services);
 }
 #endregion
- 
 
-# region Middelwares
+
+#region Middelwares
 //app.UseCors("AllowSpecificOrigin");
 app.UseCors(options => options.WithOrigins(builder.Configuration.GetSection("Cors:AllowedSite").Get<string[]>()).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 
@@ -257,14 +257,14 @@ string GetRDSConnectionString()
 {
     var appConfig = System.Configuration.ConfigurationManager.AppSettings;
 
-    string dbname = Environment.GetEnvironmentVariable("RDS_DB_NAME") ?? string.Empty;
+    string dbname = Environment.GetEnvironmentVariable("MED_RDS_DB_NAME") ?? string.Empty;
 
     if (string.IsNullOrEmpty(dbname)) return builder.Configuration.GetConnectionString("MedicaRentalDbConn");
 
-    string username = Environment.GetEnvironmentVariable("RDS_USERNAME") ?? string.Empty;
-    string password = Environment.GetEnvironmentVariable("RDS_PASSWORD") ?? string.Empty;
-    string hostname = Environment.GetEnvironmentVariable("RDS_HOSTNAME") ?? string.Empty;
-    string port = Environment.GetEnvironmentVariable("RDS_PORT") ?? string.Empty;
+    string username = Environment.GetEnvironmentVariable("MED_RDS_USERNAME") ?? string.Empty;
+    string password = Environment.GetEnvironmentVariable("MED_RDS_PASSWORD") ?? string.Empty;
+    string hostname = Environment.GetEnvironmentVariable("MED_RDS_HOSTNAME") ?? string.Empty;
+    string port = Environment.GetEnvironmentVariable("MED_RDS_PORT") ?? string.Empty;
     string cs =
         $"Initial Catalog={dbname};" +
         $"Data Source={hostname};" +
