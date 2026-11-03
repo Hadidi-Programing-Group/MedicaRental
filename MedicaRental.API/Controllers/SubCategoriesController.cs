@@ -3,8 +3,6 @@ using MedicaRental.BLL.Dtos;
 using MedicaRental.BLL.Managers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using MedicaRental.BLL.Dtos.Admin;
 
 namespace MedicaRental.API.Controllers
 {
@@ -20,9 +18,9 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PageDto<SubCategoryWithCategoryDto>>> GetAllWithCategory(int page, string? searchText)
+        public async Task<ActionResult<List<SubCategoriesDto>>> GetAllSubCategory()
         {
-            var subcategories = (await subCategoriesManager.GetAllWithCategoryAsync(page, searchText));
+            var subcategories = (await subCategoriesManager.GetAllAsync()).ToList();
             if (subcategories is null)
                 return NotFound();
             return subcategories;
@@ -30,7 +28,7 @@ namespace MedicaRental.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<SubCategoryWithCategoryDto>> GetSubcategoryById(Guid id)
+        public async Task<ActionResult<SubCategoriesDto>> GetSubcategoryById(Guid id)
         {
             var subCategory = await subCategoriesManager.GetByIdAsync(id);
             if (subCategory is null) return NotFound();
@@ -38,7 +36,6 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult> InsertSubCategory(InsertSubCategoryDto SubCat)
         {
             InsertSubCategoryStatusDto InsertStatus = await subCategoriesManager.InsertSubCategory(SubCat);
@@ -51,10 +48,10 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
-        public async Task<ActionResult> UpdateSubCategory(UpdateSubCategoryDto SubCategory)
+        [Route("{id}")]
+        public async Task<ActionResult> UpdateSubCategory(Guid id, UpdateSubCategoryDto SubCategory)
         {
-            UpdateSubCategoryStatusDto UpdateStatus = await subCategoriesManager.UpdateSubCategory(SubCategory);
+            UpdateSubCategoryStatusDto UpdateStatus = await subCategoriesManager.UpdateSubCategory(id, SubCategory);
             if (!UpdateStatus.isUpdated)
                 return BadRequest(UpdateStatus.StatusMessage);
             return CreatedAtAction(
@@ -65,13 +62,12 @@ namespace MedicaRental.API.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult> DeleteSubCategory(Guid id)
         {
             DeleteSubCategoryStatusDto DeleteStatus = await subCategoriesManager.DeleteByIdAsync(id);
             if (DeleteStatus.isDeleted)
-                   return NoContent();
-            return BadRequest(DeleteStatus.StatusMessage);
+                return BadRequest(DeleteStatus.StatusMessage);
+            return NoContent();
         }
     }
 }

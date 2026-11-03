@@ -23,22 +23,12 @@ namespace MedicaRental.DAL.Context
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<Report> Reports => Set<Report>();
         public DbSet<RentOperation> RentOperations => Set<RentOperation>();
-        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-        public DbSet<ReportAction> ReportActions => Set<ReportAction>();
-        public DbSet<Transaction> Transactions => Set<Transaction>();
-        public DbSet<CartItem> CartItems => Set<CartItem>();
-        public DbSet<AdPrice> AdPrices => Set<AdPrice>();
-        public DbSet<TransactionItem> TransactionItems => Set<TransactionItem>();
 
         public MedicaRentalDbContext(DbContextOptions<MedicaRentalDbContext> options) : base(options) { }
-
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            builder.HasDbFunction(typeof(MedicaRentalDbContext).GetMethod(nameof(LevDist), new[] { typeof(string), typeof(string), typeof(int?) })!)
-            .HasName("LevenshteinDistance");
 
             builder.ApplyConfiguration(new ItemEntityTypeConfiguration());
             builder.ApplyConfiguration(new ClientEntityTypeConfiguration());
@@ -48,49 +38,67 @@ namespace MedicaRental.DAL.Context
             builder.ApplyConfiguration(new MessageEntityTypeConfiguration());
             builder.ApplyConfiguration(new ReportEntityTypeConfiguration());
             builder.ApplyConfiguration(new RentOperationEntityTypeConfiguration());
-            builder.ApplyConfiguration(new ReportActionEntityTypeConfiguration());
-            builder.ApplyConfiguration(new CartItemEntityTypeConfiguration());
-            builder.ApplyConfiguration(new TransactionItemEntitiyTypeConfiguration());
-            builder.ApplyConfiguration(new TransactionsEntitiyTypeConfiguration());
         }
 
-
-        public static int LevDist(string s1, string? s2, int? maxDistance) => throw new NotSupportedException();
-
-        public async Task UpdateDailyRatings()
+        public override void RemoveRange(IEnumerable<object> entities)
         {
-            await Items.ForEachAsync(async i =>
-             {
-                 i.Rating = await CalculateDailyRatingForItem(i.Id);
-             });
-
-            await SaveChangesAsync();
-        }
-
-        private async Task<int> CalculateDailyRatingForItem(Guid id)
-        {
-            var averageRating = await Reviews.Where(r => r.ItemId == id).AverageAsync(r => r.Rating);
-
-            return (int)averageRating;
-        }
-
-        public override int SaveChanges()
-        {
-            HandleSoftDelete();
-            return base.SaveChanges();
-        }
-
-        private void HandleSoftDelete()
-        {
-            var entities = ChangeTracker.Entries()
-                                .Where(e => e.State == EntityState.Deleted);
             foreach (var entity in entities)
             {
-                if (entity.Entity is ISoftDeletable softDeletable)
+                if (entity is ISoftDeletable deletable)
                 {
-                    entity.State = EntityState.Modified;
-                    softDeletable.IsDeleted = true;
+                    deletable.IsDeleted = true;
+                    Entry(deletable).State = EntityState.Modified;
                 }
+                else
+                {
+                    Entry(entity).State = EntityState.Deleted;
+                }
+            }
+        }
+
+        public override void RemoveRange(params object[] entities)
+        {
+            foreach (var entity in entities)
+            {
+                if (entity is ISoftDeletable deletable)
+                {
+                    deletable.IsDeleted = true;
+                    Entry(deletable).State = EntityState.Modified;
+                }
+                else
+                {
+                    Entry(entity).State = EntityState.Deleted;
+                }
+            }
+        }
+        
+        public override EntityEntry Remove(object entity)
+        {
+            if (entity is ISoftDeletable deletable)
+            {
+                deletable.IsDeleted = true;
+                Entry(deletable).State = EntityState.Modified;
+
+                return Entry(entity);
+            }
+            else
+            {
+                return base.Remove(entity);
+            }
+        }
+
+        public override EntityEntry<TEntity> Remove<TEntity>(TEntity entity)
+        {
+            if (entity is ISoftDeletable deletable)
+            {
+                deletable.IsDeleted = true;
+                Entry(deletable).State = EntityState.Modified;
+
+                return Entry(entity);
+            }
+            else
+            {
+                return base.Remove(entity);
             }
         }
     }

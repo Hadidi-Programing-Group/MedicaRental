@@ -1,5 +1,4 @@
 ﻿using MedicaRental.DAL.Context;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicaRental.DAL.Models
@@ -7,7 +6,6 @@ namespace MedicaRental.DAL.Models
     public class Client
     {
         [ForeignKey("User")]
-        [Key]
         public string Id { get; set; } = string.Empty;
         
         public string Ssn { get; set; } = string.Empty;
@@ -19,8 +17,6 @@ namespace MedicaRental.DAL.Models
         public byte[]? NationalIdImage { get; set; }
         
         public byte[]? UnionCardImage { get; set; }
-
-        public byte[]? ProfileImage { get; set; }
 
         public ICollection<Message> SentMessages { get; set; } = new List<Message>();
         
@@ -34,14 +30,10 @@ namespace MedicaRental.DAL.Models
 
         public ICollection<RentOperation> RentOperations { get; set; } = new List<RentOperation>();
 
-        public ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();
-
-        public ICollection<Transaction> Transactions { get; set; } = new HashSet<Transaction>();
-
         public AppUser? User { get; set; }
 
-        [Range(0, 5)]
-        public int Rating { get; set; } = 0;
+        [NotMapped]
+        public int Rating { get => (int)Reviews.Average(r => r.Rating); }
 
         [NotMapped]
         public string Name { get => User?.Name ?? ""; }

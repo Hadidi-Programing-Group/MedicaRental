@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,6 +35,6 @@ public class ItemEntityTypeConfiguration : IEntityTypeConfiguration<Item>
 
         builder.Property(i => i.IsDeleted).HasDefaultValue(false);
 
-        builder.HasQueryFilter(i => !i.IsDeleted);
+        builder.HasQueryFilter(i => !i.IsDeleted && i.IsListed);
     }
 }

@@ -1,10 +1,10 @@
 ﻿using MedicaRental.DAL.Context;
 using MedicaRental.DAL.Models;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MedicaRental.DAL.Repositories;
 
@@ -19,16 +19,11 @@ public class ItemsRepo : EntityRepo<Item>, IItemsRepo
 
     public bool HasRenters(Item item)
     {
-        return item.ItemRenters.Any(r => r.ReturnDate > DateTime.UtcNow);
+        return item.ItemRenters.Any(r => r.ReturnDate > DateTime.Now);   
     }
 
     public bool HasRenters(IEnumerable<Item> items)
     {
-        return items.Any(i => i.ItemRenters.Any(r => r.ReturnDate > DateTime.UtcNow));
-    }
-
-    public decimal ItemsTotalPrice(IEnumerable<Guid> itemIds)
-    {
-        return _context.Items.Where(i => itemIds.Contains(i.Id)).Sum(i => i.Price);
+        return items.Any(i => i.ItemRenters.Any(r => r.ReturnDate > DateTime.Now));
     }
 }

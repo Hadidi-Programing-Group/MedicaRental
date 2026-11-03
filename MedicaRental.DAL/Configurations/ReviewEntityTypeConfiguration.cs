@@ -22,12 +22,7 @@ public class ReviewEntityTypeConfiguration : IEntityTypeConfiguration<Review>
 
         builder.HasOne(r => r.RentOperation)
         .WithOne(i => i.Review)
-        .HasForeignKey<RentOperation>(i => i.ReviewId)
         .OnDelete(DeleteBehavior.Restrict);
-
-        //builder.HasOne(r => r.RentOperation)
-        //.WithOne(i => i.Review)
-        //.OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(r => r.IsDeleted).HasDefaultValue(false);
         builder.HasQueryFilter(r => !r.IsDeleted);

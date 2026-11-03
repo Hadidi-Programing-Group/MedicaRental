@@ -10,20 +10,17 @@ namespace MedicaRental.BLL.Managers;
 
 public interface IItemsManager
 {
-    public Task<PageDto<HomeItemDto>?> GetAllItemsAsync(int page, string? orderBy, string? searchText, IEnumerable<Guid> categories, IEnumerable<Guid> subCategories, IEnumerable<Guid> brands);
-    public Task<PageDto<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, int page, string? orderBy, string? searchText);
-    public Task<PageDto<ListItemDto>?> GetUnListedItemsAsync(string userId, int page, string? orderBy, string? searchText);
-    public Task<PageDto<ListItemDto>?> GetListedItemsAsync(string userId, int page, string? orderBy, string? searchText);
+    public Task<IEnumerable<HomeItemDto>?> GetAllItemsAsync(string? orderBy);
+    public Task<IEnumerable<HomeItemDto>?> GetItemsBySellerAsync(string sellerId, string? orderBy);
+    public Task<IEnumerable<HomeItemDto>?> GetItemsBySearchAsync(string searchText, string? orderBy);
+    public Task<IEnumerable<HomeItemDto>?> GetItemsByCategoryAsync(Guid categoryId, string? orderBy);
+    public Task<IEnumerable<HomeItemDto>?> GetItemsBySubCategoryAsync(Guid subcategoryId, string? orderBy);
+    public Task<IEnumerable<HomeItemDto>?> GetItemsByCategoriesAsync(IEnumerable<Guid> categoryIds, string? orderBy);
+    public Task<IEnumerable<HomeItemDto>?> GetItemsBySubCategoriesAsync(IEnumerable<Guid> subcategoryIds, string? orderBy);
 
-    public Task<IEnumerable<ItemMinimalDto>?> GetItemsBySellerMinimal(string sellerId);
+    public Task<IEnumerable<SellerItemDto>?> GetAllItemsForSellerAsync(string? orderBy);
 
-    public Task<PageDto<HomeItemDto>?> GetItemsByCategoryAsync(Guid categoryId, int page, string? orderBy);
-    public Task<PageDto<HomeItemDto>?> GetItemsBySubCategoryAsync(Guid subcategoryId, int page, string? orderBy);
-    public Task<PageDto<HomeItemDto>?> GetItemsByCategoriesAsync(IEnumerable<Guid> categoryIds, int page, string? orderBy);
-    public Task<PageDto<HomeItemDto>?> GetItemsBySubCategoriesAsync(IEnumerable<Guid> subcategoryIds, int page, string? orderBy);
-
-    public Task<PageDto<SellerItemDto>?> GetAllItemsForSellerAsync(int page, string? orderBy);
-    public Task<PageDto<RenterItemDto>?> GetAllItemsForRenterAsync(int page, string? orderBy);
+    public Task<IEnumerable<RenterItemDto>?> GetAllItemsForRenterAsync(string? orderBy);
 
     public Task<HomeItemDto?> FindItemAsync(Guid id);
     public Task<SellerItemDto?> FindItemForSellerAsync(Guid id);
@@ -37,13 +34,4 @@ public interface IItemsManager
     
     public Task<StatusDto> DeleteItem(Guid id);
     public Task<StatusDto> DeleteItems(IEnumerable<Guid> ids);
-
-    public Task<StatusDto> UnListItem(Guid id);
-    public Task<StatusDto> ReListItem(Guid id);
-    public Task<ItemOwnerStatusDto> GetItemOwnerStatus(string usreId, Guid ItemId);
-    Task<StatusDto> DeleteItemByAdmin(Guid itemId);
-    Task<StatusDto> changeToAds(string id);
-    Task<PageDto<HomeItemDto>?> GetAllAdsAsync();
-    //  Task GetAllItemsBySellerAsync(string sellerId);
-    //  Task GetItemsBySellerMinimal(string sellerId);
 }

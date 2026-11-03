@@ -51,7 +51,8 @@ namespace MedicaRental.DAL.Repositories
             if (entity is null)
                 return false;
 
-            return Delete(entity);
+            Delete(entity);
+            return true;
         }
 
         public async Task<bool> DeleteManyById<TypeId>(IEnumerable<TypeId> ids)
@@ -122,15 +123,10 @@ namespace MedicaRental.DAL.Repositories
             }
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (ignoreQueryFilter)
-            {
-                query = query.IgnoreQueryFilters();
-            }
-
+            
             if (disableTracking)
             {
                 query = query.AsNoTracking();
@@ -146,27 +142,12 @@ namespace MedicaRental.DAL.Repositories
                 query = orderBy(query);
             }
 
-            if(skip != null)
-            {
-                query = query.Skip((int)skip);
-            }
-
-            if(take != null)
-            {
-                query = query.Take((int)take);
-            }
-
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (ignoreQueryFilter)
-            {
-                query = query.IgnoreQueryFilters();
-            }
 
             if (disableTracking)
             {
@@ -188,27 +169,12 @@ namespace MedicaRental.DAL.Repositories
                 query = orderBy(query);
             }
 
-            if (skip != null)
-            {
-                query = query.Skip((int)skip);
-            }
-
-            if (take != null)
-            {
-                query = query.Take((int)take);
-            }
-
-           return await query.ToListAsync();
+            return await query.ToListAsync();
         }
 
-        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (ignoreQueryFilter)
-            {
-                query = query.IgnoreQueryFilters();
-            }
 
             if (disableTracking)
             {
@@ -225,14 +191,10 @@ namespace MedicaRental.DAL.Repositories
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
         {
-            IQueryable<TEntity> query = _context.Set<TEntity>();
 
-            if (ignoreQueryFilter)
-            {
-                query = query.IgnoreQueryFilters();
-            }
+            IQueryable<TEntity> query = _context.Set<TEntity>();
 
             if (disableTracking)
             {
@@ -246,31 +208,17 @@ namespace MedicaRental.DAL.Repositories
 
             if (orderBy != null)
             {
-                query = orderBy(query);
+                return await orderBy(query).Select(selector).ToListAsync();
             }
-
-            if (skip != null)
+            else
             {
-                query = query.Skip((int)skip);
+                return await query.Select(selector).ToListAsync();
             }
-
-            if (take != null)
-            {
-                query = query.Take((int)take);
-            }
-
-            return await query.Select(selector).ToListAsync();
         }
 
-        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, int? skip = null, int? take = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<IEnumerable<TResult>> FindAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (ignoreQueryFilter)
-            {
-                query = query.IgnoreQueryFilters();
-            }
-
             if (disableTracking)
             {
                 query = query.AsNoTracking();
@@ -288,30 +236,17 @@ namespace MedicaRental.DAL.Repositories
 
             if (orderBy != null)
             {
-                query = orderBy(query);
+                return await orderBy(query).Select(selector).ToListAsync();
             }
-
-            if (skip != null)
+            else
             {
-                query = query.Skip((int)skip);
+                return await query.Select(selector).ToListAsync();
             }
-
-            if (take != null)
-            {
-                query = query.Take((int)take);
-            }
-
-            return await query.Select(selector).ToListAsync();
         }
 
-        public async Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null, bool disableTracking = true, bool ignoreQueryFilter = false)
+        public async Task<TResult?> FindAsync<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool disableTracking = true)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (ignoreQueryFilter)
-            {
-                query = query.IgnoreQueryFilters();
-            }
 
             if (disableTracking)
             {
@@ -329,23 +264,6 @@ namespace MedicaRental.DAL.Repositories
             }
 
             return await query.Select(selector).FirstOrDefaultAsync();
-        }
-
-        public async Task<int> GetCountAsync(Expression<Func<TEntity, bool>>? predicate = null, bool ignoreQueryFilter = false)
-        {
-            IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (ignoreQueryFilter)
-            {
-                query = query.IgnoreQueryFilters();
-            }
-
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return await query.CountAsync();
         }
     }
 }

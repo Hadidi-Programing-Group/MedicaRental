@@ -15,9 +15,9 @@ public class ReportEntityTypeConfiguration : IEntityTypeConfiguration<Report>
     {
         builder.HasKey(r => r.Id);
 
-        builder.HasOne(i => i.Reporter)
+        builder.HasOne(i => i.Reportee)
         .WithMany(sc => sc.Reports)
-        .HasForeignKey(i => i.ReporterId)
+        .HasForeignKey(i => i.ReporteeId)
         .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(r => r.IsDeleted).HasDefaultValue(false);

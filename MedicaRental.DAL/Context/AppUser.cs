@@ -1,5 +1,4 @@
-﻿using MedicaRental.DAL.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,10 +21,6 @@ namespace MedicaRental.DAL.Context
         public string LastName { get; set; } = string.Empty;
 
         [NotMapped]
-        public string Name { get => $"{FirstName} {LastName}"; }
-
-
-        public ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
-        public ICollection<Transaction> Transactions { get; set; } = new HashSet<Transaction>();
+        public string Name { get => $"{FirstName} {LastName}"; } 
     }
 }

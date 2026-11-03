@@ -58,8 +58,7 @@ namespace MedicaRental.DAL.Models
         public bool InStock { get => Stock == 0; }
 
         [Range(0, 5)]
-        public int Rating { get; set; } = 0;
-
-        public DateTime AdEndDate { get; set; }
+        [NotMapped]
+        public int Rating { get => (int)Reviews.Average(r => r.Rating); }
     }
 }

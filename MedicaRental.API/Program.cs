@@ -1,27 +1,15 @@
-using MedicaRental.API;
 using MedicaRental.API.DataSeeding;
-using MedicaRental.API.Services;
-using MedicaRental.BL.MailService;
-using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
-using MedicaRental.BLL.Managers.Authentication;
 using MedicaRental.DAL.Context;
-using MedicaRental.DAL.Repositories;
 using MedicaRental.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Stripe;
-using System.Configuration;
-using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-StripeConfiguration.ApiKey = "sk_test_51Mq0DEDRs2d2XncX3l5gLODG0on2gtdtEiPEXSsyB2m2TUfGwZwlanLbn5ZBZGP3LJbOjDXlsx1f5j0eTcKbKKJI00mPVX4uAc";
 
 
 #region Main Services
@@ -69,14 +57,7 @@ builder.Services
 
         options.User.RequireUniqueEmail = true;
     })
-    .AddEntityFrameworkStores<MedicaRentalDbContext>()
-    .AddDefaultTokenProviders();
-builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
-    opt.TokenLifespan = TimeSpan.FromHours(2)); ;
-#endregion
-
-#region RefreshToken 
-builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
+    .AddEntityFrameworkStores<MedicaRentalDbContext>();
 #endregion
 
 #region Authentication Services
@@ -98,52 +79,18 @@ builder.Services
             //ValidAudience = builder.Configuration["JWT:Audience"],
             ValidateIssuer = false,
             ValidateAudience = false,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("MED_JWT_SECRET") ?? builder.Configuration["JWT:Secret"])),
-            ValidateLifetime = true, // Checks expiry date.
-            ClockSkew = TimeSpan.Zero // Matches time.
-        };
-        opt.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
-
-                // If the request is for our hub...
-                var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
-                {
-
-                    // Read the token out of the query string
-                    //Console.WriteLine($"Access Token : {accessToken}");
-                    context.Token = accessToken;
-                }
-                return Task.CompletedTask;
-            }
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
         };
     });
 #endregion
 
 #region Authorization Services
-
-var _adminPolicy = new AuthorizationPolicyBuilder()
-    .RequireClaim(ClaimTypes.Role, UserRoles.Admin.ToString())
-    .Build();
-
-var _moderatorPolicy = new AuthorizationPolicyBuilder()
-    .RequireClaim(ClaimTypes.Role, UserRoles.Moderator.ToString(), UserRoles.Admin.ToString())
-    .Build();
-
-var _clientPolicy = new AuthorizationPolicyBuilder()
-    .RequireClaim(ClaimTypes.Role, UserRoles.Client.ToString())
-    .Build();
-
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(ClaimRequirement.AdminPolicy, _adminPolicy);
-    options.AddPolicy(ClaimRequirement.ModeratorPolicy, _moderatorPolicy);
-    options.AddPolicy(ClaimRequirement.ClientPolicy, _clientPolicy);
-});
+builder.Services
+    .AddAuthorization(options =>
+    {
+        //options.AddPolicy("", policy => policy
+        //    .RequireClaim(ClaimTypes.Role, "", "", ....));
+    });
 #endregion
 
 #region Unit Of Work
@@ -161,53 +108,17 @@ builder.Services.AddScoped<IReportsManager, ReportsManager>();
 builder.Services.AddScoped<IReviewsManager, ReviewsManager>();
 builder.Services.AddScoped<IBrandsManager, BrandsManager>();
 builder.Services.AddScoped<ISubCategoriesManager, SubCategoriesManager>();
-builder.Services.AddScoped<IRentOperationsManager, RentOperationsManager>();
-builder.Services.AddScoped<IReportActionManager, ReportActionManager>();
-builder.Services.AddScoped<ICartItemsManager, CartItemsManager>();
-
-builder.Services.AddScoped<IAuthManger, AuthManger>();
-builder.Services.AddScoped<ITransactionsManager, TransactionsManager>();
-builder.Services.AddScoped<ITransactionItemsManager, TransactionItemsManager>();
-
 #endregion
 
-#region CORS Services
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowSpecificOrigin",
-//        builder => builder.AllowAnyHeader()
-//                          .AllowAnyMethod()
-//                          .SetIsOriginAllowed((host) => true)
-//                          .AllowCredentials());
-//});
-builder.Services.AddCors();
-#endregion
 
-#region Email Services
-var emailConfig = builder.Configuration
-    .GetSection("EmailConfiguration")
-    .Get<EmailConfiguration>();
-builder.Services.AddSingleton(emailConfig);
-builder.Services.AddScoped<IEmailSender, EmailSender>();
-#endregion
-
-builder.Services.AddHostedService<DailyRatingCalculationService>();
-builder.Services.AddHostedService<DailyClearTokenService>();
-
-#region SignalR
-builder.Services.AddSignalR().AddJsonProtocol(options =>
-{
-    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
-});
-#endregion
 
 var app = builder.Build();
 
-//if (app.Environment.IsDevelopment())
-//{
-app.UseSwagger();
-app.UseSwaggerUI();
-//}
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 #region SeedingIdentity
 using (var scope = app.Services.CreateScope())
@@ -218,36 +129,16 @@ using (var scope = app.Services.CreateScope())
 #endregion
 
 
-#region Middelwares
-//app.UseCors("AllowSpecificOrigin");
-app.UseCors(options => options.WithOrigins(builder.Configuration.GetSection("Cors:AllowedSite").Get<string[]>()).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+# region Middelwares
+app.UseCors();
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
-app.Use(async (context, next) =>
-{
-    if (context.User.Identity.IsAuthenticated)
-    {
-        // Set the user identity on the SignalR hub context
-        var claimsIdentity = (ClaimsIdentity)context.User.Identity;
-        var claims = claimsIdentity.Claims;
-
-        var user = new ClaimsPrincipal(claimsIdentity);
-
-        context.Items["User"] = user;
-    }
-    await next();
-
-});
-
 app.UseAuthorization();
 
 app.MapControllers();
 #endregion
-
-app.MapHub<ChatHub>("/chatHub");
 
 app.MapGet("/", () => "Hello World");
 app.MapGet("/Hi", () => "GitHub Acctions Works !!");
@@ -257,14 +148,14 @@ string GetRDSConnectionString()
 {
     var appConfig = System.Configuration.ConfigurationManager.AppSettings;
 
-    string dbname = Environment.GetEnvironmentVariable("MED_RDS_DB_NAME") ?? string.Empty;
+    string dbname = Environment.GetEnvironmentVariable("RDS_DB_NAME")??string.Empty;
 
     if (string.IsNullOrEmpty(dbname)) return builder.Configuration.GetConnectionString("MedicaRentalDbConn");
 
-    string username = Environment.GetEnvironmentVariable("MED_RDS_USERNAME") ?? string.Empty;
-    string password = Environment.GetEnvironmentVariable("MED_RDS_PASSWORD") ?? string.Empty;
-    string hostname = Environment.GetEnvironmentVariable("MED_RDS_HOSTNAME") ?? string.Empty;
-    string port = Environment.GetEnvironmentVariable("MED_RDS_PORT") ?? string.Empty;
+    string username = Environment.GetEnvironmentVariable("RDS_USERNAME") ?? string.Empty;
+    string password = Environment.GetEnvironmentVariable("RDS_PASSWORD") ?? string.Empty;
+    string hostname = Environment.GetEnvironmentVariable("RDS_HOSTNAME") ?? string.Empty;
+    string port = Environment.GetEnvironmentVariable("RDS_PORT") ?? string.Empty;
     string cs =
         $"Initial Catalog={dbname};" +
         $"Data Source={hostname};" +

@@ -24,14 +24,6 @@ public class UnitOfWork : IUnitOfWork
     private IEntityRepo<Review>? _reviews;
     private IEntityRepo<Brand>? _brands;
     private IEntityRepo<RentOperation>? _rentOperations;
-    private IEntityRepo<ReportAction>? _reportActions;
-    private IEntityRepo<CartItem>? _cartItems;
-    private IEntityRepo<AdPrice>? _adPrices;
-
-    private IEntityRepo<RefreshToken>? _refreshToken;
-    private IEntityRepo<Transaction>? _transactions;
-    private IEntityRepo<TransactionItem>? _transactionItems;
-
     #endregion
 
     public UnitOfWork(MedicaRentalDbContext context)
@@ -54,12 +46,6 @@ public class UnitOfWork : IUnitOfWork
     public IEntityRepo<Review> Reviews => _reviews ??= new ReviewsRepo(_context);
     public IEntityRepo<Brand> Brands => _brands ??= new BrandsRepo(_context);
     public IEntityRepo<RentOperation> RentOperations => _rentOperations ??= new RentOperationsRepo(_context);
-    public IEntityRepo<RefreshToken> RefreshToken => _refreshToken ??= new RefreshTokenRepo(_context);
-    public IEntityRepo<ReportAction> ReportActions => _reportActions ??= new ReportActionRepo(_context);
-    public IEntityRepo<Transaction> Trasactions => _transactions ??= new TransactionsRepo(_context);
-    public IEntityRepo<CartItem> CartItems => _cartItems ??= new CartItemRepo(_context);
-    public IEntityRepo<AdPrice> AdPrices => _adPrices ??= new AdPriceRepo(_context);
-    public IEntityRepo<TransactionItem> TrasactionItems => _transactionItems ??= new TransactionItemsRepo(_context);
     #endregion
 
     private bool disposed = false;

@@ -23,14 +23,7 @@ namespace MedicaRental.DAL.Configurations
             .HasForeignKey(i => i.ItemId)
             .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(ro => ro.Review)
-            .WithOne(i => i.RentOperation)
-            .HasForeignKey<Review>(i => i.RentOperationId)
-            .OnDelete(DeleteBehavior.Restrict);
-
             builder.Property(ro => ro.Price).HasColumnType("money");
-
-            builder.Property(ro => ro.ReviewId).IsRequired(false);
 
             builder.Property(i => i.IsDeleted).HasDefaultValue(false);
             builder.HasQueryFilter(i => !i.IsDeleted);

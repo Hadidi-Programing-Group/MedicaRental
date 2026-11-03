@@ -7,27 +7,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MedicaRental.DAL.Context;
-using MedicaRental.BLL.Helpers;
-using Microsoft.EntityFrameworkCore;
 
 namespace MedicaRental.BLL.Managers;
 
 public class SubCategoriesManager : ISubCategoriesManager
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork unitOfWork;
 
-    public SubCategoriesManager(IUnitOfWork unitOfWork)
+    public SubCategoriesManager(IUnitOfWork _unitOfWork)
     {
-        _unitOfWork = unitOfWork;
+        unitOfWork = _unitOfWork;
     }
-
     public async Task<DeleteSubCategoryStatusDto> DeleteByIdAsync(Guid id)
     {
-        await _unitOfWork.SubCategories.DeleteOneById(id);
+        await unitOfWork.SubCategories.DeleteOneById(id);
         try
         {
-            _unitOfWork.Save();
+            unitOfWork.Save();
             return new DeleteSubCategoryStatusDto(
                 isDeleted: true,
                 StatusMessage: "SubCategory has been deleted successfully.");
@@ -42,57 +38,33 @@ public class SubCategoriesManager : ISubCategoriesManager
         }
     }
 
-    public async Task<PageDto<SubCategoryWithCategoryDto>> GetAllWithCategoryAsync(int page, string? searchText)
+    public async Task<IEnumerable<SubCategoriesDto>> GetAllAsync()
     {
-        var subCategories = await _unitOfWork.SubCategories.FindAllAsync(
-                predicate: c => searchText == null ||
-                MedicaRentalDbContext.LevDist(c.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance,
-                include: q => q.Include(sc => sc.Category),
-                orderBy: q => q.OrderBy(c => c.Name),
-                skip: page > 1 ? (page - 1) * SharedHelper.Take : null,
-                take: SharedHelper.Take,
-                selector: sc => new SubCategoryWithCategoryDto
-                (
-                    sc.Id,
-                    sc.Name,
-                    SharedHelper.GetMimeFromBase64(Convert.ToBase64String(sc.Icon ?? Array.Empty<byte>())),
-                    sc.CategoryId,
-                    sc.Category == null ? "" : sc.Category.Name
-                )
-            );
-
-        var count = await _unitOfWork.SubCategories.GetCountAsync
-               (
-                   c => searchText == null ||
-                   MedicaRentalDbContext.LevDist(c.Name, searchText, SharedHelper.SearchMaxDistance) <= SharedHelper.SearchMaxDistance
-               );
-
-        return new(subCategories, count);
+        var SubCategories = await unitOfWork.SubCategories.GetAllAsync();
+        return SubCategories.Select(SubCat => new SubCategoriesDto(
+            Id: SubCat.Id,
+            Name: SubCat.Name,
+            Icon: SubCat.Icon,
+            CategoryId: SubCat.CategoryId));
     }
 
-    public async Task<SubCategoryWithCategoryDto?> GetByIdAsync(Guid? id)
+    public async Task<SubCategoriesDto?> GetByIdAsync(Guid? id)
     {
-        var subCategory = await _unitOfWork.SubCategories.FindAsync
-            (
-                predicate: S => S.Id == id,
-                include: q => q.Include(sc => sc.Category)
-            );
-
-        if (subCategory is null)
+        var SubCategory = await unitOfWork.SubCategories.FindAsync(
+            predicate: S => S.Id == id);
+        if (SubCategory is null)
             return null;
-        
-        return new SubCategoryWithCategoryDto(
-            Id: subCategory.Id,
-            Name: subCategory.Name,
-            Icon: SharedHelper.GetMimeFromBase64(Convert.ToBase64String(subCategory.Icon ?? Array.Empty<byte>())),
-            CategoryId: subCategory.CategoryId,
-            CategoryName: subCategory.Category == null ? "" : subCategory.Category.Name);
+        return new SubCategoriesDto(
+            Id: SubCategory.Id,
+            Name: SubCategory.Name,
+            Icon: SubCategory.Icon,
+            CategoryId: SubCategory.CategoryId);
     }
 
 
     public async Task<InsertSubCategoryStatusDto> InsertSubCategory(InsertSubCategoryDto insertSubCategory)
     {
-        var Category = await _unitOfWork.Categories.FindAsync(
+        var Category = await unitOfWork.Categories.FindAsync(
             predicate: C => C.Id == insertSubCategory.CategoryId);
         if (Category is null)
         {
@@ -109,10 +81,10 @@ public class SubCategoriesManager : ISubCategoriesManager
             CategoryId = insertSubCategory.CategoryId
         };
 
-        await _unitOfWork.SubCategories.AddAsync(subCategory);
+        await unitOfWork.SubCategories.AddAsync(subCategory);
         try
         {
-            _unitOfWork.Save();
+            unitOfWork.Save();
             return new InsertSubCategoryStatusDto(
                 isCreated: true,
                 Id: subCategory.Id,
@@ -130,9 +102,9 @@ public class SubCategoriesManager : ISubCategoriesManager
 
     }
 
-    public async Task<UpdateSubCategoryStatusDto> UpdateSubCategory(UpdateSubCategoryDto updateSubCategory)
+    public async Task<UpdateSubCategoryStatusDto> UpdateSubCategory(Guid id, UpdateSubCategoryDto updateSubCategory)
     {
-        var SubCat = await _unitOfWork.SubCategories.FindAsync(predicate: C => C.Id == updateSubCategory.Id);
+        var SubCat = await unitOfWork.SubCategories.FindAsync(predicate: C => C.Id == id);
         if (SubCat is null)
         {
             return new UpdateSubCategoryStatusDto(
@@ -141,7 +113,7 @@ public class SubCategoriesManager : ISubCategoriesManager
                 StatusMessage: "SubCategory cannot be found!");
         }
 
-        var Category = await _unitOfWork.Categories.FindAsync(
+        var Category = await unitOfWork.Categories.FindAsync(
             predicate: C => C.Id == updateSubCategory.CategoryId);
         if (Category is null)
         {
@@ -155,11 +127,11 @@ public class SubCategoriesManager : ISubCategoriesManager
         SubCat.Icon = Convert.FromBase64String(updateSubCategory.Icon);
         SubCat.CategoryId = updateSubCategory.CategoryId;
 
-        _unitOfWork.SubCategories.Update(SubCat);
+        unitOfWork.SubCategories.Update(SubCat);
 
         try
         {
-            _unitOfWork.Save();
+            unitOfWork.Save();
             return new UpdateSubCategoryStatusDto(
                 isUpdated: true,
                 Id: SubCat.Id,

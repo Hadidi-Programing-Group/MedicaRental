@@ -11,21 +11,5 @@ namespace MedicaRental.BLL.Managers;
 public interface IClientsManager
 {
     Task<StatusDto> ApproveUserAsync(string email);
-    Task<UserApprovalInfoDto?> GetClientApprovalInfoAsync(string userId);
-    Task<UserProfileInfoDto?> GetClientInfoAsync(string userId);
-    Task<UserBasicInfoDto?> GetClientInfoByEmailAsync(string email);
     Task<ClientRegisterStatusDto> RegisterNewUserAsync(ClientRegisterInfoDto registerInfoDto);
-    Task<StatusDto> UpdateApprovalInfoAsync(string userId, UpdateApprovalInfoDto updateProfileInfoDto);
-
-    Task<StatusDto> UpdateClientInfoAsync(string userId, UpdateProfileInfoDto updateProfileInfoDto);
-
-    Task<List<UserApprovalInfoDto>> GetAllClientsApprovalInfoAsync();
-    Task<List<UserProfileInfoDto>> GetAllClientsAsync();
-
-    Task<IEnumerable<UserProfileInfoWithIdDto>> GetClientsNeedingApprovalAsync();
-    Task<UserApprovalInfoWithIdDto?> GetClientApprovalInfoWithIdAsync(string userId);
-
-    Task<StatusDto> UpdateApprovalInfoRejectAsync(string userId, UpdateApprovalInfoRejectDto updateProfileInfoDto);
-
-    Task<bool?> IsApproved(string userId);
 }

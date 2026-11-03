@@ -1,7 +1,5 @@
 ﻿using MedicaRental.BLL.Dtos;
-using MedicaRental.BLL.Dtos.Admin;
 using MedicaRental.BLL.Managers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,40 +16,19 @@ namespace MedicaRental.API.Controllers
             _categoriesManager = categoriesManager;
         }
 
-        [HttpGet("withsub")]
-        public async Task<ActionResult<IEnumerable<CategoryWithSubCategoriesDto>>> GetAllWithSubCategories()
-        {
-            IEnumerable<CategoryWithSubCategoriesDto> Categories = await _categoriesManager.GetAllWithSubCategoriesAsync();
-
-            if (Categories is null) return BadRequest();
-
-            return Ok(Categories);
-        }
-
-        [HttpGet("paged")]
-        public async Task<ActionResult<PageDto<CategoryDto>>> GetAll(int page, string? searchText)
-        {
-            var categories = await _categoriesManager.GetAllAsync(page, searchText);
-
-            if (categories is null) return BadRequest();
-
-            return Ok(categories);
-        }
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll()
+        public async Task<ActionResult<List<CategoryDto>>> GetAll()
         {
-            var categories = await _categoriesManager.GetAllAsync();
+            List<CategoryDto> Categories = (await _categoriesManager.GetAllAsyc()).ToList();
+            if (Categories is null)
+                return NotFound();
 
-            if (categories is null) return BadRequest();
-
-            return Ok(categories);
+            return Categories;
         }
-
 
         [HttpGet]
         [Route("{Id}")]
-        public async Task<ActionResult<CategoryWithSubCategoriesDto>> GetCategoryWithSubCategories(Guid Id)
+        public async Task<ActionResult<CategoryWithSubCategoriesDto>> GetAllWithSubCategories(Guid Id)
         {
             CategoryWithSubCategoriesDto? categoryWithSubCategories = await _categoriesManager.GetCategoryWithSubCategories(Id);
             if (categoryWithSubCategories is null) 
@@ -61,7 +38,6 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult> InsertCategory(InsertCategoryDto insertCategoryDto)
         {
             InsertCategoryStatusDto insertCategoryStatus = await _categoriesManager.InsertNewCategory(insertCategoryDto);
@@ -77,20 +53,23 @@ namespace MedicaRental.API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
-        public async Task<ActionResult> UpdateCategory(UpdateCategoryDto updateCategoryDto)
+        [Route("{Id}")]
+        public async Task<ActionResult> UpdateCategory(Guid Id, UpdateCategoryDto updateCategoryDto)
         {
-            UpdateCategoryStatusDto updateCategoryStatus = await _categoriesManager.UpdateNewCategory(updateCategoryDto);
+            UpdateCategoryStatusDto updateCategoryStatus = await _categoriesManager.UpdateNewCategory(Id, updateCategoryDto);
 
             if (!updateCategoryStatus.isUpdated)
                 return BadRequest(updateCategoryStatus.StatusMessage);
 
-            return NoContent();
+            return CreatedAtAction(
+                actionName: nameof(GetAllWithSubCategories),
+                routeValues: new { Id = updateCategoryStatus.Id },
+                value: new { Message = updateCategoryStatus.StatusMessage }
+                );
         }
 
         [HttpDelete]
         [Route("{Id}")]
-        [Authorize(Policy = ClaimRequirement.ModeratorPolicy)]
         public async Task<ActionResult> DeleteCategoryAsync(Guid Id)
         {
             DeleteCategoryStatusDto deleteCategoryStatus = await _categoriesManager.DeleteByIdAsync(Id);
